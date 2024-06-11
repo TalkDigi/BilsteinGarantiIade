@@ -308,7 +308,7 @@ class ApplicationController extends Controller
 
 
                 //TODO - Başvuru listeleme sayfasına yönlendir.
-                return redirect()->route('dashboard.application.create', ['type' => $type]);
+                return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number]);
 
             } else {
 

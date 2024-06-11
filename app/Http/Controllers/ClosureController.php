@@ -21,6 +21,8 @@ class ClosureController extends Controller
 
         $data = Application::whereYear('created_at', $year)
                          ->whereMonth('created_at', $month)
+                            ->whereIn('type', ['masraf-icermeyen-basvuru', 'hasarli-eksik-parca-bildirimi']) // Tip filtresi
+                        ->where('user_id', auth()->id()) // Kullanıcı ID'si filtresi
                          ->get();
 
         //extract all quantities column from data. it has array in it. every key is a product. we need to store those ids in an array
