@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
 
             // Eğer kullanıcı 'Kullanıcı' rolüne sahipse, sadece kendi oluşturduğu kayıtları filtrele
             if (auth()->user()->hasRole('Kullanıcı')) {
-                $query->where('created_by', auth()->id());
+                $query->where('user_id', auth()->id());
             }
 
             $results = $query->groupBy('type', 'status')->get();
