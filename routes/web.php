@@ -104,6 +104,8 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/{type}/{tip?}',[ApplicationController::class,'index'])->name('dashboard.application.listFilter');
 
+            Route::post('/ara',[ApplicationController::class,'search'])->name('dashboard.application.search');
+
         });
 
         Route::prefix('/basvuru')->group(function() {

@@ -130,22 +130,27 @@
                             <!--begin::Actions-->
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <!--begin::Search-->
-                                <div class="d-flex align-items-center position-relative">
+                                <form class="d-flex align-items-center position-relative" method="POST" action="{{route('dashboard.application.search')}}">
                                     <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                     </i>
-                                    <input type="text" data-kt-inbox-listing-filter="search"
+
+
+                                        @csrf
+                                        <input type="text" data-kt-inbox-listing-filter="search"
                                         class="form-control form-control-sm form-control-solid mw-100 min-w-125px min-w-lg-150px min-w-xxl-200px ps-11"
-                                        placeholder="Başvuru No Ara" />
-                                    <button class="btn btn-primary">Ara</button>
-                                </div>
+                                        placeholder="Başvuru No Ara" name="search"/>
+                                        <button class="btn btn-primary">Ara</button>
+
+                                </form>
 
                             </div>
                             <!--end::Actions-->
                         </div>
                         <div class="card-body">
-                            <!--begin::Table-->
+                            @if(isset($Applications) && !$Applications->isEmpty())
+                                <!--begin::Table-->
                             <table class="table align-middle table-row-bordered fs-6 gy-5" id="kt_ecommerce_products_table">
 								<thead>
 									<tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
@@ -221,11 +226,19 @@
                                             @endif
 										</tr>
 										@empty
+
 									@endforelse
 
 								</tbody>
 							</table>
                             <!--end::Table-->
+                            @else
+                                <div class="alert alert-warning d-flex align-items-center p-5 mb-10">
+                    <i class="ki-duotone ki-shield-tick fs-2hx text-warning me-4"><span class="path1"></span><span class="path2"></span></i>                    <div class="d-flex flex-column">
+                        <span>Başvuru bulunamadı.</span>
+                    </div>
+                </div>
+                            @endif
                         </div>
                     </div>
                     <!--end::Card-->
