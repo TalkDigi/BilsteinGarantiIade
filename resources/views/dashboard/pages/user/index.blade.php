@@ -263,10 +263,10 @@
 															<!--end::Scroll-->
 															<!--begin::Actions-->
 															<div class="text-center pt-10">
-																<button type="reset" class="btn btn-light me-3" data-kt-users-modal-action="cancel">Discard</button>
+																<button type="reset" class="btn btn-light me-3" data-kt-users-modal-action="cancel">Kapat</button>
 																<button type="submit" class="btn btn-primary" data-kt-users-modal-action="submit">
-																	<span class="indicator-label">Submit</span>
-																	<span class="indicator-progress">Please wait...
+																	<span class="indicator-label">Gönder</span>
+																	<span class="indicator-progress">Lütfen bekleyin...
 																	<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 																</button>
 															</div>

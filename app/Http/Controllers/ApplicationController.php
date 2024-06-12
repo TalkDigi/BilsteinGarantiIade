@@ -64,6 +64,7 @@ class ApplicationController extends Controller
 
         $StatusDetail = $Statuses[$Application->status];
 
+
         $Message = null;
 
         $Files = null;
@@ -82,7 +83,10 @@ class ApplicationController extends Controller
 
         $FileMatches = Application::FILE_MATCHES;
 
-        return view('dashboard.pages.application.show', compact('Application', 'Logs','Statuses','Message','StatusDetail','Files','Labels','FileMatches'));
+        $ProductsLists = $this->calculatePrice($Application);
+
+
+        return view('dashboard.pages.application.show', compact('Application', 'Logs','Statuses','Message','StatusDetail','Files','Labels','FileMatches','ProductsLists'));
 
     }
 
@@ -420,6 +424,22 @@ class ApplicationController extends Controller
         $query= $query->where('claim_number', $request->search)->orderBy('id','desc')->get();
         $Applications = $query;
         return view('dashboard.pages.application.index', compact('Applications', 'statusCounts','tip','basvuru_turu','Types','IntTypes'));
+    }
+
+    public function calculatePrice($data) {
+
+
+        $Products = [];
+            foreach($data->quantities as $key => $value) {
+
+                $Product = Product::where('No',$key)->first();
+
+                $Products['products'][$key] = $Product;
+                $Products['quantities'][$key] = $value;
+            }
+            $Invoice = Invoice::where('InvoiceNo', $data->invoice)->first();
+            $Products['invoice'] = $Invoice;
+        return $Products;
     }
 
 }

@@ -33,7 +33,8 @@
 																		<th class="pb-2">#</th>
 																		<th class="min-w-70px text-start pb-2">Ürün</th>
 																		<th class="min-w-80px text-end pb-2">Miktar</th>
-																		<th class="min-w-100px text-end pb-2">Fiyat</th>
+																		<th class="min-w-100px text-end pb-2">Birim Fiyat</th>
+                                                                        <th class="min-w-100px text-end pb-2">Toplam</th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -46,6 +47,10 @@
                                                                             </td>
                                                                             <td class="pt-6">{{$line['quantity']}} Adet</td>
                                                                             <td class="pt-6">{{$line['price']}} ₺</td>
+
+                                                                            <td class="pt-6">{{number_format($line['price'] * $line['quantity'], 2, '.', '')}} ₺</td>
+
+
 
 																	    </tr>
                                                                         @empty

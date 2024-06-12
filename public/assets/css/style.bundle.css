@@ -20,3 +20,8 @@
 padding: 1.5rem 1.25rem;
 color: var(--bs-card-color);
 }
+
+
+.question-body img{
+    max-width : 100%
+}

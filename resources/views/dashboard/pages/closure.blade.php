@@ -51,7 +51,13 @@
                                     </div>
                                     <div class="col-lg-6 p-3">
                                          <label for="month">Yıl:</label>
-                                        <input type="text" name="year" id="year" class="form-control form-control-solid mb-3 mb-lg-0">
+                                        <select name="year" id="year" class="form-control form-control-solid mb-3 mb-lg-0">
+                                            <option selected disabled> Yıl Seçin</option>
+                                            @for ($i = 2021; $i <= date('Y'); $i++)
+                                                            <option value="{{ $i }}">{{ $i }}</option>
+
+                                            @endfor
+                                        </select>
                                     </div>
                                     <div class="col-lg-12 p-3">
                                         <button type="submit" class="d-block w-100 btn btn-primary">Ara</button>
@@ -70,7 +76,7 @@
             </div>
             <!--end::Navbar-->
             <!--begin::Row-->
-            @if(isset($Products))
+            @if(isset($Products) && count($Products) > 0)
                 <div class="row gx-6 gx-xl-9">
                 <!--begin::Col-->
                 <div class="col-lg-12">
@@ -100,7 +106,6 @@
                                     @forelse($Products as $key => $product)
                                                     @php
                                                     $prices = $product['invoice']->getItemPrice();
-                                                    debug($prices);
                                                     @endphp
 
                                         @foreach ($product['products'] as $item)
@@ -134,6 +139,12 @@
                 </div>
 
             </div>
+            @else
+                <div class="alert alert-warning">
+                    <div class="alert-text text-center">
+                        <p class="text-black mb-0">Belirtilen tarihte onaylanmış başvurunuz bulunamadı.</p>
+                    </div>
+                </div>
             @endif
             <!--end::Row-->
         </div>
@@ -175,7 +186,7 @@
 @section('scripts')
     <script>
         $('#month').select2({
-            placeholder: "Select a country",
+            placeholder: "Ay Seçin",
 
         });
     </script>

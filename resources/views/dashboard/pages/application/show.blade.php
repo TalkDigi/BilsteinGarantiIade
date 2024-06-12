@@ -1,5 +1,6 @@
 @extends('layouts.dashboard')
 @section('content')
+
     <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
         <!--begin::Post-->
         <div class="content flex-row-fluid" id="kt_content">
@@ -158,6 +159,24 @@
                                     <a href="{{route('dashboard.application.edit', [$Application->claim_number])}}">Başvuruyu Düzenle</a>
                                 @endif
                             @endif
+
+                            @if($StatusDetail['showShipment'])
+                                <div class="d-flex mt-5 d-block flex-column">
+                                    <h5>İade İçin Gönderim Adresi</h5>
+                                    <p class="text-black">{{$Settings['shipment_address']}}</p>
+                                </div>
+                            @endif
+
+                            @if($StatusDetail['canInvoice'] && $Application->type === 'ilave-masraf-iceren-basvuru')
+                                <div class="d-flex mt-5 d-block flex-column">
+                                    <p>Başvurunuza dair <b>Hasar Yansıtma Faturası</b> oluşturabilirsiniz. Örnek fatura detaylarını görmek için <b>Fatura Oluştur</b> butonuna tıklayın.</p>
+
+<a class="closure-button btn btn-warning me-2 mb-2" style="max-width: 220px;">
+
+                    Örnek Fatura Oluştur
+                </a>
+                                </div>
+                            @endif
                         </div>
                         <!--end::Wrapper-->
                     </div>
@@ -193,7 +212,7 @@
                         <div class="card-body pt-0">
                             <div class="table-responsive">
                                 <!--begin::Table-->
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0">
+                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 closure-table">
                                     <thead>
                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                         <th class="min-w-175px">Ürün</th>
@@ -205,8 +224,17 @@
                                     <tbody class="fw-semibold text-gray-600">
 
                                     @forelse($Application->getProductDetails() as $product)
-                                        {{debug($product['product'])}}
-                                        <tr>
+
+                                        @php
+                                                    $prices = $ProductsLists['invoice']->getItemPrice();
+                                                    debug($prices);
+                                                    @endphp
+
+                                        <tr
+                                            data-name = "{{$product['product']->Name}}"
+                                            data-no = "{{$product['product']->No}}"
+                                            data-quantity = "{{$ProductsLists['quantities'][$product['product']->No]}}"
+                                            data-price="{{ number_format($prices[$product['product']->No], 2, '.', '')}}">
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="ms-5">
@@ -332,6 +360,36 @@
         <!--end::Post-->
     </div>
     @include('dashboard.modals.change-status',['Application' => $Application])
+    <div class="modal fade" id="invoiceModal" tabindex="-1" aria-hidden="true">
+											<!--begin::Modal dialog-->
+											<div class="modal-dialog modal-dialog-centered mw-650px">
+												<!--begin::Modal content-->
+												<div class="modal-content">
+													<!--begin::Modal header-->
+													<div class="modal-header" id="kt_modal_add_user_header">
+														<!--begin::Modal title-->
+														<h2 class="fw-bold"></h2>
+														<!--end::Modal title-->
+														<!--begin::Close-->
+														<div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close">
+															<i class="ki-duotone ki-cross fs-1">
+																<span class="path1"></span>
+																<span class="path2"></span>
+															</i>
+														</div>
+														<!--end::Close-->
+													</div>
+													<!--end::Modal header-->
+													<!--begin::Modal body-->
+													<div class="modal-body px-5 my-7 invoiceBody">
+
+													</div>
+													<!--end::Modal body-->
+												</div>
+												<!--end::Modal content-->
+											</div>
+											<!--end::Modal dialog-->
+										</div>
 @endsection
 
 
@@ -347,9 +405,7 @@
             @endforeach
        @endif
 
-            @if(Session::has('success'))
-                toastr.success("{{ Session::get('success') }}","Başarılı");
-          @endif
+
 
     </script>
 @endsection

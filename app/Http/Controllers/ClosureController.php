@@ -48,15 +48,14 @@ class ClosureController extends Controller
         return view('dashboard.pages.closure', compact('Products'));
     }
 
-    public function process(Request $request) {
+    public function process(Request $request)
+    {
         $lines = $request->data;
-
-        debug($lines);
 
         //sum total of all lines
         $total = 0;
         foreach($lines as $line) {
-            $total += $line['price'];
+            $total += $line['price'] * $line['quantity'];
         }
         //calculate tax. its %20
         $tax = $total * 0.20;

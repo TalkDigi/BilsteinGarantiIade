@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 class GuideController extends Controller
 {
     public function sss() {
-        return view('dashboard.pages.guide.sss');
+        $Questions = \App\Models\Question::orderBy('order', 'asc')->get();
+        return view('dashboard.pages.guide.sss', compact('Questions'));
     }
 }

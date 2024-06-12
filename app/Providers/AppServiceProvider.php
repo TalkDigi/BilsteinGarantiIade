@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Carbon\Carbon;
-
+use App\Models\Setting;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,8 +21,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+
         Carbon::setLocale('tr');
+
+        $setting_db = Setting::all();
+
+        $Settings = [];
+
+        foreach($setting_db as $setting) {
+            $Settings[$setting->key] = $setting->value;
+        }
+
+        view()->share('Settings', $Settings);
 
     }
 }

@@ -82,21 +82,29 @@
 
 											</a>
 
-											@if(auth()->user()->hasRole('Yönetici'))
-                                                <a href="{{route('user.index')}}" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
-												<span class="menu-link py-3">
-													<span class="menu-title">Kullanıcılar</span>
-													<span class="menu-arrow d-lg-none"></span>
-												</span>
-											</a>
-                                                @endif
 
-                                                <a href="{{route('dashboard.guide.sss')}}" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
+
+                                            <a href="{{route('dashboard.guide.sss')}}" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
 												<span class="menu-link py-3">
 													<span class="menu-title">Sıkça Sorulan Sorular</span>
 													<span class="menu-arrow d-lg-none"></span>
 												</span>
 											</a>
+
+                                            @if(auth()->user()->hasRole('Yönetici'))
+                                                 <a href="{{route('user.index')}}" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
+                                                    <span class="menu-link py-3">
+                                                        <span class="menu-title">Kullanıcılar</span>
+                                                        <span class="menu-arrow d-lg-none"></span>
+                                                    </span>
+                                                </a>
+                                                <a href="{{route('dashboard.setting.index')}}" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
+                                                    <span class="menu-link py-3">
+                                                        <span class="menu-title">Yönetim</span>
+                                                        <span class="menu-arrow d-lg-none"></span>
+                                                    </span>
+                                                </a>
+                                            @endif
 
 										</div>
 									</div>
@@ -2628,5 +2636,10 @@
         @yield('scripts')
         <script src="{{asset('assets/js/custom/kontent.js')}}"></script>
     @yield('after-scripts')
+        <script>
+              @if(Session::has('success'))
+                toastr.success("{{ Session::get('success') }}","Başarılı");
+          @endif
+        </script>
 	</body>
 </html>

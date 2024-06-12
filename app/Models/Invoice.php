@@ -51,19 +51,12 @@ class Invoice extends Model
     }
 
     public function getItemPrice() {
-        debug('Invoice burada');
-        debug($this->toArray());
-
         $Lines = $this->getLines(); // Mevcut getLines fonksiyonunu kullanarak satırları alıyoruz.
         $prices = [];
 
         foreach($Lines as $line) {
-            $discount = 0;
-            if(isset($line['Disc'])) {
-                $discount = $line['Disc'] / $line['Qty'];
-            }
 
-            $price = $line['UnitPrice'] - $discount;
+            $price = $line['Amt'] / $line['Qty'];
 
             $prices[$line['ItemNo']] = $price;
         }

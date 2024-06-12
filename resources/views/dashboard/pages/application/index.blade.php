@@ -136,12 +136,9 @@
                                         <span class="path2"></span>
                                     </i>
 
-
                                         @csrf
-                                        <input type="text" data-kt-inbox-listing-filter="search"
-                                        class="form-control form-control-sm form-control-solid mw-100 min-w-125px min-w-lg-150px min-w-xxl-200px ps-11"
-                                        placeholder="Başvuru No Ara" name="search"/>
-                                        <button class="btn btn-primary">Ara</button>
+                                    <input type="text" data-kt-inbox-listing-filter="search" class="form-control form-control-sm form-control-solid mw-100 min-w-125px min-w-lg-150px min-w-xxl-200px ps-11" placeholder="Başvuru No Ara" name="search"/>
+                                    <button class="btn btn-primary">Ara</button>
 
                                 </form>
 

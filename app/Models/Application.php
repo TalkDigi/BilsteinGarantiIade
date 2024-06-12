@@ -56,7 +56,9 @@ class Application extends Model
             'name' => 'Taslak',
             'color' => 'grey',
             'hasNotes' => false,
-            'canEdit' => false
+            'canEdit' => false,
+            'showShipment' => false,
+            'canInvoice' => false
         ],
         1 => [
             'html' => '<span class="badge badge-primary">Değerlendiriliyor</span>',
@@ -64,7 +66,9 @@ class Application extends Model
             'name' => 'Değerlendiriliyor',
             'color' => 'primary',
             'hasNotes' => false,
-            'canEdit' => false
+            'canEdit' => false,
+            'showShipment' => false,
+            'canInvoice' => false
         ],
         2 => [
             'html' => '<span class="badge badge-info">Ön Onay Bekliyor</span>',
@@ -72,7 +76,9 @@ class Application extends Model
             'name' => 'Ön Onay Bekliyor',
             'color' => 'info',
             'hasNotes' => false,
-            'canEdit' => false
+            'canEdit' => false,
+            'showShipment' => false,
+            'canInvoice' => false
         ],
         3 => [
             'html' => '<span class="badge badge-success">Onaylandı</span>',
@@ -80,7 +86,9 @@ class Application extends Model
             'name' => 'Onaylandı',
             'color' => 'success',
             'hasNotes' => true,
-            'canEdit' => false
+            'canEdit' => false,
+            'showShipment' => true,
+            'canInvoice' => true
         ],
         4 => [
             'html' => '<span class="badge badge-warning">Düzenleme İstendi</span>',
@@ -88,7 +96,9 @@ class Application extends Model
             'name' => 'Düzenleme İstendi',
             'color' => 'warning',
             'hasNotes' => true,
-            'canEdit' => true
+            'canEdit' => true,
+            'showShipment' => false,
+            'canInvoice' => false
         ],
         5 => [
             'html' => '<span class="badge badge-danger">Reddedildi</span>',
@@ -96,7 +106,9 @@ class Application extends Model
             'name' => 'Reddedildi',
             'color' => 'danger',
             'hasNotes' => true,
-            'canEdit' => false
+            'canEdit' => false,
+            'showShipment' => false,
+            'canInvoice' => false
         ],
     ];
 
