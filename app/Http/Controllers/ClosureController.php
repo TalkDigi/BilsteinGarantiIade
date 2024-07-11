@@ -21,12 +21,11 @@ class ClosureController extends Controller
 
         $data = Application::whereYear('created_at', $year)
                          ->whereMonth('created_at', $month)
-                            ->whereIn('type', ['masraf-icermeyen-basvuru', 'hasarli-eksik-parca-bildirimi']) // Tip filtresi
-                        ->where('user_id', auth()->id()) // Kullanıcı ID'si filtresi
-                         ->get();
+                            ->whereIn('type', ['masraf-icermeyen-basvuru', 'hasarli-parca-bildirimi']) // Tip filtresi
+                            ->where('status', 3)
+                            ->where('user_id', auth()->id()) // Kullanıcı ID'si filtresi
+                            ->get();
 
-        //extract all quantities column from data. it has array in it. every key is a product. we need to store those ids in an array
-        //then we'll query products table with those ids and get the products. then we'll get invoice with data's voice column. we'll append invoice to product
         $ids = [];
         foreach ($data as $item) {
             $ids = array_merge($ids, array_keys($item->quantities));

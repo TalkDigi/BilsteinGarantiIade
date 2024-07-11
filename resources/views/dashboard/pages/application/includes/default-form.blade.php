@@ -84,7 +84,7 @@
 
         <div class="d-flex flex-column flex-md-row gap-5">
             <div class="fv-row flex-row-fluid">
-                <label class=" form-label">Bayi Adı</label>
+                <label class=" form-label">Perakendeci Adı</label>
                 <input class="form-control" name="application[branch_name]"
                     @if(isset($Application->application['branch_name']))
                         value="{{ $Application->application['branch_name'] }}"

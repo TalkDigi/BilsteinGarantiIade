@@ -122,7 +122,7 @@
 
 											<div class="flex-column" data-kt-stepper-element="content">
 												<div class="fv-row">
-													<label class=" form-label"><b>Müşteriye Kesilen Onarım Faturası (Varsa)</b></label>
+													<label class=" form-label"><b>Müşteriye Kesilen Onarım Faturası (Opsiyonel)</b></label>
 													<div class="dropzone" id="dropZone1">
 														<div class="dz-message needsclick">
 															<i class="ki-duotone ki-file-up fs-3x text-primary"><span class="path1"></span><span class="path2"></span></i>
@@ -172,7 +172,7 @@
 
 
                                                 <div class="fv-row mt-5">
-													<label class=" form-label"><b>Parçaya Dair Arıza / Hata Görseli (Varsa)</b></label>
+													<label class=" form-label"><b>Parçaya Dair Arıza / Hata Görseli (Opsiyonel)</b></label>
 													<div class="dropzone" id="dropZone2">
 														<div class="dz-message needsclick">
 															<i class="ki-duotone ki-file-up fs-3x text-primary"><span class="path1"></span><span class="path2"></span></i>

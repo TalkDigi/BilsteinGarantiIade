@@ -64,7 +64,7 @@
                                 <span class="path3"></span>
                             </i>
                             <span class="d-block fw-semibold text-start">
-                                <span class="text-gray-900 fw-bold d-block fs-3">Hasarlı / Eksik Parça Bildirimi</span>
+                                <span class="text-gray-900 fw-bold d-block fs-3">Hasarlı Parça Bildirimi</span>
 										{{--<span class="text-muted fw-semibold fs-6">We will send a code via SMS if you need to use your backup login method.</span>--}}
                             </span>
                         </label>

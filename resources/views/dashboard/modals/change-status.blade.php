@@ -29,7 +29,7 @@
                     </div>
                     <div class="form-group mt-5">
                         <div class="fv-row">
-                            <div class="text-muted fw-semibold fs-5 mb-5 text-center">Müşteriye İletilecek Dökümanlar (Varsa)</div>
+                            <div class="text-muted fw-semibold fs-5 mb-5 text-center">Müşteriye İletilecek Dökümanlar (Opsiyonel)</div>
                             <div class="dropzone" id="dropZone10">
                                 <div class="dz-message needsclick">
                                     <i class="ki-duotone ki-file-up fs-3x text-primary"><span class="path1"></span><span

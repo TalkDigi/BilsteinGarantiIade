@@ -46,7 +46,7 @@ class Application extends Model
     const INT_TYPES = [
         'masraf-icermeyen-basvuru' => 1,
         'ilave-masraf-iceren-basvuru' => 2,
-        'hasarli-eksik-parca-bildirimi' => 3,
+        'hasarli-parca-bildirimi' => 3,
     ];
 
     const STATUS = [
@@ -112,7 +112,7 @@ class Application extends Model
         ],
     ];
 
-    const TYPES= [
+    const TYPES = [
 
         'masraf-icermeyen-basvuru' => [
             'title' => 'Masraf İçermeyen Başvuru',
@@ -126,9 +126,9 @@ class Application extends Model
             'view' => 'dashboard.pages.application.types.ilave-masraf-iceren-basvuru',
         ],
 
-        'hasarli-eksik-parca-bildirimi' => [
-            'title' => 'Hasarlı / Eksik Parça Bildirimi',
-            'slug' => 'hasarli-eksik-parca-bildirimi',
+        'hasarli-parca-bildirimi' => [
+            'title' => 'Hasarlı Parça Bildirimi',
+            'slug' => 'hasarli-parca-bildirimi',
             'view' => 'dashboard.pages.application.types.hasarli-eksik-parca-bildirimi',
         ],
 
@@ -140,9 +140,9 @@ class Application extends Model
             "car_brand" => "Aracın markası",
             "car_model" => "Aracın modeli",
             "car_number" => "Aracın şasi numarası",
-            "branch_name" => "Bayi adı",
+            "branch_name" => "Perakendeci adı",
             "service_name" => "Servis adı",
-            "branch_number" => "Bayi numarası",
+            "branch_number" => "Perakendeci numarası",
             "customer_name" => "Müşterinin adı",
             "car_found_date" => "17/01/1995",
             "customer_phone" => "Mşterinin telefon numarası",

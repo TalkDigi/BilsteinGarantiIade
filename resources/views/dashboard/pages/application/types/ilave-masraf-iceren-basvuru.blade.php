@@ -236,7 +236,7 @@
                                                 @endif
 
                                                 <div class="fv-row mt-5">
-													<label class=" form-label"><b>İş Emri Görseli (Varsa)</b></label>
+													<label class=" form-label"><b>İş Emri Görseli (Opsiyonel)</b></label>
 													<div class="dropzone" id="dropZone3">
 														<div class="dz-message needsclick">
 															<i class="ki-duotone ki-file-up fs-3x text-primary"><span class="path1"></span><span class="path2"></span></i>
