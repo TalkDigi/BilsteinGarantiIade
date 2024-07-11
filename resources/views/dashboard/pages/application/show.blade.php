@@ -147,7 +147,7 @@
                                     <ul class="pl-0 mt-5">
                                     @foreach($Files as $file)
                                         <li>
-                                            <a href="{{Storage::url($file)}}" target="_blank">{{$file}}</a>
+                                            <a href="{{Storage::url('application-files/'.$file)}}" target="_blank">{{$file}}</a>
                                         </li>
                                     @endforeach
                                 </ul>
