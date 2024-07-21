@@ -83,7 +83,7 @@
         </div>
 
         <div class="d-flex flex-column flex-md-row gap-5">
-            <div class="fv-row flex-row-fluid car_brand">
+            <div class="fv-row flex-row-fluid engine_power">
                 <label class=" form-label">Motor Gücü</label>
                 <input class="form-control" name="application[engine_power]"
                        @if(isset($Application->application['engine_power']))
@@ -91,7 +91,7 @@
                        @endif
                 />
             </div>
-            <div class="flex-row-fluid car_model">
+            <div class="flex-row-fluid motor_code">
                 <label class="form-label">Model Kodu</label>
                 <input class="form-control" name="application[motor_code]"
                 @if(isset($Application->application['motor_code']))
