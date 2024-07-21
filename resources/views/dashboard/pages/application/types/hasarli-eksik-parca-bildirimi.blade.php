@@ -95,7 +95,7 @@
 									<div class="">
 										<div class="mb-5">
 
-											@include('dashboard.pages.application.includes.default-form')
+											@include('dashboard.pages.application.includes.default-form', ['Complaints' => $Complaints])
 
 											<div class="flex-column" data-kt-stepper-element="content">
 												<div class="fv-row">
