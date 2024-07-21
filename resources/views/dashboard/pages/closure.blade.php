@@ -47,10 +47,19 @@
                                     <select name="month" id="month"
                                             class="form-control form-control-solid mb-3 mb-lg-0">
                                         <option selected disabled> Ay Seçin</option>
-                                        @for ($i = 1; $i <= 12; $i++)
-                                            <option value="{{ $i }}">{{ strftime('%B', mktime(0, 0, 0, $i, 1)) }}</option>
-
-                                        @endfor
+                                        <option value="1">Ocak</option>
+                                        <option value="2">Şubat</option>
+                                        <option value="3">Mart</option>
+                                        <option value="4">Nisan</option>
+                                        <option value="5">Mayıs</option>
+                                        <option value="6">Haziran</option>
+                                        <option value="7">Temmuz</option>
+                                        <option value="8">Ağustos</option>
+                                        <option value="9">Eylül</option>
+                                        <option value="10">Ekim</option>
+                                        <option value="11">Kasım</option>
+                                        <option value="12">Aralık</option>
+                                        
                                     </select>
                                 </div>
                                 <div class="col-lg-6 p-3">
