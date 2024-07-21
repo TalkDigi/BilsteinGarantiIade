@@ -2659,7 +2659,7 @@
 		<script src="{{asset('assets/js/custom/utilities/modals/create-campaign.js')}}"></script>
 		<script src="{{asset('assets/js/custom/utilities/modals/users-search.js')}}"></script>
         @yield('scripts')
-        <script src="{{asset('assets/js/custom/kontent.js')}}"></script>
+        <script src="{{asset('assets/js/custom/kontent.js')}}?v=3"></script>
     @yield('after-scripts')
         <script>
               @if(Session::has('success'))
