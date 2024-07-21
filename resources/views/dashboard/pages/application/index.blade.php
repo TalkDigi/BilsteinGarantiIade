@@ -18,7 +18,7 @@
                         <!--begin::Aside content-->
                         <div class="card-body application-card-body">
                             <!--begin::Button-->
-                            <a data-bs-toggle="modal" data-bs-target="#kt_modal_two_factor_authentication" class="btn btn-primary fw-bold w-100 mb-8">
+                            <a href="{{route('dashboard.application.index')}}" class="btn btn-primary fw-bold w-100 mb-8">
 								Yeni Başvuru +
 							</a>
 

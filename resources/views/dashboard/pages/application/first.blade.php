@@ -25,7 +25,7 @@
                                     <span class="path2"></span>
                                 </i>
                                 <input type="text" name="productCode"
-                                       class="form-control form-control-solid w-250px ps-12"
+                                       class="form-control form-control-solid  ps-12"
                                        placeholder="Ürün kodu ile ara." value="ADF1230140"/>
                             </div>
                         </div>
@@ -38,12 +38,19 @@
                                 </i>
 
                                 <input type="text" name="productName"
-                                       class="form-control form-control-solid w-250px ps-12"
+                                       class="form-control form-control-solid  ps-12"
                                        placeholder="Ürün adı ile ara."/>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                            <button type="submit"> Ara</button>
+                        <div class="col-lg-12 mt-4 mb-4">
+                            <btn type="submit"  class="btn btn-primary w-100">
+<i class="ki-duotone ki-filter-search fs-1" >
+ <span class="path1"></span>
+ <span class="path2"></span>
+ <span class="path3"></span>
+</i>
+Ara
+</btn>
                         </div>
                     </form>
 
