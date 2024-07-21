@@ -259,8 +259,7 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                     </div>
                                     {{--<a href="#" class="btn btn-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#kt_modal_create_campaign">Start Now</a>--}}
 
-                                    <a href="#" class="btn btn-primary fw-semibold" data-bs-toggle="modal"
-                                       data-bs-target="#kt_modal_two_factor_authentication">+</a>
+                                    <a href="{{route('dashboard.application.index')}}" class="btn btn-primary fw-semibold" >+</a>
                                 </div>
                             </div>
                         </div>

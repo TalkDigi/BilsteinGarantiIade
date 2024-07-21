@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Session;
 use App\Models\Question;
+use App\Models\File;
 
 class SettingController extends Controller
 {
@@ -17,6 +18,11 @@ class SettingController extends Controller
     public function sss() {
         $Questions = Question::orderBy('order', 'asc')->get();
         return view('dashboard.pages.settings.sss', compact('Questions'));
+    }
+
+    public function file() {
+        $Files = File::all();
+        return view('dashboard.pages.settings.file', compact('Files'));
     }
 
     public function settingsStore(Request $request) {

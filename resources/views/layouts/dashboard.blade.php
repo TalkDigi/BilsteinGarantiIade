@@ -31,6 +31,17 @@
 				background: rgb(244, 237, 237);
 				color: white;
 			}
+            .formChangeInputs {
+                display:flex
+            }
+            .formChangeInputs .form-check {
+                flex: 1 1 50%; /* Her bir child div'in genişliği %50 olacak */
+            box-sizing: border-box;
+            padding: 10px; /* İsteğe bağlı padding */
+            }
+            .formChangeInputs .form-check-custom .form-check-input {
+                margin-right:8px
+            }
 
 		</style>
 	</head>
@@ -91,6 +102,16 @@
 												</span>
 											</a>
 
+                                            @forelse($MenuFile as $file)
+                                                <a href="{{Storage::url('files/'.$file->path)}}" target="_blank" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
+                                                    <span class="menu-link py-3">
+                                                        <span class="menu-title">{{$file->name}}</span>
+                                                        <span class="menu-arrow d-lg-none"></span>
+                                                    </span>
+                                                </a>
+                                                @empty
+                                            @endforelse
+
                                             @if(auth()->user()->hasRole('Yönetici'))
                                                  <a href="{{route('user.index')}}" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
                                                     <span class="menu-link py-3">
@@ -105,6 +126,10 @@
                                                     </span>
                                                 </a>
                                             @endif
+
+
+
+
 
 										</div>
 									</div>

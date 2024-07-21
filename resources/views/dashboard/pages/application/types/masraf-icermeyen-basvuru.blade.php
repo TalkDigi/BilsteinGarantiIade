@@ -3,11 +3,9 @@
     <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
         <div class="content flex-row-fluid" id="kt_content">
             <form class="form d-flex flex-column flex-lg-row application_form" novalidate="novalidate"
-                  @if(isset($Application))
+                   @if(isset($Application))
                       action="{{ route('dashboard.application.update',[$Application->claim_number]) }}"
-                    @else
-                        action="{{ route('dashboard.application.store',[$type['slug'],$Invoice->InvoiceNo]) }}"
-                    @endif
+                  @endif
 
                   method="POST">
                 @csrf
@@ -15,37 +13,38 @@
                     <div class="card card-flush py-4">
                         <div class="card-header">
                             <div class="card-title">
-                                <h2>Fatura Detayları</h2>
+                                <h2>Seçilen Ürünler</h2>
                             </div>
                         </div>
-                        <div class="card-body pt-0">
+                         <div class="card-body pt-0">
                             <div class="d-flex flex-column gap-10">
-                                <div class="fv-row">
-                                    <label class="form-label fw-bold">Fatura No</label>
-                                    <div class="fs-6">{{ $Invoice->InvoiceNo }}</div>
-                                </div>
-                                <div class="fv-row">
-                                    <label class="form-label fw-bold">Tarih</label>
-                                    <div class="fs-6">{{ \Carbon\Carbon::parse($Invoice->PostingDate)->format('d/m/Y') }}
-                                    </div>
-                                    {{-- <div class="text-muted fs-7">Set the date of the order to process.</div> --}}
-                                </div>
-                                <div class="fv-row">
-                                    <label class="form-label fw-bold">Şube</label>
-                                    <div class="fs-6">{{ $Invoice->Branch }}</div>
-                                    {{-- <div class="text-muted fs-7">Set the date of the order to process.</div> --}}
-                                </div>
 
-                                <div class="fv-row">
-                                    <label class="form-label fw-bold">Tutar</label>
-                                    <div class="fs-6">{{ $Invoice->Amt }}</div>
-                                    {{-- <div class="text-muted fs-7">Set the date of the order to process.</div> --}}
-                                </div>
-                                <div class="fv-row">
-                                    <label class="form-label fw-bold">Tutar (Vergi Dahil)</label>
-                                    <div class="fs-6">{{ $Invoice->AmtIncVAT }}</div>
-                                    {{-- <div class="text-muted fs-7">Set the date of the order to process.</div> --}}
-                                </div>
+                                @forelse($Application->products as $product)
+                                        <div class="d-flex align-items-center border border-dashed rounded p-3 bg-body">
+
+                                            <div class="ms-5">
+                                                <span
+                                                    class="text-gray-800 text-hover-primary fs-5 fw-bold">{{$product['desc']}}</span>
+
+                                                <div class="text-muted fs-7 mt-2">Adet:
+                                                    {{$product['qty']}}
+                                                </div>
+
+                                                <div class="fw-semibold fs-7 mt-2">Ürün Kodu: {{$product['code']}}
+                                                </div>
+
+                                                <div class="text-muted fs-7 mt-2">Fatura No:
+                                                    {{$product['invoice']}}
+                                                </div>
+                                                <div class="text-muted fs-7 mt-2">Birim Fiyat:
+                                                    {{number_format($product['price'], 2, '.', '')}}
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                @empty
+                                @endforelse
+
 
                             </div>
                         </div>
@@ -61,29 +60,13 @@
                         <div class="card-body pt-0">
 							<div class="stepper stepper-pills" id="application_stepper">
 								<div class="stepper-nav flex-center flex-wrap mb-10">
+
+
 									<div class="stepper-item mx-8 my-4 current" data-kt-stepper-element="nav">
 										<div class="stepper-wrapper d-flex align-items-center">
 											<div class="stepper-icon w-40px h-40px">
 												<i class="stepper-check fas fa-check"></i>
 												<span class="stepper-number">1</span>
-											</div>
-
-											<div class="stepper-label">
-												<h3 class="stepper-title">
-													Ürün Seçimi
-												</h3>
-
-											</div>
-										</div>
-
-										<div class="stepper-line h-40px"></div>
-									</div>
-
-									<div class="stepper-item mx-8 my-4" data-kt-stepper-element="nav">
-										<div class="stepper-wrapper d-flex align-items-center">
-											<div class="stepper-icon w-40px h-40px">
-												<i class="stepper-check fas fa-check"></i>
-												<span class="stepper-number">2</span>
 											</div>
 
 											<div class="stepper-label">
@@ -100,7 +83,7 @@
 										<div class="stepper-wrapper d-flex align-items-center">
 											<div class="stepper-icon w-40px h-40px">
 												<i class="stepper-check fas fa-check"></i>
-												<span class="stepper-number">3</span>
+												<span class="stepper-number">2</span>
 											</div>
 
 											<div class="stepper-label">
@@ -116,7 +99,6 @@
 								</div>
 									<div class="">
 										<div class="mb-5">
-											@include('dashboard.pages.application.includes.select-product',['Invoice' => $Invoice])
 
 											@include('dashboard.pages.application.includes.default-form')
 
@@ -248,8 +230,17 @@
         @if(isset($Application))
             preselectedQuantities = @json($Application->quantities);
         @endif
-    </script>
 
-    <script src="{{ asset('assets/js/custom/apps/ecommerce/sales/save-order.js') }}"></script>
+        let inputs = null;
+        @if(isset($inputs))
+            @if(!is_null($inputs))
+            inputs = @json($inputs);
+        @endif
+        @endif
+
+        @if(isset($allinputs))
+            let allInputs = @json($allinputs);
+        @endif
+    </script>
 
 @endsection

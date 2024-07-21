@@ -1,4 +1,4 @@
-<div class="modal fade" id="kt_modal_two_factor_authentication" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="bl_new_application_type_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-650px">
         <div class="modal-content">
 
@@ -11,16 +11,16 @@
                 </div>
                 <div data-kt-element="options">
 
+                    <p class="applicationSummary text-muted fs-5 fw-semibold mb-10 text-center"></p>
+
                     <p class="text-muted fs-5 fw-semibold mb-10 text-center">
                         Başvuru tipinize uygun seçeneği seçerek sürece devam edebilirsiniz.
                     </p>
 
-                    <form class="pb-10" method="POST" action="{{route('dashboard.application.create.redirect')}}">
+                    <form class="pb-10" method="POST" action="{{route('dashboard.application.draft')}}">
+                        <input type="hidden" name="products" id="jsonData" >
 
                         @csrf
-
-
-
                         <input type="radio" class="btn-check" name="application_type" value="ilave-masraf-iceren-basvuru"
                                id="ilave-masraf-iceren-basvuru"/>
                         <label
@@ -33,7 +33,6 @@
                             </i>
                             <span class="d-block fw-semibold text-start">
                                 <span class="text-gray-900 fw-bold d-block fs-3">İlave Masraf İçeren Başvuru</span>
-                                {{--<span class="text-muted fw-semibold fs-6">We will send a code via SMS if you need to use your backup login method.</span>--}}
                             </span>
                         </label>
 
@@ -49,11 +48,10 @@
                             </i>
                             <span class="d-block fw-semibold text-start">
                                 <span class="text-gray-900 fw-bold d-block fs-3">Masraf İçermeyen Başvuru</span>
-                                {{--<span class="text-muted fw-semibold fs-6">We will send a code via SMS if you need to use your backup login method.</span>--}}
                             </span>
                         </label>
 
-                        <input type="radio" class="btn-check" name="application_type" value="hasarli-eksik-parca-bildirimi"
+                        <input type="radio" class="btn-check" name="application_type" value="hasarli-parca-bildirimi"
                                id="hasarli-eksik-parca-bildirimi"/>
                         <label
                             class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center"
@@ -65,7 +63,6 @@
                             </i>
                             <span class="d-block fw-semibold text-start">
                                 <span class="text-gray-900 fw-bold d-block fs-3">Hasarlı Parça Bildirimi</span>
-										{{--<span class="text-muted fw-semibold fs-6">We will send a code via SMS if you need to use your backup login method.</span>--}}
                             </span>
                         </label>
                         <button class="btn btn-primary w-100 mt-5" type="submit">Devam Et</button>

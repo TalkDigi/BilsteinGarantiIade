@@ -66,7 +66,8 @@ class QuestionController extends Controller
 
             if($question->save()) {
 
-                return redirect()->back()->with('success', 'Soru başarıyla eklendi.');
+
+
 
             } else {
 

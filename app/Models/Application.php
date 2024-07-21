@@ -16,6 +16,7 @@ class Application extends Model
         'quantities' => 'array',
         'files' => 'array',
         'application' => 'array',
+        'products' => 'array',
     ];
 
     protected $fillable = [
@@ -29,18 +30,37 @@ class Application extends Model
         'version',
         'rejected_by',
         'user_id',
+        'products'
     ];
 
-    const FILE_MATCHES = [
-        'invoice' => 'Müşteriye Kesilen Onarım Faturası',
-        'car_permit' => 'Araç Ruhsatı',
-        'work_order' => 'İş Emri',
-        'expense' => 'Masraf Proforma Faturası',
-        'workmanship' => 'Harici İşçilik Faturası',
-        'video' => 'Sorunu Anlatan Video',
-        'gallery' => 'Sorunu Anlatan Görseller',
-        'consent' => 'İmzalı Parça Rıza Beyanı',
-        'fault' => 'Parçaya Dair Arıza / Hata Görseli'
+    const INPUT_MATCHES = [
+            'car_brand' => 'Aracın Markası',
+            'car_model' => 'Model Adı',
+            'car_year' => 'Model Yılı',
+            'car_number' => 'Şasi Numarası',
+            'car_repair_date' => 'Onarımın (Montajın) Yapıldığı Tarih',
+            'car_found_date' => 'Sorunun Veya Arızanın Tespit Edildiği Tarih',
+            'car_found_milage' => 'Sorunun Veya Arızanın Tespit Edildiği Tarihte Aracın Kilometresi',
+            'car_repair_milage' => 'Onarımın (Montajın) Yapıldığı Tarihte Aracın Kilometresi',
+            'engine_power' => 'Motor Gücü',
+            'engine_code' => 'Motor Kodu',
+            'branch_name' => 'Perakendeci Adı',
+            'branch_number' => 'Perakendeci Telefon Numarası',
+            'service_name' => 'Onarımı Yapan Servis',
+            'service_number' => 'Onarımı Yapan Servis Numarası',
+            'customer_name' => 'Müşteri Adı',
+            'customer_phone' => 'Müşteri Telefon Numarası',
+            'customer_complain' => 'Müşteri Şikayeti',
+            'Fault' => 'Sorunla, Arızayla Veya Ürünle İlgili Detaylı Görüşleriniz',
+            'invoice' => 'Müşteriye Kesilen Onarım Faturası',
+            'car_permit' => 'Araç Ruhsatı',
+            'work_order' => 'İş Emri',
+            'expense' => 'Masraf Proforma Faturası',
+            'workmanship' => 'Harici İşçilik Faturası',
+            'video' => 'Sorunu Anlatan Video',
+            'gallery' => 'Sorunu Anlatan Görseller',
+            'consent' => 'İmzalı Parça Rıza Beyanı',
+            'fault' => 'Parçaya Dair Arıza / Hata Görseli'
     ];
 
     const INT_TYPES = [
@@ -58,7 +78,8 @@ class Application extends Model
             'hasNotes' => false,
             'canEdit' => false,
             'showShipment' => false,
-            'canInvoice' => false
+            'canInvoice' => false,
+            'deleteBlocked' => false
         ],
         1 => [
             'html' => '<span class="badge badge-primary">Değerlendiriliyor</span>',
@@ -68,7 +89,9 @@ class Application extends Model
             'hasNotes' => false,
             'canEdit' => false,
             'showShipment' => false,
-            'canInvoice' => false
+            'canInvoice' => false,
+            'deleteBlocked' => false
+
         ],
         2 => [
             'html' => '<span class="badge badge-info">Ön Onay Bekliyor</span>',
@@ -78,7 +101,8 @@ class Application extends Model
             'hasNotes' => false,
             'canEdit' => false,
             'showShipment' => false,
-            'canInvoice' => false
+            'canInvoice' => false,
+            'deleteBlocked' => false
         ],
         3 => [
             'html' => '<span class="badge badge-success">Onaylandı</span>',
@@ -88,7 +112,8 @@ class Application extends Model
             'hasNotes' => true,
             'canEdit' => false,
             'showShipment' => true,
-            'canInvoice' => true
+            'canInvoice' => true,
+            'deleteBlocked' => false
         ],
         4 => [
             'html' => '<span class="badge badge-warning">Düzenleme İstendi</span>',
@@ -98,7 +123,8 @@ class Application extends Model
             'hasNotes' => true,
             'canEdit' => true,
             'showShipment' => false,
-            'canInvoice' => false
+            'canInvoice' => false,
+            'deleteBlocked' => false
         ],
         5 => [
             'html' => '<span class="badge badge-danger">Reddedildi</span>',
@@ -108,7 +134,8 @@ class Application extends Model
             'hasNotes' => true,
             'canEdit' => false,
             'showShipment' => false,
-            'canInvoice' => false
+            'canInvoice' => false,
+            'deleteBlocked' => true
         ],
     ];
 
@@ -157,6 +184,15 @@ class Application extends Model
     {
         return 'BL-' . strtoupper(substr(md5(uniqid()), 0, 6));
     }
+
+    public static function findKeyByStatus($statusSlug) {
+    foreach (self::STATUS as $key => $value) {
+        if ($value['slug'] === $statusSlug) {
+            return $key;
+        }
+    }
+    return null; // Return null if the status slug is not found
+}
 
     public function productCount() {
         return count($this->quantities);

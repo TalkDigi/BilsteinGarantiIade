@@ -26,25 +26,17 @@ class ClosureController extends Controller
                             ->where('user_id', auth()->id()) // Kullanıcı ID'si filtresi
                             ->get();
 
-        $ids = [];
-        foreach ($data as $item) {
-            $ids = array_merge($ids, array_keys($item->quantities));
-        }
+        $items = [];
 
-        $Products = [];
-        foreach($data as $d) {
-            foreach($d->quantities as $key => $value) {
+        foreach ($data as $products) {
 
-                $Product = Product::where('No',$key)->first();
-
-                $Products[$d->claim_number]['products'][$key] = $Product;
-                $Products[$d->claim_number]['quantities'][$key] = $value;
+            foreach ($products['products'] as $r) {
+                $r['claim_number'] = $products->claim_number;
+                $items[] = $r;
             }
-            $Invoice = Invoice::where('InvoiceNo', $d->invoice)->first();
-            $Products[$d->claim_number]['invoice'] = $Invoice;
         }
 
-        return view('dashboard.pages.closure', compact('Products'));
+        return view('dashboard.pages.closure', compact('items'));
     }
 
     public function process(Request $request)

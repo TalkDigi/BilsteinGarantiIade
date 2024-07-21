@@ -44,6 +44,18 @@
                             <input type="hidden" name="files[support]" id="dropZone10Input">
                         </div>
                     </div>
+                    <div class="form-group mt-5 flex-wrap-reverse formChangeInputs" style="display:none">
+                        @forelse($FileMatches as $key => $name)
+                            <div class="form-check form-check-custom form-check-solid mt-3">
+
+                                    <input class="form-check-input" type="checkbox" name="inputs[]" value="{{$key}}" id="input{{$key}}">
+                                <label for="input{{$key}}">
+                                    {{$name}}
+                                </label>
+                            </div>
+                            @empty
+                        @endforelse
+                    </div>
                     <div class="d-flex justify-content-center pt-15">
                         <button type="submit" class="btn btn-primary me-3">Kaydet</button>
                         <button type="button" class="btn btn-light-primary" data-bs-dismiss="modal">İptal</button>

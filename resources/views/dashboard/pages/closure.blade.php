@@ -24,9 +24,11 @@
                                     <!--end::Status-->
                                     <!--begin::Description-->
                                     <div
-                                        class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-500">
+                                            class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-500">
 
-                                        Onaylanan ilave masrafsız başvuruların ürün listesine bu sayfadan ulaşabilirsiniz. Örnek fatura oluşturmak istediğiniz ayı seçerek başlayabilirsiniz.
+                                        Onaylanan ilave masrafsız başvuruların ürün listesine bu sayfadan
+                                        ulaşabilirsiniz. Örnek fatura oluşturmak istediğiniz ayı seçerek
+                                        başlayabilirsiniz.
                                     </div>
                                     <!--end::Description-->
                                 </div>
@@ -34,35 +36,37 @@
                             </div>
                             <!--end::Head-->
                             <!--begin::Info-->
-                            <form class="d-flex flex-wrap justify-content-start" action="{{route('dashboard.application.closure-filter')}}" method="POST">
+                            <form class="d-flex flex-wrap justify-content-start"
+                                  action="{{route('dashboard.application.closure-filter')}}" method="POST">
                                 @csrf
-                                    <div class="col-lg-6 p-3">
-                                         <label for="month">Ay:</label>
-                                        @php
+                                <div class="col-lg-6 p-3">
+                                    <label for="month">Ay:</label>
+                                    @php
                                         setlocale(LC_TIME, 'tr_TR', 'Turkish');
-                                        @endphp
-                                        <select name="month" id="month" class="form-control form-control-solid mb-3 mb-lg-0">
-                                            <option selected disabled> Ay Seçin</option>
-                                            @for ($i = 1; $i <= 12; $i++)
-                                                            <option value="{{ $i }}">{{ strftime('%B', mktime(0, 0, 0, $i, 1)) }}</option>
+                                    @endphp
+                                    <select name="month" id="month"
+                                            class="form-control form-control-solid mb-3 mb-lg-0">
+                                        <option selected disabled> Ay Seçin</option>
+                                        @for ($i = 1; $i <= 12; $i++)
+                                            <option value="{{ $i }}">{{ strftime('%B', mktime(0, 0, 0, $i, 1)) }}</option>
 
-                                            @endfor
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-6 p-3">
-                                         <label for="month">Yıl:</label>
-                                        <select name="year" id="year" class="form-control form-control-solid mb-3 mb-lg-0">
-                                            <option selected disabled> Yıl Seçin</option>
-                                            @for ($i = 2021; $i <= date('Y'); $i++)
-                                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div class="col-lg-6 p-3">
+                                    <label for="month">Yıl:</label>
+                                    <select name="year" id="year" class="form-control form-control-solid mb-3 mb-lg-0">
+                                        <option selected disabled> Yıl Seçin</option>
+                                        @for ($i = 2021; $i <= date('Y'); $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
 
-                                            @endfor
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-12 p-3">
-                                        <button type="submit" class="d-block w-100 btn btn-primary">Ara</button>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div class="col-lg-12 p-3">
+                                    <button type="submit" class="d-block w-100 btn btn-primary">Ara</button>
 
-                                    </div>
+                                </div>
                             </form>
                             <!--end::Info-->
                         </div>
@@ -76,69 +80,69 @@
             </div>
             <!--end::Navbar-->
             <!--begin::Row-->
-            @if(isset($Products) && count($Products) > 0)
+            @if(isset($items) && count($items) > 0)
                 <div class="row gx-6 gx-xl-9">
-                <!--begin::Col-->
-                <div class="col-lg-12">
-                    <div class="card card-flush py-4 flex-row-fluid overflow-hidden">
-                        <!--begin::Card header-->
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h2>Ürün Bilgileri</h2>
+                    <!--begin::Col-->
+                    <div class="col-lg-12">
+                        <div class="card card-flush py-4 flex-row-fluid overflow-hidden">
+                            <!--begin::Card header-->
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h2>Ürün Bilgileri</h2>
+                                </div>
                             </div>
-                        </div>
-                        <!--end::Card header-->
-                        <!--begin::Card body-->
-                        <div class="card-body pt-0">
-                            <div class="table-responsive">
-                                <!--begin::Table-->
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 closure-table">
-                                    <thead>
-                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                        <th class="min-w-175px">Başvuru No</th>
-                                        <th class="min-w-100px text-end">Ürün</th>
-                                        <th class="min-w-100px text-end">Adet</th>
-                                        <th class="min-w-70px text-end">Fiyat</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="fw-semibold text-gray-600">
+                            <!--end::Card header-->
+                            <!--begin::Card body-->
+                            <div class="card-body pt-0">
+                                <div class="table-responsive">
+                                    <!--begin::Table-->
+                                    <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5 mb-0 closure-table">
+                                        <thead>
+                                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                            <th class="min-w-175px">Başvuru No</th>
+                                            <th class="min-w-175px">Fatura</th>
+                                            <th class="min-w-100px text-start">Ürün</th>
+                                            <th class="min-w-100px text-start">Adet</th>
+                                            <th class="min-w-70px text-start">Birim Fiyat</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="fw-semibold text-gray-600">
 
-                                    @forelse($Products as $key => $product)
-                                                    @php
-                                                    $prices = $product['invoice']->getItemPrice();
-                                                    @endphp
+                                        @forelse($items as $key => $product)
+                                            <tr data-name="{{$product['desc']}}" data-no="{{$product['code']}}"
+                                                data-quantity="{{$product['qty']}}"
+                                                data-price="{{ number_format($product['price'], 2, '.', '')}}">
 
-                                        @foreach ($product['products'] as $item)
-                                            <tr data-name = "{{$item->Name}}" data-no = "{{$item->No}}" data-quantity = "{{$product['quantities'][$item->No]}}" data-price="{{ number_format($prices[$item->No], 2, '.', '')}}">
-                                                <td>{{$key}}</td>
-                                                <td class="text-end">
-                                                    {{$item->Name}}
-                                                    <span class="text-muted">{{$item->No}}</span>
+                                                <td>{{$product['claim_number']}}</td>
+                                                <td class="text-start">{{$product['invoice']}}</td>
+                                                <td class="text-start">
+                                                    {{$product['desc']}}
+                                                    <br>
+                                                    <span class="text-muted">{{$product['code']}}</span>
                                                 </td>
-                                                <td class="text-end">{{$product['quantities'][$item->No]}}</td>
-                                                <td class="text-end">
-                                                    @if(isset($prices[$item->No]))
-                                                        {{ number_format($prices[$item->No], 2, '.', '') }}
-                                                    @endif
+                                                <td class="text-start">{{$product['qty']}}</td>
+                                                <td class="text-start">
+                                                    {{number_format($product['price'], 2, '.', '')}}
                                                 </td>
 
                                             </tr>
-                                        @endforeach
 
                                         @empty
-                                    @endforelse
-                                    </tbody>
-                                </table>
-                                <!--end::Table-->
+                                        @endforelse
+                                        </tbody>
+                                    </table>
+                                    <!--end::Table-->
+                                </div>
+                                <button class=" d-block text-center btn btn-success closure-button w-100 mt-5">Kapat ve
+                                    Örnek Fatura Oluştur
+                                </button>
+
                             </div>
-                            <button class=" d-block text-center btn btn-success closure-button w-100 mt-5">Kapat ve Örnek Fatura Oluştur</button>
-
+                            <!--end::Card body-->
                         </div>
-                        <!--end::Card body-->
                     </div>
-                </div>
 
-            </div>
+                </div>
             @else
                 <div class="alert alert-warning">
                     <div class="alert-text text-center">
@@ -153,35 +157,42 @@
 
 
     <div class="modal fade" id="invoiceModal" tabindex="-1" aria-hidden="true">
-											<!--begin::Modal dialog-->
-											<div class="modal-dialog modal-dialog-centered mw-650px">
-												<!--begin::Modal content-->
-												<div class="modal-content">
-													<!--begin::Modal header-->
-													<div class="modal-header" id="kt_modal_add_user_header">
-														<!--begin::Modal title-->
-														<h2 class="fw-bold"></h2>
-														<!--end::Modal title-->
-														<!--begin::Close-->
-														<div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close">
-															<i class="ki-duotone ki-cross fs-1">
-																<span class="path1"></span>
-																<span class="path2"></span>
-															</i>
-														</div>
-														<!--end::Close-->
-													</div>
-													<!--end::Modal header-->
-													<!--begin::Modal body-->
-													<div class="modal-body px-5 my-7 invoiceBody">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content">
+                <!--begin::Modal header-->
+                <div class="modal-header" id="kt_modal_add_user_header">
+                    <!--begin::Modal title-->
+                    <h2 class="fw-bold"></h2>
+                    <!--end::Modal title-->
+                    <!--begin::Close-->
+                    <div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close"
+                            data-bs-dismiss="modal"
+                            data-bs-target="#kt_modal_add_user"
+                            id="kt_modal_add_user_close"
+                    >
+                        <i class="ki-duotone ki-cross fs-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </div>
+                    <!--end::Close-->
+                </div>
+                <!--end::Modal header-->
+                <!--begin::Modal body-->
+                <div class="modal-body px-5 my-7 invoiceBody" id="invoiceBody">
 
-													</div>
-													<!--end::Modal body-->
-												</div>
-												<!--end::Modal content-->
-											</div>
-											<!--end::Modal dialog-->
-										</div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="downloadPDF()">PDF İndir</button>
+                </div>
+                <!--end::Modal body-->
+            </div>
+            <!--end::Modal content-->
+        </div>
+        <!--end::Modal dialog-->
+    </div>
 @endsection
 @section('scripts')
     <script>
@@ -189,5 +200,20 @@
             placeholder: "Ay Seçin",
 
         });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script>
+        function downloadPDF() {
+            var element = document.getElementById('invoiceBody');
+            html2canvas(element, {
+                onrendered: function (canvas) {
+                    var imgData = canvas.toDataURL('image/png');
+                    var doc = new jsPDF('p', 'mm');
+                    doc.addImage(imgData, 'PNG', 10, 10);
+                    doc.save('content.pdf');
+                }
+            });
+        }
     </script>
 @endsection

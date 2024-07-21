@@ -3,62 +3,165 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Complaint;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Activity;
+use App\Models\Blockage;
+use PDF;
 
 class ApplicationController extends Controller
 {
 
-    public function index($type =null,$tip = null) {
+    public function list($type = null, $tip = null)
+    {
+        debug($type, $tip);
 
         $Types = Application::TYPES;
+
         $IntTypes = Application::INT_TYPES;
-         $basvuru_turu = 'tumu';
+
+        $basvuru_turu = 'tumu';
 
         if (Auth::user()->hasRole('Yönetici')) {
+
             $query = Application::query();
             $statusCounts = Application::getTotalStatusCounts();
+
         } else {
+
             $query = Application::where('user_id', auth()->id());
+
             $statusCounts = Application::getTotalStatusCounts(auth()->id());
         }
 
         if ($type !== null) {
-            if($type !== 'tumu') {
+            if ($type !== 'tumu') {
                 $query->where('type', $type);
             }
             $basvuru_turu = $type;
         }
 
         if ($tip !== null) {
-            if($tip !== 'tumu') {
-                $query->where('status', $tip);
+            if ($tip !== 'tumu') {
+                $key = Application::findKeyByStatus($tip);
+                $query->where('status', $key);
             }
         }
 
-        $Applications = $query->orderBy('id','desc')->get();
+        $Applications = $query->orderBy('id', 'desc')->get();
 
 
-
-        return view('dashboard.pages.application.index', compact('Applications', 'statusCounts','tip','basvuru_turu','Types','IntTypes'));
+        return view('dashboard.pages.application.index', compact('Applications', 'statusCounts', 'tip', 'basvuru_turu', 'Types', 'IntTypes'));
 
     }
 
-    public function show($claim) {
+    public function index()
+    {
+        return view('dashboard.pages.application.first');
+    }
+
+    public function search(Request $request)
+    {
+
+
+        if (!is_null($request->productCode)) {
+
+            $Invoice = Invoice::where('CustNo', auth()->user()->CustNo)->whereJsonContains('Line', [['ItemNo' => $request->productCode]])->orderBy('id', 'desc')->get();
+
+            $searchString = 'ItemNo';
+
+            $searchCode = $request->productCode;
+
+        } else {
+
+            $Invoice = Invoice::where('CustNo', auth()->user()->CustNo)->whereJsonContains('Line', [['ItemDesc' => $request->productName]])->orderBy('id', 'desc')->get();
+
+            $searchString = 'ItemDesc';
+
+            $searchCode = $request->productName;
+
+        }
+
+        $products = [];
+
+        foreach ($Invoice as $invoice) {
+
+            $filteredLines = array_filter($invoice->Line, function ($line) use ($searchString, $searchCode) {
+
+                return $line[$searchString] === $searchCode;
+
+            });
+
+            //filteredLines may hold more than one item, we need to iterate over it
+            foreach ($filteredLines as $line) {
+
+                $line['Price'] = $line['Amt'] / $line['Qty'];
+
+                $line['Invoice'] = $invoice->InvoiceNo;
+
+                $products[] = $line;
+
+            }
+        }
+
+        \Log::info('Products' . print_r($products, true));
+
+        //check blockages
+
+        foreach ($products as $key => &$product) {
+
+            $blockage = Blockage::where('ItemNo', $product['ItemNo'])->where('InvoiceNo', $product['Invoice'])->get();
+
+            $blocked_stock = 0;
+
+            if ($blockage->count() > 0) {
+                \Log::info('buraya girdi');
+
+                foreach ($blockage as $block) {
+
+                    $blocked_stock += $block->Qty;
+
+                }
+
+                $product['Qty'] = $product['Qty'] - $blocked_stock;
+                $product['Blocked'] = $blocked_stock;
+
+                if ($product['Qty'] <= 0) {
+                    unset($products[$key]);
+                }
+
+            }
+
+        }
+
+        \Log::info('Blokalnmış haliyle' . print_r($products, true));
+
+
+        //send products to views.dashboard.elements.search-product and return it json with html
+        return response()->json([
+
+            'html' => view('dashboard.elements.search-product', compact('products'))->render()
+
+        ]);
+
+    }
+
+    public function show($claim)
+    {
 
         $Application = Application::where('claim_number', $claim)->first();
 
-        if(!$Application) {
+        if (!$Application) {
 
             return redirect()->route('dashboard');
 
         }
 
-        $Logs = Activity::whereJsonContains('properties->claim', $Application->claim_number)->orderBy('id','desc')->limit(10)->get();
+        $Logs = Activity::whereJsonContains('properties->claim', $Application->claim_number)->orderBy('id', 'desc')->limit(10)->get();
 
         $Statuses = Application::STATUS;
 
@@ -69,9 +172,9 @@ class ApplicationController extends Controller
 
         $Files = null;
 
-        if($StatusDetail['hasNotes']) {
+        if ($StatusDetail['hasNotes']) {
 
-            $lastActivity = Activity::where('event','application-status-update')->whereJsonContains('properties->claim', $Application->claim_number)->orderBy('id','desc')->first();
+            $lastActivity = Activity::where('event', 'application-status-update')->whereJsonContains('properties->claim', $Application->claim_number)->orderBy('id', 'desc')->first();
 
             $Message = $lastActivity->properties['message'] ?? null;
 
@@ -81,104 +184,130 @@ class ApplicationController extends Controller
 
         $Labels = Application::LABELS;
 
-        $FileMatches = Application::FILE_MATCHES;
+        $FileMatches = Application::INPUT_MATCHES;
 
         $ProductsLists = $this->calculatePrice($Application);
 
-
-        return view('dashboard.pages.application.show', compact('Application', 'Logs','Statuses','Message','StatusDetail','Files','Labels','FileMatches','ProductsLists'));
+        return view('dashboard.pages.application.show', compact('Application', 'Logs', 'Statuses', 'Message', 'StatusDetail', 'Files', 'Labels', 'FileMatches', 'ProductsLists'));
 
     }
 
-    public function update_status($status,$claim_number) {
+    public function update_status($status, $claim_number)
+    {
 
-            $Application = Application::where('claim_number', $claim_number)->first();
+        $Application = Application::where('claim_number', $claim_number)->first();
 
-            if(!$Application) {
+        if (!$Application) {
 
-                return redirect()->route('dashboard');
+            return redirect()->route('dashboard');
 
-            }
+        }
 
-            if(!array_key_exists($status, Application::STATUS)) {
+        if (!array_key_exists($status, Application::STATUS)) {
 
-                return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Durum bulunamadı.']);
+            return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Durum bulunamadı.']);
 
-            }
+        }
 
-            if($Application->status == $status) {
+        if ($Application->status == $status) {
 
-                return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Başvuru zaten değiştirmek istediğiniz duruma sahip.']);
+            return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Başvuru zaten değiştirmek istediğiniz duruma sahip.']);
 
-            }
+        }
 
 
-            $Application->status = $status;
+        $Application->status = $status;
 
-            if($Application->save()) {
+        if ($Application->save()) {
 
-                activity()
-                    ->performedOn($Application)
-                    ->causedBy(auth()->user())
-                    ->withProperties(['claim' => $Application->claim_number])
-                    ->event('application-status-update')
-                    ->log(auth()->user()->name . ', '.$Application->claim_number.' numaralı başvurunun durumunu '.$Application->getStatusBadge().' olarak güncelledi.');
+            activity()
+                ->performedOn($Application)
+                ->causedBy(auth()->user())
+                ->withProperties(['claim' => $Application->claim_number])
+                ->event('application-status-update')
+                ->log(auth()->user()->name . ', ' . $Application->claim_number . ' numaralı başvurunun durumunu ' . $Application->getStatusBadge() . ' olarak güncelledi.');
 
-                Session::flash('success', 'Durum güncellendi.');
+            Session::flash('success', 'Durum güncellendi.');
 
-                return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number]);
+            return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number]);
 
-            } else {
+        } else {
 
-                return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Bir hata oluştu.']);
+            return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Bir hata oluştu.']);
 
-            }
+        }
     }
 
-    public function edit($claim) {
+    public function edit($claim)
+    {
 
-            $Application = Application::where('claim_number', $claim)->first();
+        $Application = Application::where('claim_number', $claim)->first();
 
-            if(!$Application) {
 
-                return redirect()->route('dashboard');
+        if (!$Application) {
 
-            }
+            return redirect()->route('dashboard');
 
-            //TODO - Commenti kaldır.
-            /*if(!$Application->editable) {
+        }
 
-                return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Bu başvuru durumu düzenlenemez.']);
+        if (!$Application->editable) {
 
-            }*/
+            return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Bu başvuru durumu düzenlenemez.']);
 
-            $Invoice = Invoice::where('InvoiceNo', $Application->invoice)->first();
+        }
 
-            $type = Application::TYPES[$Application->type];
+        $lastActivity = Activity::where('subject_id', $Application->id)->where('event', 'application-status-update')->whereJsonContains('properties->claim', $Application->claim_number)->whereJsonContains('properties->new_status', "4")->orderBy('id', 'desc')->first();
 
-            return view($type['view'], compact('Application', 'Invoice', 'type'));
+        $inputs = null;
+
+        if (isset($lastActivity->properties['inputs'])) {
+            $inputs = $lastActivity->properties['inputs'];
+        }
+
+        debug($inputs);
+
+        $Invoice = Invoice::where('InvoiceNo', $Application->invoice)->first();
+
+        $type = Application::TYPES[$Application->type];
+
+        $allinputs = Application::INPUT_MATCHES;
+
+        return view($type['view'], compact('Application', 'Invoice', 'type', 'inputs', 'allinputs'));
     }
 
-    public function update_status_with_message(Request $request) {
+    public function update_status_with_message(Request $request)
+    {
+
+        $status = Application::STATUS[$request->new_status];
+
+        if($status['deleteBlocked']) {
+
+                $Blockages = Blockage::where('ClaimNo', $request->claim_number)->get();
+
+                foreach($Blockages as $Blockage) {
+                    $Blockage->delete();
+                }
+        }
+
 
 
         $Application = Application::where('claim_number', $request->claim_number)->first();
 
-        if(!$Application) {
+        if (!$Application) {
 
             return redirect()->route('dashboard');
 
         }
 
 
-        if(!array_key_exists($request->new_status, Application::STATUS)) {
+        if (!array_key_exists($request->new_status, Application::STATUS)) {
 
 
             return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Durum bulunamadı.']);
 
         }
 
-        if($Application->status == $request->new_status) {
+        if ($Application->status == $request->new_status) {
 
             return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Başvuru zaten değiştirmek istediğiniz duruma sahip.']);
 
@@ -188,17 +317,26 @@ class ApplicationController extends Controller
 
         $StatusDetail = Application::STATUS[$request->new_status];
 
-        if($StatusDetail['canEdit']) {
+        if ($StatusDetail['canEdit']) {
             $Application->editable = true;
         } else {
             $Application->editable = false;
         }
 
-        if($Application->save()) {
+        if ($Application->save()) {
+
+            $inputs = null;
+
+            if ($request->has('inputs')) {
+                $inputs = $request->inputs;
+            }
+
             $props = [
                 'claim' => $Application->claim_number,
                 'message' => $request->message,
-                'new_status' => $request->new_status
+                'new_status' => $request->new_status,
+                //if request has inputs
+                'inputs' => $inputs
             ];
 
             if ($request->has('files.support')) {
@@ -215,7 +353,7 @@ class ApplicationController extends Controller
                 ->causedBy(auth()->user())
                 ->withProperties($props)
                 ->event('application-status-update')
-                ->log(auth()->user()->name . ', '.$Application->claim_number.' numaralı başvurunun durumunu '.$Application->getStatusBadge().' olarak güncelledi.');
+                ->log(auth()->user()->name . ', ' . $Application->claim_number . ' numaralı başvurunun durumunu ' . $Application->getStatusBadge() . ' olarak güncelledi.');
 
             Session::flash('success', 'Durum güncellendi.');
 
@@ -229,22 +367,125 @@ class ApplicationController extends Controller
 
     }
 
-    public function firstStep($type = null, $invoice = null){
+    public function create_draft(Request $request)
+    {
+
+        //we need to validate products and application_type is exist
+        if (!$request->has('products') || !$request->has('application_type')) {
+
+            return redirect()->route('dashboard.application.index')->withErrors(['Lütfen ürün ve başvuru tipi seçiniz.']);
+
+        }
+
+        $products = json_decode($request->products);
+
+        //Get all invoice ids so we can query them in one query
+        $invoice_ids = [];
+
+        foreach ($products as $product) {
+            $invoice_ids[] = $product->invoice;
+        }
+
+        $Invoice = Invoice::whereIn('InvoiceNo', $invoice_ids)->get();
+
+        //make InvoiceNo as key so we can access it easily
+        $Invoices = $Invoice->keyBy('InvoiceNo');
+
+
+        //even we have product prices,codes,quantity etc. we need to check blocked stock, price, max quantity.
+        $quantities = [];
+
+        foreach ($products as $product) {
+            $Invoice = $Invoices[$product->invoice];
+
+            $filteredLines = array_filter($Invoice->Line, function ($line) use ($product) {
+
+                return $line['ItemNo'] === $product->code;
+
+            });
+
+
+            if (empty($filteredLines)) {
+
+                return redirect()->route('dashboard.application.index')->withErrors(['Ürün bulunamadı.']);
+
+            }
+
+
+            $line = $filteredLines[0];
+
+
+            //TODO Bloklu ürün stokları kontrol edilecek.
+
+            if ($line['Qty'] < $product->qty) {
+                return redirect()->route('dashboard.application.index')->withErrors(['Stokta yeterli ürün bulunmamaktadır. Ürün kodu: ' . $product->code]);
+            }
+
+            //if quantity is available, we need to check if price is correct
+
+            $price = $line['Amt'] / $line['Qty'];
+
+            if ($price != $product->price) {
+                $product->price = $price;
+            }
+
+
+            //we need to create another array. product code is key, quantity is value
+            $quantities[$product->code] = $product->qty;
+
+        }
+
+        $Application = new Application();
+        $Application->status = 0;
+        $Application->type = $request->application_type;
+        $Application->quantities = $quantities;
+        $Application->products = $products;
+        $Application->version = 0;
+        $Application->user_id = auth()->id();
+        $Application->claim_number = $Application->generateClaimNumber();
+
+
+        if ($Application->save()) {
+
+            $blockages = [];
+            foreach ($products as $product) {
+                $blockages[] = [
+                    'InvoiceNo' => $product->invoice,
+                    'ItemNo' => $product->code,
+                    'Qty' => $product->qty,
+                    'ClaimNo' => $Application->claim_number,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+            }
+
+            $blockage = new Blockage();
+            $blockage->insert($blockages);
+
+            return redirect()->route('dashboard.application.first', ['type' => $Application->type, 'claim' => $Application->claim_number]);
+        } else {
+            dd('Hata var');
+        }
+
+    }
+
+    public function firstStep($type = null, $claim = null)
+    {
 
         try {
 
-            $Invoice = Invoice::where('InvoiceNo', $invoice)->firstOrFail();
+            $Application = Application::where('claim_number', $claim)->first();
+            $Complaints = Complaint::where('status', 1)->get();
 
             $type = Application::TYPES[$type];
 
-            return view($type['view'], compact('Invoice', 'type'));
+            return view($type['view'], compact('Application', 'type', 'Complaints'));
 
 
         } catch (\Exception $e) {
 
             \Log::error($e->getMessage());
 
-            if(!app()->isProduction()) {
+            if (!app()->isProduction()) {
 
                 dd($e->getMessage());
 
@@ -256,11 +497,12 @@ class ApplicationController extends Controller
         }
     }
 
-    public function store($type,$invoice,Request $request) {
+
+    public function store($type, $invoice, Request $request)
+    {
 
 
-
-        if(!$request->has('quantities') && $request->has('application') ) {
+        if (!$request->has('quantities') && $request->has('application')) {
 
             return redirect()->back()->withInput($request->all())->withErrors(['Lütfem zorunlu alanları doldurunuz.']);
 
@@ -269,7 +511,7 @@ class ApplicationController extends Controller
             //check if invoice is exist
             $DBInvoice = Invoice::where('InvoiceNo', $invoice)->first();
 
-            if(!$DBInvoice) {
+            if (!$DBInvoice) {
 
                 return redirect()->back()->withInput($request->all())->withErrors(['Fatura bulunamadı.']);
 
@@ -299,7 +541,7 @@ class ApplicationController extends Controller
             $Application->user_id = auth()->id();
             $Application->claim_number = $Application->generateClaimNumber();
 
-            if($Application->save()) {
+            if ($Application->save()) {
 
                 Session::flash('claim_number', $Application->claim_number);
 
@@ -308,7 +550,7 @@ class ApplicationController extends Controller
                     ->causedBy(auth()->user())
                     ->withProperties(['claim' => $Application->claim_number])
                     ->event('application-create')
-                    ->log(auth()->user()->name . ', '.$Application->claim_number.' numaralı başvuruyu oluşturdu.');
+                    ->log(auth()->user()->name . ', ' . $Application->claim_number . ' numaralı başvuruyu oluşturdu.');
 
 
                 //TODO - Başvuru listeleme sayfasına yönlendir.
@@ -324,30 +566,33 @@ class ApplicationController extends Controller
 
     }
 
-    public function update($claim,Request $request) {
+    public function update($claim, Request $request)
+    {
 
 
         $Application = Application::where('claim_number', $claim)->first();
 
-        if(!$Application) {
+        if (!$Application) {
 
             return redirect()->route('dashboard');
 
         }
 
-        if(!$Application->editable) {
+        if ($Application->status != 0) {
+            if (!$Application->editable) {
 
-            return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Bu başvuru düzenlenemez.']);
+                return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Bu başvuru düzenlenemez.']);
 
+            }
         }
 
         $Application->status = 2;
-        $Application->quantities = $request->quantities;
         $Application->application = $request->application;
         $Application->files = $request->docs;
-        $Application->version = 2;
 
-        if($Application->save()) {
+        $Application->version = $Application->version + 1;
+
+        if ($Application->save()) {
 
             Session::flash('success', 'Güncellendi.');
 
@@ -356,7 +601,7 @@ class ApplicationController extends Controller
                 ->causedBy(auth()->user())
                 ->withProperties(['claim' => $Application->claim_number])
                 ->event('application-content-update')
-                ->log(auth()->user()->name . ', '.$Application->claim_number.' numaralı başvurunun içeriğini güncelledi.');
+                ->log(auth()->user()->name . ', ' . $Application->claim_number . ' numaralı başvurunun içeriğini güncelledi.');
 
             return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number]);
 
@@ -369,16 +614,16 @@ class ApplicationController extends Controller
     }
 
 
+    public function applicationBridge(Request $request)
+    {
 
-    public function applicationBridge(Request $request) {
-
-        if(!array_key_exists($request->application_type, Application::TYPES)) {
+        if (!array_key_exists($request->application_type, Application::TYPES)) {
 
             return redirect()->route('dashboard');
 
         }
 
-        if(!array_key_exists($request->application_type, Application::TYPES)) {
+        if (!array_key_exists($request->application_type, Application::TYPES)) {
 
             return redirect()->route('dashboard');
 
@@ -390,9 +635,10 @@ class ApplicationController extends Controller
 
     }
 
-    public function invoiceIndex($type, $page = 1) {
+    public function invoiceIndex($type, $page = 1)
+    {
 
-        if(!array_key_exists($type, Application::TYPES)) {
+        if (!array_key_exists($type, Application::TYPES)) {
 
             return redirect()->route('dashboard');
 
@@ -401,45 +647,41 @@ class ApplicationController extends Controller
         $type = Application::TYPES[$type];
 
         //TODO CustNo parametresi dinamik olacak
-        $Invoices = Invoice::where('CustNo', '120.1050')->orderBy('id','desc')->get();
+        $Invoices = Invoice::where('CustNo', '120.1050')->orderBy('id', 'desc')->get();
 
         return view('dashboard.pages.application.invoice-list', compact('Invoices', 'type'));
 
     }
 
-    public function search(Request $request) {
 
-        $Types = Application::TYPES;
-        $IntTypes = Application::INT_TYPES;
-         $basvuru_turu = 'tumu';
-         $tip = 'tumu';
-
-        if (Auth::user()->hasRole('Yönetici')) {
-            $query = Application::query();
-            $statusCounts = Application::getTotalStatusCounts();
-        } else {
-            $query = Application::where('user_id', auth()->id());
-            $statusCounts = Application::getTotalStatusCounts(auth()->id());
-        }
-        $query= $query->where('claim_number', $request->search)->orderBy('id','desc')->get();
-        $Applications = $query;
-        return view('dashboard.pages.application.index', compact('Applications', 'statusCounts','tip','basvuru_turu','Types','IntTypes'));
-    }
-
-    public function calculatePrice($data) {
+    public function calculatePrice($data)
+    {
 
 
         $Products = [];
-            foreach($data->quantities as $key => $value) {
+        foreach ($data->quantities as $key => $value) {
 
-                $Product = Product::where('No',$key)->first();
+            $Product = Product::where('No', $key)->first();
 
-                $Products['products'][$key] = $Product;
-                $Products['quantities'][$key] = $value;
-            }
-            $Invoice = Invoice::where('InvoiceNo', $data->invoice)->first();
-            $Products['invoice'] = $Invoice;
+            $Products['products'][$key] = $Product;
+            $Products['quantities'][$key] = $value;
+        }
+        $Invoice = Invoice::where('InvoiceNo', $data->invoice)->first();
+        $Products['invoice'] = $Invoice;
         return $Products;
+    }
+
+    public function generatePDF($claim_number)
+    {
+
+        $Application = Application::where('claim_number', $claim_number)->first();
+
+        $html = view('dashboard.pages.application.pdf', compact('Application'))->render();
+
+        $pdf = PDF::loadHTML($html);
+
+        return $pdf->download($Application->claim_number . '.pdf');
+
     }
 
 }

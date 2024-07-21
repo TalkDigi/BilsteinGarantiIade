@@ -11,10 +11,10 @@ use App\Http\Controllers\ClosureController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\QuestionController;
 Route::get('/test', function () {
-    //generate two uuid
-    $uuid1 = \Illuminate\Support\Str::uuid();
-    $uuid2 = \Illuminate\Support\Str::uuid();
-    dd($uuid1, $uuid2);
+    $invoices = \App\Models\Invoice::where('CustNo','120.1085')->whereJsonContains('Line', [['ItemNo' => 'ADR163082']])->get();
+
+    echo 'Veri bulundu Sayı: '.$invoices->count().'<br>AA';
+
 });
 Route::get('/assignRole', function () {
     $user = \App\Models\User::find(1);
@@ -88,21 +88,26 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('/yeni-basvuru')->group(function () {
 
-        Route::post('/', [ApplicationController::class, 'applicationBridge'])->name('dashboard.application.create.redirect');
+        Route::get('/', [ApplicationController::class, 'index'])->name('dashboard.application.index');
 
-        Route::get('/{type}', [ApplicationController::class, 'invoiceIndex'])->name('dashboard.application.create');
+        Route::post('/', [ApplicationController::class, 'search'])->name('dashboard.application.search');
 
-        Route::get('/{type}/{invoice}', [ApplicationController::class, 'firstStep'])->name('dashboard.application.index');
+        Route::post('/taslak-olustur', [ApplicationController::class, 'create_draft'])->name('dashboard.application.draft');
 
-        Route::post('/{type}/{invoice}', [ApplicationController::class, 'store'])->name('dashboard.application.store');
+        Route::get('/{type}/{claim}', [ApplicationController::class, 'firstStep'])->name('dashboard.application.first');
+
+        /*
+
+
+        Route::post('/{type}/{invoice}', [ApplicationController::class, 'store'])->name('dashboard.application.store');*/
 
     });
 
     Route::prefix('/basvurular')->group(function () {
 
-        Route::get('/', [ApplicationController::class, 'index'])->name('dashboard.application.list');
+        Route::get('/', [ApplicationController::class, 'list'])->name('dashboard.application.list');
 
-        Route::get('/{type}/{tip?}', [ApplicationController::class, 'index'])->name('dashboard.application.listFilter');
+        Route::get('/{type}/{tip?}', [ApplicationController::class, 'list'])->name('dashboard.application.listFilter');
 
         Route::post('/ara', [ApplicationController::class, 'search'])->name('dashboard.application.search');
 
@@ -118,6 +123,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/durum-degistir/{status}/{claim}', [ApplicationController::class, 'update_status'])->name('dashboard.application.update_status');
 
         Route::post('/durum-degistir', [ApplicationController::class, 'update_status_with_message'])->name('dashboard.application.update_status_with_message');
+
+        Route::get('/pdf-cikti/{claim}', [ApplicationController::class, 'generatePDF'])->name('dashboard.application.pdf');
     });
 
     Route::prefix('/icerik')->group(function () {
@@ -129,14 +136,18 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/yonetim')->group(function () {
         Route::get('/ayarlar', [SettingController::class, 'index'])->name('dashboard.setting.index');
         Route::get('/sss', [SettingController::class, 'sss'])->name('dashboard.setting.sss');
+        Route::get('/dosyalar', [SettingController::class, 'file'])->name('dashboard.setting.file');
 
         Route::prefix('/kaydet')->group(function () {
             Route::post('/sss', [QuestionController::class, 'store'])->name('dashboard.setting.sssStore');
             Route::post('/ayarlar', [SettingController::class, 'settingsStore'])->name('dashboard.setting.settingsStore');
+            Route::post('/dosya', [FileController::class, 'settingsFileStore'])->name('dashboard.setting.fileStore');
         });
+
 
         Route::prefix('/sil')->group(function () {
             Route::get('/sss/{id}', [QuestionController::class, 'destroy'])->name('dashboard.setting.sssDestroy');
+            Route::get('/dosya/{id}', [FileController::class, 'destroy'])->name('dashboard.setting.fileDestroy');
         });
 
     });

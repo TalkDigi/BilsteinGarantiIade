@@ -34,7 +34,8 @@
                                 <div class="d-flex mb-4">
                                     @if(auth()->user()->hasRole('Yönetici'))
 
-                                         <a href="{{route('dashboard.application.update_status',[2,$Application->claim_number])}}" class="btn btn-sm btn-warning me-3">Ön Onay Bekleniyor</a>
+                                         @if($Application->status != 5)
+                                             <a href="{{route('dashboard.application.update_status',[2,$Application->claim_number])}}" class="btn btn-sm btn-warning me-3">Ön Onay Bekleniyor</a>
 
                                          <a href="#" class="btn btn-sm btn-success me-3 changeStatusButton"
                                        data-bs-toggle="modal" data-bs-target="#change_status" data-status-id="3">Onayla</a>
@@ -44,6 +45,19 @@
 
                                        <a href="#" class="btn btn-sm btn-danger me-3 changeStatusButton"
                                        data-bs-toggle="modal" data-bs-target="#change_status" data-status-id="5">Reddet</a>
+
+                                             @endif
+
+                                        {{--<a href="{{route('dashboard.application.pdf',['claim' => $Application->claim_number])}}" class="btn btn-sm btn-dark me-3" data-status-id="5">
+                                            <i class="ki-duotone ki-printer">
+ <span class="path1"></span>
+ <span class="path2"></span>
+ <span class="path3"></span>
+ <span class="path4"></span>
+ <span class="path5"></span>
+</i>
+                                            PDF Çıktısı Al
+                                        </a>--}}
 
                                     @endif
 
@@ -155,9 +169,7 @@
                                 @endif
 
                             @if($StatusDetail['canEdit'])
-                                @if(auth()->user()->hasRole('Kullanıcı'))
                                     <a href="{{route('dashboard.application.edit', [$Application->claim_number])}}">Başvuruyu Düzenle</a>
-                                @endif
                             @endif
 
                             @if($StatusDetail['showShipment'])
@@ -217,37 +229,34 @@
                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                         <th class="min-w-175px">Ürün</th>
                                         <th class="min-w-100px text-end">Kod</th>
-                                        <th class="min-w-100px text-end">Marka</th>
+                                        {{--<th class="min-w-100px text-end">Marka</th>--}}
+                                        <th class="min-w-100px text-end">Fatura</th>
                                         <th class="min-w-70px text-end">Adet</th>
                                     </tr>
                                     </thead>
                                     <tbody class="fw-semibold text-gray-600">
 
-                                    @forelse($Application->getProductDetails() as $product)
-
-                                        @php
-                                                    $prices = $ProductsLists['invoice']->getItemPrice();
-                                                    debug($prices);
-                                                    @endphp
+                                    @forelse($Application->products as $product)
 
                                         <tr
-                                            data-name = "{{$product['product']->Name}}"
-                                            data-no = "{{$product['product']->No}}"
-                                            data-quantity = "{{$ProductsLists['quantities'][$product['product']->No]}}"
-                                            data-price="{{ number_format($prices[$product['product']->No], 2, '.', '')}}">
+                                            data-name = "{{$product['desc']}}"
+                                            data-no = "{{$product['code']}}"
+                                            data-quantity = "{{$product['qty']}}"
+                                            data-price="{{ number_format($product['price'], 2, '.', '')}}">
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="ms-5">
                                                         <p class="fw-bold text-gray-600 text-hover-primary">
-                                                            {{$product['product']->Name}}
+                                                            {{$product['desc']}}
                                                         </p>
                                                     </div>
-                                                    <!--end::Title-->
+
                                                 </div>
                                             </td>
-                                            <td class="text-end">{{$product['product']->No}}</td>
-                                            <td class="text-end">{{$product['product']->BrandName}}</td>
-                                            <td class="text-end">{{$product['quantity']}}</td>
+                                            <td class="text-end">{{$product['code']}}</td>
+                                            {{--<td class="text-end">{{$product['product']->BrandName}}</td>--}}
+                                            <td class="text-end"> {{$product['invoice']}}</td>
+                                            <td class="text-end">{{$product['qty']}}</td>
                                         </tr>
 
                                     @empty
@@ -310,10 +319,25 @@
                         <div class="card-body p-9 pt-4">
                             <div class="row">
                                 @foreach ($Application->application as $key => $value)
+                                    @if(is_array($value))
+                                        @continue
+                                        @endif
                                     <div>
                                         <b>{{ __('fields.' . $key) }}:</b> <p>{{ $value }}</p>
                                     </div>
                                 @endforeach
+                                @if(isset($Application->application['complain']) && !empty($Application->application['complain']))
+                                    <b>Müşteri Şikayeti:</b>
+                                    <p>@foreach ($Application->application['complain'] as $value)
+                                        {{$ProviderComplaints[$value]->title}}
+                                        @if(!$loop->last)
+                                            ,
+                                        @endif
+
+                                        @endforeach</p>
+                                @endif
+
+
                             </div>
                         </div>
                         <!--end::Card body-->
@@ -360,7 +384,7 @@
         </div>
         <!--end::Post-->
     </div>
-    @include('dashboard.modals.change-status',['Application' => $Application])
+    @include('dashboard.modals.change-status',['Application' => $Application,'FileMatches' => $FileMatches])
     <div class="modal fade" id="invoiceModal" tabindex="-1" aria-hidden="true">
 											<!--begin::Modal dialog-->
 											<div class="modal-dialog modal-dialog-centered mw-650px">
@@ -372,7 +396,11 @@
 														<h2 class="fw-bold"></h2>
 														<!--end::Modal title-->
 														<!--begin::Close-->
-														<div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close">
+														<div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close"
+                                                                data-bs-dismiss="modal"
+                                                                data-bs-target="#kt_modal_add_user"
+                                                                id="kt_modal_add_user_close"
+                                                        >
 															<i class="ki-duotone ki-cross fs-1">
 																<span class="path1"></span>
 																<span class="path2"></span>
@@ -382,15 +410,36 @@
 													</div>
 													<!--end::Modal header-->
 													<!--begin::Modal body-->
-													<div class="modal-body px-5 my-7 invoiceBody">
+													<div class="modal-body px-5 my-7 invoiceBody" id="invoiceBody">
 
 													</div>
+                                                    <div class="modal-footer">
+                    <button onclick="downloadPDF()">PDF İndir</button>
+                </div>
 													<!--end::Modal body-->
 												</div>
 												<!--end::Modal content-->
 											</div>
 											<!--end::Modal dialog-->
 										</div>
+@endsection
+
+@section('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script>
+        function downloadPDF() {
+            var element = document.getElementById('invoiceBody');
+            html2canvas(element, {
+                onrendered: function (canvas) {
+                    var imgData = canvas.toDataURL('image/png');
+                    var doc = new jsPDF('p', 'mm');
+                    doc.addImage(imgData, 'PNG', 10, 10);
+                    doc.save('content.pdf');
+                }
+            });
+        }
+    </script>
 @endsection
 
 

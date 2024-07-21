@@ -37,13 +37,14 @@
                                href="{{route('dashboard.setting.index')}}">Ayarlar</a>
                         </li>
                         <!--end::Nav item-->
-                        <!--begin::Nav item-->
                         <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5 active" href="javascript:void(0)">S.S.S</a>
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5 "
+                               href="{{route('dashboard.setting.sss')}}">S.S.S</a>
                         </li>
 
+                        <!--begin::Nav item-->
                         <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5" href="{{route('dashboard.setting.file')}}">Dosyalar</a>
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5 active" href="javascript:void(0)">Dosyalar</a>
                         </li>
 
                     </ul>
@@ -59,7 +60,7 @@
                      aria-controls="kt_account_profile_details">
                     <!--begin::Card title-->
                     <div class="card-title m-0">
-                        <h3 class="fw-bold m-0">Sıkça Sorulan Sorular</h3>
+                        <h3 class="fw-bold m-0">Dosyalar</h3>
                     </div>
                     <!--end::Card title-->
                     <div class="card-toolbar">
@@ -78,8 +79,8 @@
 									<tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
 
 										<th>#</th>
-                                        <th>Sıra</th>
                                         <th>Durum</th>
+                                        <th>Menüde Gözüksün</th>
 										<th class="text-center min-w-100px">Başlık</th>
                                         <th class="text-center">Oluşturma Tarihi</th>
                                         <th class="text-center">Güncelleme Tarihi</th>
@@ -87,10 +88,10 @@
 									</tr>
 								</thead>
 								<tbody class="fw-semibold text-gray-600">
-                                    @forelse($Questions as $question)
+                                    @forelse($Files as $question)
                                         <tr>
                                             <td>{{$loop->index + 1}}</td>
-                                            <td>{{$question->order}}</td>
+
                                             <td>
                                                 @if($question->status == 1)
                                                     <span class="badge badge-light-success">Aktif</span>
@@ -98,22 +99,29 @@
                                                     <span class="badge badge-light-danger">Pasif</span>
                                                 @endif
                                             </td>
-                                            <td class="text-center">{{$question->title}}</td>
+                                            <td>
+                                                @if($question->show_menu == 1)
+                                                    <span class="badge badge-light-success">Evet</span>
+                                                @else
+                                                    <span class="badge badge-light-danger">Hayır</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{$question->name}}</td>
                                             <td class="text-center">{{$question->created_at}}</td>
                                             <td class="text-center">{{$question->updated_at}}</td>
                                             <td class="text-center">
                                                 <a
                                                     data-id="{{$question->id}}"
                                                     data-status="{{$question->status}}"
-                                                    data-order="{{$question->order}}"
-                                                    data-title="{{$question->title}}"
-                                                    data-text="{{$question->text}}"
+                                                    data-show_menu="{{$question->show_menu}}"
+                                                    data-title="{{$question->name}}"
+                                                    data-path="{{Storage::url('files/'.$question->path)}}"
                                                     class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1 editSSS">
                                                     <span class="svg-icon svg-icon-3">
                                                         <i class="fas fa-edit"></i>
                                                     </span>
                                                 </a>
-                                                <a href="{{route('dashboard.setting.sssDestroy',['id' => $question->id])}}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                                                <a href="{{route('dashboard.setting.fileDestroy',['id' => $question->id])}}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
                                                     <!--begin::Svg Icon | path: icons/duotone/General/Trash.svg-->
                                                     <span class="svg-icon svg-icon-3">
                                                         <i class="fas fa-trash"></i>
@@ -158,7 +166,7 @@
                 <!--begin::Modal body-->
                 <div class="modal-body px-5 my-7">
                     <!--begin::Form-->
-                    <form id="add_sss_form" class="form" action="{{route('dashboard.setting.sssStore')}}" method="POST">
+                    <form id="add_file_form" class="form" action="{{route('dashboard.setting.fileStore')}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="id" value="">
                         <!--begin::Scroll-->
@@ -177,12 +185,17 @@
                                     </div>
 
                             </div>
-                             <div class="fv-row mb-7">
-                                        <label class="required fw-semibold fs-6 mb-2">Sıra</label>
-                                        <input type="number" name="order" class="form-control form-control-solid mb-3 mb-lg-0"
-                                               placeholder="Sıra" value="9999" required/>
-                                        <!--end::Input-->
+
+                            <div class="fv-row mb-7">
+
+                                    <div class="form-check form-switch form-check-custom form-check-solid">
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchDefault" name="show_menu"/>
+                                        <label class="form-check-label" for="flexSwitchDefault">
+                                            Menüde Gözüksün
+                                        </label>
                                     </div>
+
+                            </div>
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
                                 <label class="required fw-semibold fs-6 mb-2">Başlık</label>
@@ -196,11 +209,13 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Metin</label>
-                                <div id="kt_docs_quill_basic" name="kt_docs_quill_basic"></div>
-                                       <input type="hidden" name="text" id="editorContent" required>
+                                <label class="required fw-semibold fs-6 mb-2">Dosya</label>
 
-                                <input type="file" id="fileInput" style="display: none;">
+
+                                <input type="file" class="form-control" name="file">
+                            </div>
+                            <div class="fv-row mb-7">
+                                <a href="" target="_blank" class="uploadedFile" style="display: none">Yüklü Dosya</a>
                             </div>
 
                         </div>
@@ -234,97 +249,33 @@
            }
     </style>
     <script>
-
-        var toolbarOptions = [
-               [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-               ['bold', 'italic', 'underline', 'strike'],
-               [{'list': 'ordered'}, {'list': 'bullet'}],
-               [{'indent': '-1'}, {'indent': '+1'}],
-               [{'size': ['small', false, 'large', 'huge']}],
-               [{'color': []}, {'background': []}],
-               [{'font': []}],
-               [{'align': []}],
-               ['link', 'image', 'video', 'formula'],
-               ['clean'],
-               ['code-block'],
-           ];
-       var quill = new Quill('#kt_docs_quill_basic', {
-            modules: {
-                toolbar: {
-                    container: toolbarOptions,
-                    handlers: {
-                        'image': function() {
-                                document.getElementById('fileInput').click();
-                        }
-                    }
-                }
-            },
-            placeholder: 'Metin Alanı',
-            theme: 'snow'
-        });
-
-        document.getElementById('fileInput').addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                var formData = new FormData();
-                formData.append('image', file);
-                formData.append('_token', '{{ csrf_token() }}');
-
-                fetch('{{route('quill.store')}}', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.url) {
-                        const range = quill.getSelection(true);
-                        quill.insertEmbed(range.index, 'image', result.url);
-                        quill.setSelection(range.index + 1);
-                    }
-                })
-                .catch(error => {
-                    console.error('Dosya yükleme hatası:', error);
-                });
-            }
-        });
-
-        var form = document.querySelector('#add_sss_form');
-       form.onsubmit = function() {
-           var html = quill.root.innerHTML;
-           if(html == '<p><br></p>') {
-               return false;
-           }
-           document.getElementById('editorContent').value = html;
-           // Formun gönderilmesine izin ver
-           return true;
-       };
-
-
         var editButtons = document.querySelectorAll('.editSSS');
 
     editButtons.forEach(function(button) {
         button.addEventListener('click', function() {
+            /*data-id="{{$question->id}}"
+                                                    data-status="{{$question->status}}"
+                                                    data-show_menu="{{$question->show_menu}}"
+                                                    data-title="{{$question->name}}"
+                                                    data-path="{{Storage::url('files/'.$question->path)}}"*/
             var id = this.getAttribute('data-id');
             var status = this.getAttribute('data-status');
-            var order = this.getAttribute('data-order');
+            var show_menu = this.getAttribute('data-show_menu');
             var title = this.getAttribute('data-title');
-            var text = this.getAttribute('data-text');
+            var path = this.getAttribute('data-path');
 
             // Modal form alanlarını doldur
             var modal = document.getElementById('add_sss');
             modal.querySelector('[name="id"]').value = id;
-            modal.querySelector('[name="order"]').value = order;
             modal.querySelector('[name="title"]').value = title;
-            modal.querySelector('[name="text"]').value = text;
             modal.querySelector('[name="status"]').checked = status === '1';
+            modal.querySelector('[name="show_menu"]').checked = show_menu === '1';
+            //select .uploadedFile, change its href attribute
+            var uploadedFile = modal.querySelector('.uploadedFile');
+            uploadedFile.href = path;
+            //show uploadedFile
+            uploadedFile.style.display = 'block';
 
-            // Quill editörüne yeni içeriği yükle
-            quill.root.innerHTML = text;
-
-            // Gizli input alanını doldur
-            document.getElementById('editorContent').value = text;
-
-            // Modalı göster
             var modalElement = new bootstrap.Modal(modal);
             modalElement.show();
         });
