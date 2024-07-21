@@ -253,11 +253,7 @@
 
     editButtons.forEach(function(button) {
         button.addEventListener('click', function() {
-            /*data-id="{{$question->id}}"
-                                                    data-status="{{$question->status}}"
-                                                    data-show_menu="{{$question->show_menu}}"
-                                                    data-title="{{$question->name}}"
-                                                    data-path="{{Storage::url('files/'.$question->path)}}"*/
+            
             var id = this.getAttribute('data-id');
             var status = this.getAttribute('data-status');
             var show_menu = this.getAttribute('data-show_menu');

@@ -59,7 +59,7 @@
                                         <option value="10">Ekim</option>
                                         <option value="11">Kasım</option>
                                         <option value="12">Aralık</option>
-                                        
+
                                     </select>
                                 </div>
                                 <div class="col-lg-6 p-3">
