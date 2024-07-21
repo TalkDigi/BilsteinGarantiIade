@@ -97,7 +97,7 @@
                                 <div class="">
                                     <div class="mb-5">
 
-                                        @include('dashboard.pages.application.includes.default-form', ['Complaints' => $Complaints])
+                                        @include('dashboard.pages.application.includes.default-form', ['Complaints' => $ProviderComplaints])
                                         @php
                                             $invoices = [];
                                             $car_permits = [];
