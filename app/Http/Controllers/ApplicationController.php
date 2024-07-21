@@ -395,6 +395,7 @@ class ApplicationController extends Controller
         //even we have product prices,codes,quantity etc. we need to check blocked stock, price, max quantity.
         $quantities = [];
 
+
         foreach ($products as $product) {
             $Invoice = $Invoices[$product->invoice];
 
@@ -404,12 +405,15 @@ class ApplicationController extends Controller
 
             });
 
+            $filteredLines = array_values($filteredLines);
+
 
             if (empty($filteredLines)) {
 
                 return redirect()->route('dashboard.application.index')->withErrors(['Ürün bulunamadı.']);
 
             }
+
 
 
             $line = $filteredLines[0];
