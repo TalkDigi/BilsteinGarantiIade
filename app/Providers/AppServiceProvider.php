@@ -28,12 +28,12 @@ class AppServiceProvider extends ServiceProvider
 
         $setting_db = Setting::all();
 
-        $Complaints = Complaint::where('status','1')->get();
+        /*$Complaints = Complaint::where('status','1')->get();
         //make their ids key
         $ProviderComplaints = [];
         foreach($Complaints as $complaint) {
             $ProviderComplaints[$complaint->id] = $complaint;
-        }
+        }*/
 
         $Settings = [];
 
@@ -41,11 +41,11 @@ class AppServiceProvider extends ServiceProvider
             $Settings[$setting->key] = $setting->value;
         }
 
-        $MenuFile = File::where('status',1)->where('show_menu',1)->get();
+        /*$MenuFile = File::where('status',1)->where('show_menu',1)->get();*/
 
         view()->share('Settings', $Settings);
-        view()->share('ProviderComplaints', $ProviderComplaints);
-        view()->share('MenuFile', $MenuFile);
+        /*view()->share('ProviderComplaints', $ProviderComplaints);*/
+        /*view()->share('MenuFile', $MenuFile);*/
 
     }
 }
