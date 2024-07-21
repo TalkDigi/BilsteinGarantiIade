@@ -91,11 +91,11 @@
                        @endif
                 />
             </div>
-            <div class="flex-row-fluid motor_code">
+            <div class="flex-row-fluid engine_code">
                 <label class="form-label">Model Kodu</label>
-                <input class="form-control" name="application[motor_code]"
-                @if(isset($Application->application['motor_code']))
-                        value="{{ $Application->application['motor_code'] }}"
+                <input class="form-control" name="application[engine_code]"
+                @if(isset($Application->application['engine_code']))
+                        value="{{ $Application->application['engine_code'] }}"
                        @endif
                 />
             </div>
