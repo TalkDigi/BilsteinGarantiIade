@@ -112,7 +112,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/{type}/{tip?}', [ApplicationController::class, 'list'])->name('dashboard.application.listFilter');
 
-        Route::post('/ara', [ApplicationController::class, 'search'])->name('dashboard.application.search');
+        Route::post('/ara', [ApplicationController::class, 'claim_search'])->name('dashboard.application.claim_search');
 
     });
 

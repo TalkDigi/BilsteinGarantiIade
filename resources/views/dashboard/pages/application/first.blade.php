@@ -26,7 +26,7 @@
                                 </i>
                                 <input type="text" name="productCode"
                                        class="form-control form-control-solid  ps-12"
-                                       placeholder="Ürün kodu ile ara." value="ADF1230140"/>
+                                       placeholder="Ürün kodu ile ara." value=""/>
                             </div>
                         </div>
 

@@ -692,4 +692,23 @@ class ApplicationController extends Controller
 
     }
 
+    public function claim_search(Request $request) {
+
+        $Types = Application::TYPES;
+        $IntTypes = Application::INT_TYPES;
+         $basvuru_turu = 'tumu';
+         $tip = 'tumu';
+
+        if (Auth::user()->hasRole('Yönetici')) {
+            $query = Application::query();
+            $statusCounts = Application::getTotalStatusCounts();
+        } else {
+            $query = Application::where('user_id', auth()->id());
+            $statusCounts = Application::getTotalStatusCounts(auth()->id());
+        }
+        $query= $query->where('claim_number', $request->search)->orderBy('id','desc')->get();
+        $Applications = $query;
+        return view('dashboard.pages.application.index', compact('Applications', 'statusCounts','tip','basvuru_turu','Types','IntTypes'));
+    }
+
 }

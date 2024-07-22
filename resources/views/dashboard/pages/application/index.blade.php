@@ -130,7 +130,7 @@
                             <!--begin::Actions-->
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <!--begin::Search-->
-                                <form class="d-flex align-items-center position-relative" method="POST" action="{{route('dashboard.application.search')}}">
+                                <form class="d-flex align-items-center position-relative" method="POST" action="{{route('dashboard.application.claim_search')}}">
                                     <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
