@@ -286,7 +286,7 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                             <!--begin::Header-->
                                             <div class="card-header pt-5">
                                                 <!--begin::Title-->
-                                                <a href="{{$slugs[$key]}}" class="card-title align-items-start flex-column">
+                                                <a href="/basvurular/{{$slugs[$key]}}" class="card-title align-items-start flex-column">
                                                     <span class="card-label fw-bold text-gray-900">{{$key}}</span>
                                                 </a>
 
