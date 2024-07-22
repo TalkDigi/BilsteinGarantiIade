@@ -96,10 +96,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/{type}/{claim}', [ApplicationController::class, 'firstStep'])->name('dashboard.application.first');
 
-        /*
-
-
-        Route::post('/{type}/{invoice}', [ApplicationController::class, 'store'])->name('dashboard.application.store');*/
+        /*Route::post('/{type}/{invoice}', [ApplicationController::class, 'store'])->name('dashboard.application.store');*/
 
     });
 

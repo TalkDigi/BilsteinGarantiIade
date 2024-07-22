@@ -370,6 +370,7 @@ class ApplicationController extends Controller
     public function create_draft(Request $request)
     {
 
+
         //we need to validate products and application_type is exist
         if (!$request->has('products') || !$request->has('application_type')) {
 
@@ -386,10 +387,12 @@ class ApplicationController extends Controller
             $invoice_ids[] = $product->invoice;
         }
 
+
         $Invoice = Invoice::whereIn('InvoiceNo', $invoice_ids)->get();
 
         //make InvoiceNo as key so we can access it easily
         $Invoices = $Invoice->keyBy('InvoiceNo');
+
 
 
         //even we have product prices,codes,quantity etc. we need to check blocked stock, price, max quantity.
@@ -401,9 +404,10 @@ class ApplicationController extends Controller
 
             $filteredLines = array_filter($Invoice->Line, function ($line) use ($product) {
 
-                return $line['ItemNo'] === $product->code;
+                return $line['ItemNo'] == $product->code;
 
             });
+
 
             $filteredLines = array_values($filteredLines);
 
@@ -414,12 +418,12 @@ class ApplicationController extends Controller
 
             }
 
-
-
             $line = $filteredLines[0];
 
 
             //TODO Bloklu ürün stokları kontrol edilecek.
+
+
 
             if ($line['Qty'] < $product->qty) {
                 return redirect()->route('dashboard.application.index')->withErrors(['Stokta yeterli ürün bulunmamaktadır. Ürün kodu: ' . $product->code]);

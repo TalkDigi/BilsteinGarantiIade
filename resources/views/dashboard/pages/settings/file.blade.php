@@ -253,7 +253,7 @@
 
     editButtons.forEach(function(button) {
         button.addEventListener('click', function() {
-            
+
             var id = this.getAttribute('data-id');
             var status = this.getAttribute('data-status');
             var show_menu = this.getAttribute('data-show_menu');
