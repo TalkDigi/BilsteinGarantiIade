@@ -279,15 +279,16 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                             </div>
                             <div class="row gx-5 gx-xl-8">
                                 @forelse($allResults as $key => $r)
+
                                     <div class="col-sm-4 mb-5 mb-xl-10">
                                         <!--begin::List widget 1-->
                                         <div class="card card-flush h-lg-100">
                                             <!--begin::Header-->
                                             <div class="card-header pt-5">
                                                 <!--begin::Title-->
-                                                <h3 class="card-title align-items-start flex-column">
+                                                <a href="{{$slugs[$key]}}" class="card-title align-items-start flex-column">
                                                     <span class="card-label fw-bold text-gray-900">{{$key}}</span>
-                                                </h3>
+                                                </a>
 
                                             </div>
                                             <div class="card-body pt-5">

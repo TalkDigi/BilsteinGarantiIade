@@ -48,7 +48,13 @@ Route::middleware('auth')->group(function () {
         $totalCount = $typeCounts->sum(); // Tüm başvuruların toplam sayısı
         $typeACount = $typeCounts->get('ilave-masraf-iceren-basvuru', 0); // 'b' tipi başvuruların sayısı
         $typeBCount = $typeCounts->get('masraf-icermeyen-basvuru', 0); // 'a' tipi başvuruların sayısı
-        $typeCCount = $typeCounts->get('hasarli-eksik-parca-bildirim', 0); // 'c' tipi başvuruların sayısı
+        $typeCCount = $typeCounts->get('hasarli-parca-bildirimi', 0); // 'c' tipi başvuruların sayısı
+
+        $slugs = [
+            'Masraf İçermeyen Başvuru' => 'masraf-icermeyen-basvuru',
+            'İlave Masraf İçeren Başvuru' => 'ilave-masraf-iceren-basvuru',
+            'Hasarlı Parça Bildirimi' => 'hasarli-parca-bildirimi',
+        ];
 
         // Öncelikle tüm kombinasyonları içeren bir array oluşturuyoruz.
         $allResults = [];
@@ -82,7 +88,7 @@ Route::middleware('auth')->group(function () {
         }
 
 
-        return view('dashboard.home', compact('Activities', 'totalCount', 'typeACount', 'typeBCount', 'typeCCount', 'allResults'));
+        return view('dashboard.home', compact('slugs','Activities', 'totalCount', 'typeACount', 'typeBCount', 'typeCCount', 'allResults'));
 
     })->name('dashboard');
 
