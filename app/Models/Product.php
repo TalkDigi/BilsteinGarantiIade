@@ -12,4 +12,11 @@ class Product extends Model
      * @var string
      */
     protected $connection = 'mysqlSource';
+
+    public function getBrand()
+    {
+        return $this->belongsTo(Brand::class, 'Brand', 'BrandID');
+    }
+
+
 }

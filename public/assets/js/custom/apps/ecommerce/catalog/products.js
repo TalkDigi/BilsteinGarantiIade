@@ -13,11 +13,7 @@ var KTAppEcommerceProducts = function () {
             "info": false,
             'order': [],
             'pageLength': 10,
-            'columnDefs': [
-                { render: DataTable.render.number(',', '.', 2), targets: 4},
-                { orderable: false, targets: 1 }, // Disable ordering on column 0 (checkbox)
-                { orderable: false, targets: 5 }, // Disable ordering on column 7 (actions)
-            ]
+         
         });
 
         // Re-init functions on datatable re-draws
@@ -36,14 +32,7 @@ var KTAppEcommerceProducts = function () {
 
     // Handle status filter dropdown
     var handleStatusFilter = () => {
-        const filterStatus = document.querySelector('[data-kt-ecommerce-product-filter="status"]');
-        $(filterStatus).on('change', e => {
-            let value = e.target.value;
-            if(value === 'all'){
-                value = '';
-            }
-            datatable.column(6).search(value).draw();
-        });
+      
     }
 
     // Delete cateogry
@@ -115,9 +104,7 @@ var KTAppEcommerceProducts = function () {
             }
 
             initDatatable();
-            handleSearchDatatable();
-            handleStatusFilter();
-            handleDeleteRows();
+          
         }
     };
 }();

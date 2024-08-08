@@ -43,6 +43,31 @@
                 margin-right:8px
             }
 
+			.cost_request span {
+				position: absolute;
+				bottom: 0;
+				right: 0;
+				font-size: 18px;
+				padding: 8px 15px;
+				background-color: rgb(208, 207, 207);
+				border-top-right-radius: 8px;
+				border-bottom-right-radius: 8px;
+				color: grey
+			}
+
+            .swal-custom-height .swal2-html-container {
+                height: auto;
+                max-height:unset;
+                text-align:justify
+            }
+
+			.yoket {
+    height: 0px;
+    width: 0px;
+    display: none;
+    padding: 0px;
+}
+
 		</style>
 	</head>
 	<body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled">
@@ -134,7 +159,58 @@
 										</div>
 									</div>
 								</div>
+								
 								<div class="topbar d-flex align-items-stretch flex-shrink-0">
+									@if(auth()->user()->hasRole('Yönetici'))
+									<div class="d-flex align-items-center ms-1 ms-lg-3">
+										<div class="position-relative btn btn-icon btn-active-light-primary btn-custom w-30px h-30px w-md-40px h-md-40px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+											<i class="ki-duotone ki-binance fs-1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+												<span class="path3"></span>
+												<span class="path4"></span>
+												<span class="path5"></span>
+											</i>
+											<span class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink"></span>
+										</div>
+										<div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px" data-kt-menu="true" id="kt_menu_notifications">
+											<div class="d-flex flex-column bgi-no-repeat rounded-top" style="background-image:url({{asset('assets/media/misc/menu-header-bg.jpg')}})">
+												<h3 class="text-white fw-semibold px-9 mt-10 mb-6">İncelenmemiş Başvurular
+												<span class="fs-8 opacity-75 ps-3">{{count($NonViewed)}} Başvuru</span></h3>
+												
+											</div>
+											<div class="tab-content">
+												<div class="tab-pane fade show active" id="kt_topbar_notifications_3" role="tabpanel">
+													<div class="scroll-y mh-325px my-5 px-8">
+														
+														@forelse($NonViewed as $item)
+														<div class="d-flex flex-stack py-4">
+															<div class="d-flex align-items-center me-2">
+																<span class="w-70px badge badge-light-danger me-4">Okunmadı</span>
+																<a href="#" class="text-gray-800 text-hover-primary fw-semibold">{{$item->claim_number}}</a>
+															</div>
+															<span class="badge badge-light fs-8">{{$item->created_at->diffForHumans()}}</span>
+														</div>
+														@if($loop->iteration == 5)
+															@break
+														@endif
+														@empty
+														@endforelse
+														
+														
+													</div>
+													<div class="py-3 text-center border-top">
+														<a href="{{route('dashboard.application.list')}}" class="btn btn-color-gray-600 btn-active-color-primary">Tümünü Görüntüle
+														<i class="ki-duotone ki-arrow-right fs-5">
+															<span class="path1"></span>
+															<span class="path2"></span>
+														</i></a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									@endif
 
 
 									<div class="d-flex align-items-center ms-1 ms-lg-3">
@@ -2633,7 +2709,8 @@
         <script>
             const fileStore = "{{route('file.store')}}";
             const fileDelete = "{{route('file.delete')}}";
-            const closure = "{{route('dashboard.application.closure-process')}}";
+			const create_invoice = "{{route('dashboard.application.create-invoice')}}"
+
         </script>
 		<script>var hostUrl = "assets/";</script>
 		<script src="{{asset('assets/plugins/global/plugins.bundle.js')}}"></script>

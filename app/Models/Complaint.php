@@ -17,4 +17,10 @@ class Complaint extends Model
         'title',
 
     ];
+
+    public function types()
+    {
+        return $this->belongsToMany(Type::class, 'complaint_type');
+    }
+
 }

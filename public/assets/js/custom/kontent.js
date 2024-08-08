@@ -1,10 +1,15 @@
 if ($('.changeStatusButton').length > 0) {
 
     $('.changeStatusButton').on('click', function () {
-
         let status_id = $(this).data('status-id');
 
         let status = statuses[status_id];
+
+        console.log('Status hereeeee');
+        console.log(statuses);
+
+        console.log('status_id');
+        console.log(status_id);
 
         $('.newStatus').html(status.html);
         $('.newStatus').val(status_id);
@@ -13,6 +18,12 @@ if ($('.changeStatusButton').length > 0) {
             $('.formChangeInputs').show();
         } else {
             $('.formChangeInputs').hide();
+        }
+
+        if (status_id == 5) {
+            $('.accepted_cost').show();
+        } else {
+            $('.accepted_cost').hide();
         }
 
     });
@@ -252,25 +263,15 @@ $(document).on('click', '.delete-file', function () {
     });
 });
 
-$('.closure-button').on('click', function () {
-    //get all tr data values inside closure-table and store them in an array
-    let trs = document.querySelectorAll('.closure-table tbody tr');
-    let data = [];
-    trs.forEach(function (tr) {
-        data.push({
-            name: tr.getAttribute('data-name'),
-            no: tr.getAttribute('data-no'),
-            quantity: tr.getAttribute('data-quantity'),
-            price: tr.getAttribute('data-price')
-        });
-    });
+$('.applicationCreateInvoice').on('click', function () {
 
-    //send data to the server
+    let claimNumber = $(this).data('claim-number');
+
     $.ajax({
         type: 'POST',
-        url: closure,
+        url: create_invoice,
         data: {
-            data: data,
+            claim_number : claimNumber,
             _token: document.head.querySelector('meta[name="csrf-token"]').content
         },
         success: function (response) {
@@ -310,6 +311,7 @@ $(document).ready(function () {
 
     // Eğer inputs array'i null değilse
     if (typeof inputs !== 'undefined') {
+        console.log(inputs);
 
         if (inputs !== null) {
             // Eğer inputs array'i null değilse ve bir array ise
@@ -320,8 +322,9 @@ $(document).ready(function () {
                         // Eğer inputs array'inde yoksa
                         if (!inputs.includes(key)) {
                             // Bu stringi class olarak al ve class > input veya class > textarea readonly yap ve arka plan rengini değiştir
+
                             var elements = $('.' + key);
-                            //display none
+                            
                             elements.hide();
                             var elementsInputs = $('.' + key + ' > input, .' + key + ' > textarea');
                             elementsInputs.attr('readonly', true);
@@ -335,6 +338,7 @@ $(document).ready(function () {
         }
     }
 
+    let isHide = false;
 
     $('.productSearchForm').submit(function (e) {
         e.preventDefault();
@@ -357,7 +361,18 @@ $(document).ready(function () {
             type: 'POST',
             data: data,
             success: function (response) {
-                $('.productSearchList').html(response.html);
+                if(response.success) {
+                    console.log(response);
+                    $('.filteredProductsTableBody').html(response.html);
+
+                    if(response.hide_search) {
+                        isHide = true;
+                        $('.productSearchForm').hide();
+                    }
+                } else {
+                    isHide = false;
+                        toastr.error(response.message);
+                }
             },
             complete: function () {
                 // Hide page loading
@@ -369,6 +384,66 @@ $(document).ready(function () {
         });
     });
 
+    //on click btnRemove
+    $(document).on('click', '.btnRemove', function () {
+       //get data-id
+        let id = $(this).data('id');
+        //remove row
+        $('#' + id).remove();
+        console.log(isHide);
+        if(isHide) {
+            $('.productSearchForm').show();
+        }
+    });
+
+
+
+    $('.application_form').submit(function (e) {
+        e.preventDefault();
+
+        //if form has update class, just post it
+        if ($(this).hasClass('update')) {
+            $(this).off('submit').submit();
+            return true;
+        }
+        let trs = document.querySelectorAll('.filteredProductsTableBody tr');
+        console.log(trs);
+        products = [];
+        trs.forEach(function (tr) {
+            products.push({
+                code: tr.getAttribute('data-code'),
+                desc: tr.getAttribute('data-desc'),
+                qty: tr.getAttribute('data-qty'),
+                invoice: tr.getAttribute('data-invoice'),
+                price: tr.getAttribute('data-price')
+            });
+        });
+
+
+        let data = $(this).serialize();
+        data += '&products=' + JSON.stringify(products);
+        //post application form
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: data,
+            success: function (response) {
+                console.log(response);
+                if (response.success) {
+                    //redirect to applications page
+                    window.location.href = response.redirect;
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (error) {
+                toastr.error('Başvuru oluşturulurken bir hata oluştu.');
+            }
+        });
+
+
+    })
+
     //we have two input productCode and productName. we should reset other input when one of them is filled
     $('input[name=productCode]').on('input', function () {
         $('input[name=productName]').val('');
@@ -377,102 +452,6 @@ $(document).ready(function () {
     $('input[name=productName]').on('input', function () {
         $('input[name=productCode]').val('');
     });
-
-    let products = [];
-
-    $(document).on('click', '.addProduct', function () {
-
-        let desc = $(this).data('desc');
-        let code = $(this).data('code');
-        let invoice = $(this).data('invoice');
-        let price = $(this).data('price');
-        let max = $(this).data('max');
-        let qty = $(this).closest('.d-flex').find('.quantity').val();
-
-
-        if (qty == '' || qty == 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Hata',
-                text: 'Lütfen adet girin.',
-            });
-            return false;
-        }
-
-        if (qty > max) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Hata',
-                text: 'Maksimum adet sayısını aştınız.',
-            });
-            return false;
-        }
-
-        let isAdded = false;
-        let index = 0;
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].code == code && products[i].invoice == invoice) {
-                isAdded = true;
-                index = i;
-                break;
-            }
-        }
-
-        if (isAdded) {
-
-            products[index].qty = parseInt(products[index].qty) + parseInt(qty);
-
-            let newQty = parseInt(qty);
-
-            products[index].qty = newQty;
-
-            let row = $('.selectedProducts').find('tr[data-code="' + code + '"][data-invoice="' + invoice + '"]');
-
-            row.find('.qty').text(newQty);
-
-        } else {
-
-            products.push({
-                code: code,
-                invoice: invoice,
-                qty: qty,
-                price: price,
-                desc: desc
-            });
-
-            let row = '<tr data-code="' + code + '" data-invoice="' + invoice + '">';
-            row += '<td>' + desc + '</td>';
-            row += '<td>' + code + '</td>';
-            row += '<td class="qty">' + qty + '</td>';
-            row += '<td>' + price + '</td>';
-            row += '<td><button class="btn btn-danger removeProduct">Sil</button></td>';
-            row += '</tr>';
-
-            $('.selectedProducts table tbody').find('.emptyRow').remove();
-
-            $('.selectedProducts table tbody').append(row);
-
-        }
-
-        checkApplicationContinueButton(products);
-    })
-
-    $(document).on('click', '.removeProduct', function () {
-        //get product code and invoice
-        let code = $(this).closest('tr').data('code');
-        let invoice = $(this).closest('tr').data('invoice');
-        //remove product from products array
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].code == code && products[i].invoice == invoice) {
-                products.splice(i, 1);
-                break;
-            }
-        }
-        //remove row from table
-        $(this).closest('tr').remove();
-        checkApplicationContinueButton(products);
-
-    })
 
     $('.applicationStatus button').on('click', function () {
         //check if products array is empty
@@ -491,41 +470,6 @@ $(document).ready(function () {
         $('#bl_new_application_type_modal').modal('show');
 
         $('.applicationSummary').text('Toplam ' + products.length + ' ürün eklendi.');
-
-    });
-
-    $('#bl_new_application_type_modal form').on('submit', function (e) {
-
-        e.preventDefault();
-
-        if (products.length == 0) {
-            //show warning
-            Swal.fire({
-                icon: 'warning',
-                title: 'Uyarı',
-                text: 'Lütfen en az bir ürün ekleyin.',
-            });
-            return false;
-        }
-
-        //check if any application_type radio is checked
-
-        let application_type = $('input[name=application_type]:checked').val();
-        if (!application_type) {
-            //show warning
-            Swal.fire({
-                icon: 'warning',
-                title: 'Uyarı',
-                text: 'Lütfen bir başvuru türü seçin.',
-            });
-            return false;
-        }
-
-        $('#jsonData').val(JSON.stringify(products));
-
-        //submit form
-
-        this.submit();
 
     });
 

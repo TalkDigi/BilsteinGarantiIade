@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FileController;
+use App\Models\Status;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GuideController;
@@ -10,12 +11,11 @@ use App\Models\Application;
 use App\Http\Controllers\ClosureController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\QuestionController;
-Route::get('/test', function () {
-    $invoices = \App\Models\Invoice::where('CustNo','120.1085')->whereJsonContains('Line', [['ItemNo' => 'ADR163082']])->get();
+use Illuminate\Support\Facades\DB;
+use App\Models\Invoice;
+use App\Models\Blockage;
+use App\Models\Type;
 
-    echo 'Veri bulundu Sayı: '.$invoices->count().'<br>AA';
-
-});
 Route::get('/assignRole', function () {
     $user = \App\Models\User::find(1);
     $user->assignRole('Yönetici');
@@ -32,7 +32,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/', function () {
 
+
+
         $Activities = \App\Models\Activity::orderBy('created_at', 'desc')->limit(15)->get();
+
+        //find applications where viewed_by is null
 
         $query = Application::selectRaw('type, COUNT(*) as count')
             ->groupBy('type');
@@ -42,67 +46,31 @@ Route::middleware('auth')->group(function () {
             $query->where('user_id', auth()->user()->id);
         }
 
-        $typeCounts = $query->pluck('count', 'type');
+        $Types = Type::all();
 
 
-        $totalCount = $typeCounts->sum(); // Tüm başvuruların toplam sayısı
-        $typeACount = $typeCounts->get('ilave-masraf-iceren-basvuru', 0); // 'b' tipi başvuruların sayısı
-        $typeBCount = $typeCounts->get('masraf-icermeyen-basvuru', 0); // 'a' tipi başvuruların sayısı
-        $typeCCount = $typeCounts->get('hasarli-parca-bildirimi', 0); // 'c' tipi başvuruların sayısı
-
-        $slugs = [
-            'Masraf İçermeyen Başvuru' => 'masraf-icermeyen-basvuru',
-            'İlave Masraf İçeren Başvuru' => 'ilave-masraf-iceren-basvuru',
-            'Hasarlı Parça Bildirimi' => 'hasarli-parca-bildirimi',
-        ];
-
-        // Öncelikle tüm kombinasyonları içeren bir array oluşturuyoruz.
-        $allResults = [];
-        foreach (Application::TYPES as $typeKey => $typeInfo) {
-            foreach (Application::STATUS as $statusKey => $statusInfo) {
-                if ($statusInfo['slug'] != 'taslak') {  // 'Taslak' durumunu hariç tutuyoruz.
-                    $statusTitle = $statusInfo['name']; // Status başlığını kullanıyoruz.
-                    $allResults[$typeInfo['title']][$statusTitle] = 0; // Başlangıçta her bir kombinasyon için sayımı 0 olarak ayarlıyoruz.
-                }
-            }
-        }
-
-        // Veritabanından gelen sonuçları alıyoruz.
-        $query = Application::select('type', 'status', DB::raw('COUNT(*) as count'))
-            ->whereNotIn('status', [0]);  // 'Taslak' durumunu veritabanı sorgusunda hariç tutuyoruz.
-
-        // Eğer kullanıcı 'Kullanıcı' rolüne sahipse, sadece kendi oluşturduğu kayıtları filtrele
-        if (auth()->user()->hasRole('Kullanıcı')) {
-            $query->where('user_id', auth()->id());
-        }
-
-        $results = $query->groupBy('type', 'status')->get();
-
-        // Veritabanından gelen sonuçları işleyerek ilgili type ve status için sayıları güncelliyoruz.
-        foreach ($results as $result) {
-            $typeTitle = Application::TYPES[$result->type]['title'] ?? 'Bilinmeyen Tip';
-            $statusTitle = Application::STATUS[$result->status]['name'] ?? 'Bilinmeyen Durum';
-            if (isset($allResults[$typeTitle][$statusTitle])) {
-                $allResults[$typeTitle][$statusTitle] = $result->count;
-            }
-        }
-
-
-        return view('dashboard.home', compact('slugs','Activities', 'totalCount', 'typeACount', 'typeBCount', 'typeCCount', 'allResults'));
+        return view('dashboard.home', compact('Types','Activities' ));
 
     })->name('dashboard');
 
+
     Route::prefix('/yeni-basvuru')->group(function () {
 
-        Route::get('/', [ApplicationController::class, 'index'])->name('dashboard.application.index');
+        /*Route::get('/', [ApplicationController::class, 'index'])->name('dashboard.application.index');
 
-        Route::post('/', [ApplicationController::class, 'search'])->name('dashboard.application.search');
+        Route::post('/', [ApplicationController::class, 'search'])->name('dashboard.application.search');*/
 
-        Route::post('/taslak-olustur', [ApplicationController::class, 'create_draft'])->name('dashboard.application.draft');
+        /*Route::post('/taslak-olustur', [ApplicationController::class, 'create_draft'])->name('dashboard.application.draft');*/
+
+        Route::post('/urun-ara', [ApplicationController::class, 'search'])->name('dashboard.application.search');
+
+        Route::post('/bridge', [ApplicationController::class, 'applicationBridge'])->name('dashboard.application.bridge');
+
+        Route::get('/{type}', [ApplicationController::class, 'firstStep'])->name('dashboard.application.firstStep');
+
+        Route::post('/{type}', [ApplicationController::class, 'store'])->name('dashboard.application.store');
 
         Route::get('/{type}/{claim}', [ApplicationController::class, 'firstStep'])->name('dashboard.application.first');
-
-        /*Route::post('/{type}/{invoice}', [ApplicationController::class, 'store'])->name('dashboard.application.store');*/
 
     });
 
@@ -158,6 +126,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/ay-kapama', [ClosureController::class, 'index'])->name('dashboard.application.closure');
     Route::post('/ay-kapama', [ClosureController::class, 'filter'])->name('dashboard.application.closure-filter');
     Route::post('/ay-kapama/islem', [ClosureController::class, 'process'])->name('dashboard.application.closure-process');
+    Route::get('/ay-kapama/{uuid}', [ClosureController::class, 'show'])->name('dashboard.application.closure-show');
+    Route::post('/fiyat-ara', [ClosureController::class, 'search_other_prices'])->name('dashboard.application.search_other_prices');
+    Route::post('/fiyat-degistir', [ClosureController::class, 'set_price'])->name('dashboard.application.set_price');
+
+
+
+    Route::post('/fatura-olustur', [ClosureController::class, 'create_invoice'])->name('dashboard.application.create-invoice');
+    Route::get('/fatura-cikti/{claim}', [ClosureController::class, 'export_invoice'])->name('dashboard.application.export-invoice');
+    Route::get('/ay-kapama-fatura-cikti/{uuid}', [ClosureController::class, 'export_invoice_closure'])->name('dashboard.application.export-invoice-closure');
 
     Route::post('/file', [FileController::class, 'store'])->name('file.store');
     Route::post('/quill', [FileController::class, 'quill'])->name('quill.store');

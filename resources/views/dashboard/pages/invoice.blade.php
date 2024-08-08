@@ -33,7 +33,7 @@
 																		<th class="pb-2">#</th>
 																		<th class="min-w-70px text-start pb-2">Ürün</th>
 																		<th class="min-w-80px text-end pb-2">Miktar</th>
-																		<th class="min-w-100px text-end pb-2">Birim Fiyat</th>
+																		<th class="min-w-100px text-end pb-2">Birim Fatura Fiyatı</th>
                                                                         <th class="min-w-100px text-end pb-2">Toplam</th>
 																	</tr>
 																</thead>
@@ -42,19 +42,42 @@
                                                                         <tr class="fw-bold text-gray-700 fs-5 text-end">
                                                                             <td>{{$loop->index +1}}</td>
                                                                             <td class="d-flex align-items-start flex-column">
-                                                                                <p>{{$line['name']}}</p>
-                                                                                <span class="text-muted d-block">{{$line['no']}}</span>
+                                                                                <p>{{$line['desc']}}</p>
+                                                                                <span class="text-muted d-block">{{$line['code']}}</span>
                                                                             </td>
-                                                                            <td class="pt-6">{{$line['quantity']}} Adet</td>
-                                                                            <td class="pt-6">{{$line['price']}} ₺</td>
+                                                                            <td class="pt-6">{{$line['qty']}} Adet</td>
+                                                                            <td class="pt-6">
+                                                                            {{ number_format($line['price'], 2, ',', '.') }}₺
 
-                                                                            <td class="pt-6">{{number_format($line['price'] * $line['quantity'], 2, '.', '')}} ₺</td>
+                                                                            </td>
+
+                                                                            <td class="pt-6">
+
+                                                                                {{ number_format($line['price'] * $line['qty'], 2, ',', '.') }}₺
 
 
-
+                                                                            </td>
 																	    </tr>
                                                                         @empty
                                                                 @endforelse
+
+                                                                @if(isset($Application->application['accepted_cost']))
+                                                                    <tr class="fw-bold text-gray-700 fs-5 text-end">
+                                                                            <td>#</td>
+                                                                            <td class="d-flex align-items-start flex-column">
+                                                                                <p>İlave Masraf</p>
+
+                                                                            </td>
+                                                                            <td class="pt-6"></td>
+                                                                            <td class="pt-6">
+                                                                                {{ number_format($Application->application['accepted_cost'], 2, ',', '.') }}₺
+                                                                            </td>
+
+                                                                            <td class="pt-6">
+                                                                                {{ number_format($Application->application['accepted_cost'], 2, ',', '.') }}₺
+                                                                            </td>
+																	    </tr>
+                                                                @endif
 
 																</tbody>
 															</table>
@@ -70,7 +93,9 @@
 																	<div class="fw-semibold pe-10 text-gray-600 fs-7">Ara Toplam:</div>
 																	<!--end::Accountname-->
 																	<!--begin::Label-->
-																	<div class="text-end fw-bold fs-6 text-gray-800">{{$total}} ₺</div>
+																	<div class="text-end fw-bold fs-6 text-gray-800">
+                                                                        {{ number_format($total, 2, ',', '.') }}₺
+                                                                    </div>
 																	<!--end::Label-->
 																</div>
 																<!--end::Item-->
@@ -81,7 +106,8 @@
 																	<!--end::Accountname-->
 																	<!--begin::Label-->
 																	<div class="text-end fw-bold fs-6 text-gray-800">
-                                                                        {{$tax}} ₺</div>
+                                                                        {{ number_format($tax, 2, ',', '.') }}₺
+                                                                    </div>
 																	<!--end::Label-->
 																</div>
 																<!--end::Item-->
@@ -91,9 +117,13 @@
 																	<div class="fw-semibold pe-10 text-gray-600 fs-7">Toplam</div>
 																	<!--end::Accountnumber-->
 																	<!--begin::Number-->
-																	<div class="text-end fw-bold fs-6 text-gray-800">{{$total_with_tax}} ₺</div>
+																	<div class="text-end fw-bold fs-6 text-gray-800">
+                                                                        {{ number_format($total_with_tax, 2, ',', '.') }}₺
+                                                                    </div>
 																	<!--end::Number-->
 																</div>
+
+                                                                <a class="btn btn-success w-100" href="{{route('dashboard.application.export-invoice',['claim' => $Application->claim_number])}}">Excel Çıktısı Al</a>
 
 															</div>
 															<!--end::Section-->

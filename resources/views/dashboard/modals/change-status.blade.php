@@ -12,9 +12,10 @@
             <div class="modal-body scroll-y mx-5 mx-xl-18 pt-0 pb-15">
                 <div class="text-center mb-13">
                     <h1 class="mb-3">Durum Değiştir</h1>
-                    <div class="text-muted fw-semibold fs-5 mb-5">{!! $Application->getStatusBadge()  !!} >
+                    <div class="text-muted fw-semibold fs-5 mb-5">{!! $Status->html  !!} >
                         <div class="newStatus d-inline-block"></div>
                     </div>
+
 
                 </div>
                 <form action="{{route('dashboard.application.update_status_with_message')}}" method="POST">
@@ -22,11 +23,25 @@
                     <div class="form-group">
                         <div class="text-muted fw-semibold fs-5 mb-5 text-center">Başvuru sahibine gösterilecek metin.
                         </div>
-                        <textarea class="form-control" data-kt-autosize="true" name="message" required></textarea>
+                        <textarea class="form-control" data-kt-autosize="true" name="message" ></textarea>
                         <input type="hidden" name="new_status" class="newStatus" required>
                         <input type="hidden" name="claim_number" value="{{$Application->claim_number}}" required>
 
                     </div>
+
+                    @if($Application->getType()->has_additional_payment)
+                        <div class="flex-row-fluid mb-5 mt-5 accepted_cost">
+                        <div class="fv-row flex-row-fluid cost_request position-relative">
+                            <label class="form-label">Onaylanan Masraf Tutarı</label>
+                            <input class="form-control" name="accepted_cost" type="text" required
+                                @if (isset($Application->application['cost_request'])) value="{{ $Application->application['cost_request'] }}" @endif
+                                pattern="\d+(,\d{1,2})?"
+                                oninput="this.value = this.value.replace(/[^0-9,]/g, '').replace(/(,.*?),/g, '$1');" />
+                            <span>₺</span>
+                        </div>
+                    </div>
+
+                        @endif
                     <div class="form-group mt-5">
                         <div class="fv-row">
                             <div class="text-muted fw-semibold fs-5 mb-5 text-center">Müşteriye İletilecek Dökümanlar (Opsiyonel)</div>

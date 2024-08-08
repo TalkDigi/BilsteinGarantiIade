@@ -3,10 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Complaint;
+use App\Models\Status;
+use App\Models\Type;
 use Illuminate\Support\ServiceProvider;
 use Carbon\Carbon;
 use App\Models\Setting;
 use App\Models\File;
+use App\Models\Application;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,9 +46,35 @@ class AppServiceProvider extends ServiceProvider
 
         $MenuFile = File::where('status',1)->where('show_menu',1)->get();
 
+        $ApplicationStatus = Status::where('status',1)->get();
+
+        $ApplicationStatusById = [];
+        foreach($ApplicationStatus as $status) {
+            $ApplicationStatusById[$status->id] = $status;
+        }
+
+        $ApplicationTypes = Type::all();
+
+        $Customers = \App\Models\Customer::all();
+
+        $NonViewed = Application::whereNull('viewed_by')->get();
+
         view()->share('Settings', $Settings);
+
         view()->share('ProviderComplaints', $ProviderComplaints);
+
         view()->share('MenuFile', $MenuFile);
+
+        view()->share('ApplicationStatus', $ApplicationStatus);
+
+        view()->share('ApplicationTypes', $ApplicationTypes);
+
+        view()->share('ApplicationStatusById', $ApplicationStatusById);
+
+        view()->share('Customers', $Customers);
+
+        view()->share('NonViewed', $NonViewed);
+
 
     }
 }

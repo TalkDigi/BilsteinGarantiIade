@@ -2,104 +2,40 @@
 @section('content')
     <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
         <div class="content flex-row-fluid" id="kt_content">
-            <form class="form d-flex flex-column flex-lg-row application_form" novalidate="novalidate"
-                   @if(isset($Application))
-                      action="{{ route('dashboard.application.update',[$Application->claim_number]) }}"
-                  @endif
 
-                  method="POST">
-                @csrf
-                <div class="w-100 flex-lg-row-auto w-lg-300px mb-7 me-7 me-lg-10">
+
+                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
                     <div class="card card-flush py-4">
                         <div class="card-header">
                             <div class="card-title">
-                                <h2>Fatura Detayları</h2>
+                                <h2>{{$Type->title}}</h2>
                             </div>
                         </div>
-                        <div class="card-body pt-0">
-                            <div class="d-flex flex-column gap-10">
-
-                                @forelse($Application->products as $product)
-                                        <div class="d-flex align-items-center border border-dashed rounded p-3 bg-body">
-
-                                            <div class="ms-5">
-                                                <span
-                                                    class="text-gray-800 text-hover-primary fs-5 fw-bold">{{$product['desc']}}</span>
-
-                                                <div class="text-muted fs-7 mt-2">Adet:
-                                                    {{$product['qty']}}
-                                                </div>
-
-                                                <div class="fw-semibold fs-7 mt-2">Ürün Kodu: {{$product['code']}}
-                                                </div>
-
-                                                <div class="text-muted fs-7 mt-2">Fatura No:
-                                                    {{$product['invoice']}}
-                                                </div>
-                                                <div class="text-muted fs-7 mt-2">Birim Fiyat:
-                                                    {{number_format($product['price'], 2, '.', '')}}
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                @empty
-                                @endforelse
-
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
-                    <div class="card card-flush py-4">
 
                         <div class="card-body pt-0">
-							<div class="stepper stepper-pills" id="application_stepper">
-								<div class="stepper-nav flex-center flex-wrap mb-10">
 
-									<div class="stepper-item mx-8 my-4 current" data-kt-stepper-element="nav">
-										<div class="stepper-wrapper d-flex align-items-center">
-											<div class="stepper-icon w-40px h-40px">
-												<i class="stepper-check fas fa-check"></i>
-												<span class="stepper-number">1</span>
-											</div>
+                            @if(isset($Application))
+                            @include('dashboard.pages.application.includes.product-search', ['Type' => $Type, 'Application' => $Application])
+                        @else
+                            @include('dashboard.pages.application.includes.product-search', ['Type' => $Type])
+                        @endif
 
-											<div class="stepper-label">
-												<h3 class="stepper-title">
-													Başvuru Formu
-												</h3>
-											</div>
-										</div>
+									  <form class="form d-flex flex-column flex-lg-row application_form @if(isset($Application)) update @endif"
+                              @if(isset($Application))
+                                  action="{{ route('dashboard.application.update',[$Application->claim_number]) }}"
+                              @endif
 
-										<div class="stepper-line h-40px"></div>
-									</div>
+                              method="POST"
+                                action="{{route('dashboard.application.store',['type' => $Type->uuid ])}}">
+                            @csrf
+                                           <input type="hidden" name="uuid" value="{{$Type->uuid}}">
+										<div class="mb-5 w-100">
 
-									<div class="stepper-item mx-8 my-4" data-kt-stepper-element="nav">
-										<div class="stepper-wrapper d-flex align-items-center">
-											<div class="stepper-icon w-40px h-40px">
-												<i class="stepper-check fas fa-check"></i>
-												<span class="stepper-number">2</span>
-											</div>
-
-											<div class="stepper-label">
-												<h3 class="stepper-title">
-													Dosyalar
-												</h3>
-											</div>
-										</div>
-
-										<div class="stepper-line h-40px"></div>
-									</div>
-
-								</div>
-									<div class="">
-										<div class="mb-5">
-
-											@include('dashboard.pages.application.includes.default-form', ['Complaints' => $ProviderComplaints])
+											@include('dashboard.pages.application.includes.default-form', ['Type'=> $Type, 'Complaints' => $Type->complaints])
 
 											<div class="flex-column" data-kt-stepper-element="content">
 												<div class="fv-row">
-													<label class=" form-label"><b>Müşteriye Kesilen Onarım Faturası (Opsiyonel)</b></label>
+													<label class=" form-label"><b>Servisin müşteriye kestiği ilk fatura/iş emri (Opsiyonel)</b></label>
 													<div class="dropzone" id="dropZone1">
 														<div class="dz-message needsclick">
 															<i class="ki-duotone ki-file-up fs-3x text-primary"><span class="path1"></span><span class="path2"></span></i>
@@ -180,40 +116,25 @@
                                                         </div>
                                                     </div>
                                                 @endif
-											</div>
-
-
-										</div>
-
-										<div class="d-flex flex-stack">
-											<div class="me-2">
-												<button type="button" class="btn btn-light btn-active-light-primary" data-kt-stepper-action="previous">
-													Geri
-												</button>
-											</div>
-
-											<div>
-												<button type="submit" class="btn btn-primary" >
+                                                 <button type="submit" class="btn btn-primary mt-5 float-end">
 													<span class="indicator-label">
 														Gönder
 													</span>
-													<span class="indicator-progress">
-														Lütfen bekleyin... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                                <span class="indicator-progress">
+														Lütfen bekleyin... <span
+                                                        class="spinner-border spinner-border-sm align-middle ms-2"></span>
 													</span>
-												</button>
-
-												<button type="button" class="btn btn-primary" data-kt-stepper-action="next">
-													Devam Et
-												</button>
+                                            </button>
 											</div>
+
+
 										</div>
-									</div>
-								</div>
+
+									</form>
                         </div>
                     </div>
 
                 </div>
-            </form>
         </div>
     </div>
 @endsection
@@ -229,6 +150,7 @@
         @if(isset($inputs))
             @if(!is_null($inputs))
             inputs = @json($inputs);
+
         @endif
         @endif
 

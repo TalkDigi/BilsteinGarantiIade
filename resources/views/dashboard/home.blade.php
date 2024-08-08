@@ -19,8 +19,18 @@
                                     <span class="fw-bold fs-2x mb-3">Başvurularım</span>
                                 @endif
                                 <div class="fs-4 text-white">
+                                    @php
+                                    $count = 0;
+                                    @endphp
+                                    @forelse($Types as $type)
+                                        @php
+                                        $count += $type->application_counts();
+                                        @endphp
+                                    @empty
+                                    @endforelse
+
                                     <span
-                                        class="opacity-75">Toplam {{$totalCount}} @if(auth()->user()->hasRole('Yönetici'))
+                                        class="opacity-75">Toplam {{$count}} @if(auth()->user()->hasRole('Yönetici'))
                                             başvuru
                                         @else
                                             başvurunuz
@@ -48,11 +58,11 @@
                                             <div class="m-0">
                                                 <!--begin::Number-->
                                                 <span
-                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$typeBCount}}</span>
+                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$Types[0]->application_counts()}}</span>
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
-                                                <a href="basvurular/masraf-icermeyen-basvuru/tumu"
-                                                    class="text-gray-500 fw-semibold fs-6">Masraf İçermeyen Başvuru</a>
+                                                <a href="basvurular/{{$Types[0]->id}}/tumu"
+                                                    class="text-gray-500 fw-semibold fs-6">{{$Types[0]->title}}</a>
                                                 <!--end::Desc-->
                                             </div>
                                             <!--end::Stats-->
@@ -73,10 +83,11 @@
                                             <div class="m-0">
                                                 <!--begin::Number-->
                                                 <span
-                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$typeCCount}}</span>
+                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$Types[1]->application_counts()}}</span>
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
-                                                <a href="basvurular/hasarli-parca-bildirimi/tumu" class="text-gray-500 fw-semibold fs-6">Hasarlı Parça</a>
+                                                <a href="basvurular/{{$Types[1]->id}}/tumu"
+                                                    class="text-gray-500 fw-semibold fs-6">{{$Types[1]->title}}</a>
                                                 <!--end::Desc-->
                                             </div>
                                             <!--end::Stats-->
@@ -96,12 +107,12 @@
                                             <!--begin::Stats-->
                                             <div class="m-0">
                                                 <!--begin::Number-->
-                                                <span
-                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$typeACount}}</span>
+                                          <span
+                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$Types[2]->application_counts()}}</span>
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
-                                                <a href="basvurular/ilave-masraf-iceren-basvuru/tumu"
-                                                    class="text-gray-500 fw-semibold fs-6">İlave Masraf İçeren Başvuru</a>
+                                                <a href="basvurular/{{$Types[2]->id}}/tumu"
+                                                    class="text-gray-500 fw-semibold fs-6">{{$Types[2]->title}}</a>
                                                 <!--end::Desc-->
                                             </div>
                                             <!--end::Stats-->
@@ -118,123 +129,7 @@
                     </div>
                     <!--end::Lists Widget 19-->
                 </div>
-                {{--<div class="col-xl-4">
-                    <div class="card card-xl-stretch mb-xl-3">
-                        <div class="card-header border-0 py-5">
-                            <h3 class="card-title align-items-start flex-column">
-                                <span class="card-label fw-bold fs-3 mb-1">Trends</span>
-                                <span class="text-muted fw-semibold fs-7">Latest trends</span>
-                            </h3>
-                            <div class="card-toolbar">
-                                <button type="button" class="btn btn-sm btn-icon btn-color-primary btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                    <i class="ki-duotone ki-category fs-6">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
-                                </button>
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
-                                    <div class="menu-item px-3">
-                                        <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Payments</div>
-                                    </div>
-                                    <div class="menu-item px-3">
-                                        <a href="#" class="menu-link px-3">Create Invoice</a>
-                                    </div>
-                                    <div class="menu-item px-3">
-                                        <a href="#" class="menu-link flex-stack px-3">Create Payment
-                                        <span class="ms-2" data-bs-toggle="tooltip" title="Specify a target name for future usage and reference">
-                                            <i class="ki-duotone ki-information fs-6">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                            </i>
-                                        </span></a>
-                                    </div>
-                                    <div class="menu-item px-3">
-                                        <a href="#" class="menu-link px-3">Generate Bill</a>
-                                    </div>
-                                    <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
-                                        <a href="#" class="menu-link px-3">
-                                            <span class="menu-title">Subscription</span>
-                                            <span class="menu-arrow"></span>
-                                        </a>
-                                        <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                                            <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3">Plans</a>
-                                            </div>
-                                            <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3">Billing</a>
-                                            </div>
-                                            <div class="menu-item px-3">
-                                                <a href="#" class="menu-link px-3">Statements</a>
-                                            </div>
-                                            <div class="separator my-2"></div>
-                                            <div class="menu-item px-3">
-                                                <div class="menu-content px-3">
-                                                    <label class="form-check form-switch form-check-custom form-check-solid">
-                                                        <input class="form-check-input w-30px h-20px" type="checkbox" value="1" checked="checked" name="notifications" />
-                                                        <span class="form-check-label text-muted fs-6">Recuring</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="menu-item px-3 my-1">
-                                        <a href="#" class="menu-link px-3">Settings</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <div class="mixed-widget-5-chart card-rounded-top" data-kt-chart-color="success" style="height: 150px"></div>
-                            <div class="mt-5">
-                                <div class="d-flex flex-stack mb-5">
-                                    <div class="d-flex align-items-center me-2">
-                                        <div class="symbol symbol-50px me-3">
-                                            <div class="symbol-label bg-light">
-                                                <img src="assets/media/svg/brand-logos/plurk.svg" class="h-50" alt="" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <a href="#" class="fs-6 text-gray-800 text-hover-primary fw-bold">Top Authors</a>
-                                            <div class="fs-7 text-muted fw-semibold mt-1">Ricky Hunt, Sandra Trepp</div>
-                                        </div>
-                                    </div>
-                                    <div class="badge badge-light fw-semibold py-4 px-3">+82$</div>
-                                </div>
-                                <div class="d-flex flex-stack mb-5">
-                                    <div class="d-flex align-items-center me-2">
-                                        <div class="symbol symbol-50px me-3">
-                                            <div class="symbol-label bg-light">
-                                                <img src="assets/media/svg/brand-logos/figma-1.svg" class="h-50" alt="" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <a href="#" class="fs-6 text-gray-800 text-hover-primary fw-bold">Top Sales</a>
-                                            <div class="fs-7 text-muted fw-semibold mt-1">PitStop Emails</div>
-                                        </div>
-                                    </div>
-                                    <div class="badge badge-light fw-semibold py-4 px-3">+82$</div>
-                                </div>
-                                <div class="d-flex flex-stack">
-                                    <div class="d-flex align-items-center me-2">
-                                        <div class="symbol symbol-50px me-3">
-                                            <div class="symbol-label bg-light">
-                                                <img src="assets/media/svg/brand-logos/vimeo.svg" class="h-50" alt="" />
-                                            </div>
-                                        </div>
-                                        <div class="py-1">
-                                            <a href="#" class="fs-6 text-gray-800 text-hover-primary fw-bold">Top Engagement</a>
-                                            <div class="fs-7 text-muted fw-semibold mt-1">KT.com</div>
-                                        </div>
-                                    </div>
-                                    <div class="badge badge-light fw-semibold py-4 px-3">+82$</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>--}}
+
                 <div class="col-xl-8">
                     <div class="row gx-5 gx-xl-8 mb-5 mb-xl-8">
                         <div class="col-xl-3 mb-5 mb-xl-0">
@@ -250,6 +145,19 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                         </div>
                         <div class="col-xl-9">
                             <div class="card h-150px card-xl-stretch">
+                                @if(auth()->user()->hasRole('Yönetici'))
+                                <div class="card-body d-flex align-items-center justify-content-between flex-wrap">
+                                    <div class="me-2">
+                                        <h2 class="fw-bold text-gray-800 mb-3">Başvurular</h2>
+                                        <div class="text-muted fw-semibold fs-6">
+                                            İncelenmemiş {{count($NonViewed)}} başvuru bulunmakta.
+                                        </div>
+                                    </div>
+                                    
+
+                                    <a href="{{route('dashboard.application.list')}}" class="btn btn-primary fw-semibold" >+</a>
+                                    </div>
+                                @else
                                 <div class="card-body d-flex align-items-center justify-content-between flex-wrap">
                                     <div class="me-2">
                                         <h2 class="fw-bold text-gray-800 mb-3">Yeni Başvuru Oluştur</h2>
@@ -257,10 +165,12 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                             Başvuru formlarını buradan oluşturabilirsiniz.
                                         </div>
                                     </div>
-                                    {{--<a href="#" class="btn btn-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#kt_modal_create_campaign">Start Now</a>--}}
+                                    <a href="#" class="btn btn-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#bl_new_application_type_modal">+</a>
 
-                                    <a href="{{route('dashboard.application.index')}}" class="btn btn-primary fw-semibold" >+</a>
-                                </div>
+                                    {{-- <a href="{{route('dashboard.application.index')}}" class="btn btn-primary fw-semibold" >+</a>--}}
+                                    </div>
+
+                                    @endif
                             </div>
                         </div>
                     </div>
@@ -270,7 +180,11 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                  style="background-color: #663259; background-position: right; background-image:url('assets/media/svg/misc/taieri.svg')">
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <h2 class="text-white fw-bold ">Ay Kapama</h2>
+                                    @if(auth()->user()->hasRole('Yönetici'))
+                                    <span class="text-white mb-5 d-block"> Müşterilere ait ay kapama hesaplamalarını görüntüleyin. </span>
+                                    @else
                                     <span class="text-white mb-5 d-block"> İstediğiniz aya ait onaylanmış başvurularınız için örnek fatura oluşturun. </span>
+                                    @endif
                                     <div class="m-0">
                                         <a href='{{route('dashboard.application.closure')}}'
                                            class="btn btn-danger fw-semibold px-6 py-3">Oluştur</a>
@@ -278,7 +192,7 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                 </div>
                             </div>
                             <div class="row gx-5 gx-xl-8">
-                                @forelse($allResults as $key => $r)
+                                {{--@forelse($allResults as $key => $r)
 
                                     <div class="col-sm-4 mb-5 mb-xl-10">
                                         <!--begin::List widget 1-->
@@ -311,7 +225,7 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                         </div>
                                     </div>
                                 @empty
-                                @endforelse
+                                @endforelse--}}
 
                             </div>
                         </div>

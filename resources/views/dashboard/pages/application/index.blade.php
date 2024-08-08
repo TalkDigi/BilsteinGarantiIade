@@ -18,7 +18,7 @@
                         <!--begin::Aside content-->
                         <div class="card-body application-card-body">
                             <!--begin::Button-->
-                            <a href="{{route('dashboard.application.index')}}" class="btn btn-primary fw-bold w-100 mb-8">
+                            <a data-bs-toggle="modal" data-bs-target="#bl_new_application_type_modal" class="btn btn-primary fw-bold w-100 mb-8">
 								Yeni Başvuru +
 							</a>
 
@@ -40,7 +40,7 @@
                                 <!--end::Menu item-->
 
                             @foreach ($Types as $key => $type)
-									<a class="menu-item mb-3 " href="{{route('dashboard.application.listFilter',['type'=>$key,'tip'=>'tumu'])}}">
+									<a class="menu-item mb-3 " href="{{route('dashboard.application.listFilter',['type'=>$type->id,'tip'=>'tumu'])}}">
 										<span class="menu-link">
 											<span class="menu-icon">
 												<span class="svg-icon"><svg class=" . h-20px w-20px .  " width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -62,10 +62,15 @@
                                 class="menu menu-column menu-rounded menu-state-bg menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary mb-10">
 
 								@php
-									$allStatus = App\Models\Application::getStatusArray();
+									$allStatus = App\Models\Status::get()->toArray();
+                                    //group by id
+                                $allStatusById = [];
+                                foreach ($allStatus as $key => $status) {
+                                    $allStatusById[$status['id']] = $status;
+                                }
 								@endphp
 
-                                @foreach ($allStatus as $key => $status)
+                                @foreach ($allStatusById as $key => $status)
 									<a class="menu-item mb-3 " href="{{route('dashboard.application.listFilter',['type'=>$basvuru_turu,'tip'=>$status['slug']])}}">
 
 										<span class="menu-link @if(isset($tip) && $tip === $status['slug']) active @endif">
@@ -99,32 +104,6 @@
                             <!--begin::Actions-->
                             <div class="d-flex flex-wrap gap-2">
 
-                                <span>
-
-                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                        data-kt-menu="true">
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3"
-                                                data-kt-inbox-listing-filter="filter_newest">Newest</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3"
-                                                data-kt-inbox-listing-filter="filter_oldest">Oldest</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                        <!--begin::Menu item-->
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3"
-                                                data-kt-inbox-listing-filter="filter_unread">Unread</a>
-                                        </div>
-                                        <!--end::Menu item-->
-                                    </div>
-                                    <!--end::Menu-->
-                                </span>
-                                <!--end::Sort-->
                             </div>
                             <!--end::Actions-->
                             <!--begin::Actions-->
@@ -151,11 +130,9 @@
                             <table class="table align-middle table-row-bordered fs-6 gy-5" id="kt_ecommerce_products_table">
 								<thead>
 									<tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-
-										<th class="min-w-100px">#</th>
-										<th class="text-center min-w-100px">Fatura No</th>
-										<th class="text-center min-w-70px">Ürün Adedi</th>
-										<th class="text-center min-w-100px">Ürün Miktarı</th>
+                                        <th class="text-center">#</th>
+										<th class="text-center min-w-100px">Başvuru No</th>
+										<th class="text-center min-w-100px">Müşteri</th>
 										<th class="text-center min-w-70px">Durum</th>
                                         <th class="text-center">Oluşturma Tarihi</th>
                                         <th class="text-center">Güncelleme Tarihi</th>
@@ -165,19 +142,17 @@
 								<tbody class="fw-semibold text-gray-600">
 									@forelse($Applications as $a)
 										<tr>
+                                            <td>{{$a->id}}</td>
 											<td>
 												<span class="fw-bold">{{$a->claim_number}}</span>
 											</td>
-											<td class="text-center pe-0">
-												<span class="fw-bold">{{$a->invoice}}</span>
+
+                                            <td>
+												<span class="fw-bold"> {{$a->getUser->customer->No}} - {{$a->getUser->customer->SearchName}}</span>
 											</td>
-											<td class="text-center pe-0">
-												<span class="fw-bold ms-3">{{$a->productCount()}}</span>
-											</td>
-											<td class="text-center pe-0">{{$a->productQuantities()}}</td>
 
 											<td class="text-center pe-0" data-order="Inactive">
-												{!!$a->getStatusBadge()!!}
+												{!!$a->getStatus->html!!}
 											</td>
 
                                             <td class="text-center">
@@ -188,39 +163,11 @@
                                                 <span class="fw-bold">{{$a->updated_at->diffForHumans()}}</span>
                                             </td>
 
-											@if(auth()->user()->hasRole('Yönetici'))
                                                 <td class="text-center">
                                                     <a href="{{route('dashboard.application.show',['claim' => $a->claim_number])}}" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary">İncele</a>
                                                 </td>
-                                            @endif
-                                            @if(auth()->user()->hasRole('Kullanıcı'))
-                                                @if($a->editable)
-                                                    <td class="text-center">
-                                                        <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Eylemler
-                                                        <i class="ki-duotone ki-down fs-5 ms-1"></i></a>
-                                                        <!--begin::Menu-->
-                                                        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
-                                                            <!--begin::Menu item-->
-                                                            <div class="menu-item px-3">
-                                                                <a href="{{route('dashboard.application.show',['claim' => $a->claim_number])}}" class="menu-link px-3">İncele</a>
-                                                            </div>
-                                                            <!--end::Menu item-->
-                                                            <!--begin::Menu item-->
-                                                            <div class="menu-item px-3">
-                                                                <a href="{{route('dashboard.application.edit',['claim' => $a->claim_number])}}" class="menu-link px-3" >Düzenle</a>
-                                                            </div>
-                                                            <!--end::Menu item-->
-                                                        </div>
-                                                        <!--end::Menu-->
-                                                    </td>
-                                                @else
-                                                    <td class="text-center">
-                                                        <a href="{{route('dashboard.application.show',['claim' => $a->claim_number])}}" class="menu-link px-3">İncele</a>
 
-                                                    </td>
 
-                                                @endif
-                                            @endif
 										</tr>
 										@empty
 

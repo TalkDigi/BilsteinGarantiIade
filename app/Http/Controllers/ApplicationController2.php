@@ -128,7 +128,7 @@ class ApplicationController extends Controller
                     ->causedBy(auth()->user())
                     ->withProperties(['claim' => $Application->claim_number])
                     ->event('application-status-update')
-                    ->log(auth()->user()->name . ', '.$Application->claim_number.' numaralı başvurunun durumunu '.$Application->getStatusBadge().' olarak güncelledi.');
+                    ->log(auth()->user()->name . ', '.$Application->claim_number.' numaralı başvurunun durumunu '.$Application->getStatus->title.' olarak güncelledi.');
 
                 Session::flash('success', 'Durum güncellendi.');
 
@@ -221,7 +221,7 @@ class ApplicationController extends Controller
                 ->causedBy(auth()->user())
                 ->withProperties($props)
                 ->event('application-status-update')
-                ->log(auth()->user()->name . ', '.$Application->claim_number.' numaralı başvurunun durumunu '.$Application->getStatusBadge().' olarak güncelledi.');
+                ->log(auth()->user()->name . ', '.$Application->claim_number.' numaralı başvurunun durumunu '.$Application->getStatus->title.' olarak güncelledi.');
 
             Session::flash('success', 'Durum güncellendi.');
 

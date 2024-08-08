@@ -15,5 +15,9 @@ return [
     "car_repair_date" => "Onarımın (Montajın) Yapıldığı Tarih",
     "car_found_milage" => "Sorunun Veya Arızanın Tespit Edildiği Tarihte Aracın Kilometresi",
     "car_repair_milage" => "Onarımın (Montajın) Yapıldığı Tarihte Aracın Kilometresi",
-    "customer_complain" => "Müşteri Şikayeti"
+    "customer_complain" => "Müşteri Şikayeti",
+    "engine_code" => "Motor Kodu",
+    "engine_power" => "Motor Gücü (KW)",
+    "cost_request" => "Talep Edilen Masraf Tutarı",
+    "accepted_cost" => "Onaylanan Masraf Tutarı"
 ];

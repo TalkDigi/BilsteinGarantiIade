@@ -1,3 +1,4 @@
+{{--
 <div
     class="row row-cols-1 row-cols-xl-3 row-cols-md-2 border border-dashed rounded pt-3 pb-1 px-2 mb-5 mh-300px overflow-scroll"
     id="kt_ecommerce_edit_order_selected_products">
@@ -49,3 +50,28 @@
 
 
 </div>
+--}}
+@forelse($products as $product)
+    <tr id="product{{$loop->index}}"
+        data-desc = "{{ $product['line']['ItemDesc'] }}"
+         data-code ="{{ $product['line']['ItemNo'] }}"
+         data-qty = "{{ $product['usedQty'] }}"
+         data-invoice = "{{$product['invoice']}}"
+        data-price = {{ number_format($product['line']['Amt'] / $product['line']['Qty'], 2, '.', '')}}
+    >
+        <td> {{ $product['line']['ItemDesc'] }}</td>
+        <td> {{ $product['line']['ItemNo'] }}</td>
+        <td> {{ $product['usedQty'] }}</td>
+        <td>{{$product['invoice']}}</td>
+        <td class="text-center" >
+            {{
+                number_format($product['line']['Amt'] / $product['line']['Qty'], 2, '.', '')
+            }}₺
+        </td>
+        <td><button class="btn btn-danger btnRemove" data-id="product{{$loop->index}}">Kaldır</button></td>
+</tr>
+@empty
+    <tr>
+        <td colspan="5">Başvuru için ilgili ürünü seçin.</td>
+    </tr>
+@endforelse

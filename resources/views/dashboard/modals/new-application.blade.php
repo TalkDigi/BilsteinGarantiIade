@@ -17,54 +17,28 @@
                         Başvuru tipinize uygun seçeneği seçerek sürece devam edebilirsiniz.
                     </p>
 
-                    <form class="pb-10" method="POST" action="{{route('dashboard.application.draft')}}">
-                        <input type="hidden" name="products" id="jsonData" >
-
+                    <form class="pb-10" method="POST" action="{{route('dashboard.application.bridge')}}">
                         @csrf
-                        <input type="radio" class="btn-check" name="application_type" value="ilave-masraf-iceren-basvuru"
-                               id="ilave-masraf-iceren-basvuru"/>
+                        @forelse($ApplicationTypes as $type)
+
+                        <input type="radio" class="btn-check" name="application_type" value="{{$type->uuid}}"
+                               id="{{$type->uuid}}"/>
                         <label
                             class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center mb-5"
-                            for="ilave-masraf-iceren-basvuru">
+                            for="{{$type->uuid}}">
                             <i class="ki-duotone ki-message-text-2 fs-4x me-4">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
                             </i>
                             <span class="d-block fw-semibold text-start">
-                                <span class="text-gray-900 fw-bold d-block fs-3">İlave Masraf İçeren Başvuru</span>
+                                <span class="text-gray-900 fw-bold d-block fs-3">{{$type->title}}</span>
                             </span>
                         </label>
 
-                        <input type="radio" class="btn-check" name="application_type" value="masraf-icermeyen-basvuru"
-                               id="masraf-icermeyen-basvuru"/>
-                        <label
-                            class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center mb-5"
-                            for="masraf-icermeyen-basvuru">
-                            <i class="ki-duotone ki-message-text-2 fs-4x me-4">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i>
-                            <span class="d-block fw-semibold text-start">
-                                <span class="text-gray-900 fw-bold d-block fs-3">Masraf İçermeyen Başvuru</span>
-                            </span>
-                        </label>
+                        @empty
+                            @endforelse
 
-                        <input type="radio" class="btn-check" name="application_type" value="hasarli-parca-bildirimi"
-                               id="hasarli-eksik-parca-bildirimi"/>
-                        <label
-                            class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center"
-                            for="hasarli-eksik-parca-bildirimi">
-                            <i class="ki-duotone ki-message-text-2 fs-4x me-4">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i>
-                            <span class="d-block fw-semibold text-start">
-                                <span class="text-gray-900 fw-bold d-block fs-3">Hasarlı Parça Bildirimi</span>
-                            </span>
-                        </label>
                         <button class="btn btn-primary w-100 mt-5" type="submit">Devam Et</button>
                     </form>
                 </div>
