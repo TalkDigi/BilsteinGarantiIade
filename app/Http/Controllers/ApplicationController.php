@@ -499,7 +499,6 @@ class ApplicationController extends Controller
 
         }
 
-        number_format($result['line']['Amt'] / $result['line']['Qty'], 2, '.', '');
 
         foreach ($products as $product) {
 
