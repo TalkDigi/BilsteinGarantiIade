@@ -187,7 +187,7 @@
 														<div class="d-flex flex-stack py-4">
 															<div class="d-flex align-items-center me-2">
 																<span class="w-70px badge badge-light-danger me-4">Okunmadı</span>
-																<a href="#" class="text-gray-800 text-hover-primary fw-semibold">{{$item->claim_number}}</a>
+																<a href="{{route('dashboard.application.show',['claim' => $item->claim_number])}}" class="text-gray-800 text-hover-primary fw-semibold">{{$item->claim_number}}</a>
 															</div>
 															<span class="badge badge-light fs-8">{{$item->created_at->diffForHumans()}}</span>
 														</div>
