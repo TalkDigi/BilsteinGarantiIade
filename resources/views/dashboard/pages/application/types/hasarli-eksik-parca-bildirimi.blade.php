@@ -34,7 +34,7 @@
 											@include('dashboard.pages.application.includes.default-form', ['Type'=> $Type, 'Complaints' => $Type->complaints])
 
 											<div class="flex-column" data-kt-stepper-element="content">
-												<div class="fv-row">
+												<div class="fv-row invoice">
 													<label class=" form-label"><b>Servisin müşteriye kestiği ilk fatura/iş emri (Opsiyonel)</b></label>
 													<div class="dropzone" id="dropZone1">
 														<div class="dz-message needsclick">
@@ -84,7 +84,7 @@
                                                 @endif
 
 
-                                                <div class="fv-row mt-5">
+                                                <div class="fv-row mt-5 fault">
 													<label class=" form-label"><b>Parçaya Dair Arıza / Hata Görseli (Opsiyonel)</b></label>
 													<div class="dropzone" id="dropZone2">
 														<div class="dz-message needsclick">
