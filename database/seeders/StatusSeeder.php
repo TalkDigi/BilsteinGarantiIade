@@ -23,19 +23,6 @@ class StatusSeeder extends Seeder
                 'deleteBlocked' => false,
                 'noteRequired' => false
             ],
-            1 => [
-                'html' => '<span class="badge badge-primary">Değerlendiriliyor</span>',
-                'slug' => 'degerlendiriliyor',
-                'name' => 'Değerlendiriliyor',
-                'color' => 'primary',
-                'hasNotes' => false,
-                'canEdit' => false,
-                'showShipment' => false,
-                'canInvoice' => false,
-                'deleteBlocked' => false,
-                'noteRequired' => false
-    
-            ],
             2 => [
                 'html' => '<span class="badge badge-info">Ön Onay Bekliyor</span>',
                 'slug' => 'on-onay-bekleyenler',
@@ -43,6 +30,32 @@ class StatusSeeder extends Seeder
                 'color' => 'info',
                 'hasNotes' => false,
                 'canEdit' => false,
+                'showShipment' => false,
+                'canInvoice' => false,
+                'deleteBlocked' => false,
+                'noteRequired' => false
+            ],
+
+            6 => [
+                'html' => '<span class="badge badge-danger">Ön Onay & Kargo</span>',
+                'slug' => 'on-onay-kargo',
+                'name' => 'Ön Onay Verildi & Kargo Bekleniyor',
+                'color' => 'info',
+                'hasNotes' => false,
+                'canEdit' => false,
+                'showShipment' => false,
+                'canInvoice' => false,
+                'deleteBlocked' => true,
+                'noteRequired' => false
+                
+            ],
+            4 => [
+                'html' => '<span class="badge badge-warning">Düzenleme İstendi</span>',
+                'slug' => 'duzenleme-istendi',
+                'name' => 'Düzenleme İstendi',
+                'color' => 'warning',
+                'hasNotes' => true,
+                'canEdit' => true,
                 'showShipment' => false,
                 'canInvoice' => false,
                 'deleteBlocked' => false,
@@ -60,18 +73,7 @@ class StatusSeeder extends Seeder
                 'deleteBlocked' => false,
                 'noteRequired' => false
             ],
-            4 => [
-                'html' => '<span class="badge badge-warning">Düzenleme İstendi</span>',
-                'slug' => 'duzenleme-istendi',
-                'name' => 'Düzenleme İstendi',
-                'color' => 'warning',
-                'hasNotes' => true,
-                'canEdit' => true,
-                'showShipment' => false,
-                'canInvoice' => false,
-                'deleteBlocked' => false,
-                'noteRequired' => false
-            ],
+           
             5 => [
                 'html' => '<span class="badge badge-danger">Reddedildi</span>',
                 'slug' => 'reddedildi',
@@ -83,19 +85,6 @@ class StatusSeeder extends Seeder
                 'canInvoice' => false,
                 'deleteBlocked' => true,
                 'noteRequired' => false
-            ],
-            6 => [
-                'html' => '<span class="badge badge-danger">Ön Onay & Kargo</span>',
-                'slug' => 'on-onay-kargo',
-                'name' => 'Ön Onay Verildi & Kargo Bekleniyor',
-                'color' => 'info',
-                'hasNotes' => false,
-                'canEdit' => false,
-                'showShipment' => false,
-                'canInvoice' => false,
-                'deleteBlocked' => true,
-                'noteRequired' => false
-                
             ],
         ];
 

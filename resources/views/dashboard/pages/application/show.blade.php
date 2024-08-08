@@ -40,7 +40,7 @@
                                             <a href="{{route('dashboard.application.update_status',[2,$Application->claim_number])}}"
                                                class="btn btn-sm btn-warning me-3">Ön Onay Bekleniyor</a>
 
-                                               <a href="{{route('dashboard.application.update_status',[7,$Application->claim_number])}}"
+                                               <a href="{{route('dashboard.application.update_status',[3,$Application->claim_number])}}"
                                                 class="btn btn-sm btn-danger me-3">Ön Onay & Kargo Bekleniyor</a>
                                                
 
