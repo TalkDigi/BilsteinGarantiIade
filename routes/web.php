@@ -17,10 +17,10 @@ use App\Models\Blockage;
 use App\Models\Type;
 
 Route::get('/assignRole', function () {
-    $user = \App\Models\User::find(1);
-    $user->assignRole('Yönetici');
-    $user = \App\Models\User::find(4);
-    $user->assignRole('Yönetici');
+    $user = \App\Models\User::find(3);
+    $user->assignRole('Kullanıcı');
+    $user = \App\Models\User::find(5);
+    $user->assignRole('Kullanıcı');
     return $user;
 });
 
