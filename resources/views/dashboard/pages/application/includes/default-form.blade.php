@@ -125,9 +125,7 @@
 
                             <input class="form-check-input mr-2" type="checkbox" name="application[complain][]"
                                 value="{{ $c->id }}" id="input{{ $c->id }}"
-                                @if(in_array($c->id, $Application->application['complain'])) checked @endif /
-                                
-                                >
+                                @if(isset($Application)) @if(in_array($c->id, $Application->application['complain'])) checked @endif @endif />
                             <label for="input{{ $c->id }}" class=" d-inline-block" style="padding-left: 10px">
                                 {{ $c->title }}
                             </label>
