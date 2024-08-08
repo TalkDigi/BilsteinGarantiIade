@@ -111,7 +111,7 @@ class StatusSeeder extends Seeder
                 'canEdit' => $status['canEdit'],
                 'showShipment' => $status['showShipment'],
                 'canInvoice' => $status['canInvoice'],
-                'deleteBlocked' => $status['deleteBlocked'],,
+                'deleteBlocked' => $status['deleteBlocked'],
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
