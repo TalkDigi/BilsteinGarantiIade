@@ -159,7 +159,7 @@
 										</div>
 									</div>
 								</div>
-								
+
 								<div class="topbar d-flex align-items-stretch flex-shrink-0">
 									@if(auth()->user()->hasRole('Yönetici'))
 									<div class="d-flex align-items-center ms-1 ms-lg-3">
@@ -171,18 +171,20 @@
 												<span class="path4"></span>
 												<span class="path5"></span>
 											</i>
-											<span class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink"></span>
+											@if(count($NonViewed) > 0)
+                                                <span class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink"></span>
+                                            @endif
 										</div>
 										<div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px" data-kt-menu="true" id="kt_menu_notifications">
 											<div class="d-flex flex-column bgi-no-repeat rounded-top" style="background-image:url({{asset('assets/media/misc/menu-header-bg.jpg')}})">
 												<h3 class="text-white fw-semibold px-9 mt-10 mb-6">İncelenmemiş Başvurular
 												<span class="fs-8 opacity-75 ps-3">{{count($NonViewed)}} Başvuru</span></h3>
-												
+
 											</div>
 											<div class="tab-content">
 												<div class="tab-pane fade show active" id="kt_topbar_notifications_3" role="tabpanel">
 													<div class="scroll-y mh-325px my-5 px-8">
-														
+
 														@forelse($NonViewed as $item)
 														<div class="d-flex flex-stack py-4">
 															<div class="d-flex align-items-center me-2">
@@ -196,8 +198,8 @@
 														@endif
 														@empty
 														@endforelse
-														
-														
+
+
 													</div>
 													<div class="py-3 text-center border-top">
 														<a href="{{route('dashboard.application.list')}}" class="btn btn-color-gray-600 btn-active-color-primary">Tümünü Görüntüle
