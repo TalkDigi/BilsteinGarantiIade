@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\QuantitiesController;
 use App\Models\Status;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -117,6 +118,10 @@ Route::middleware('auth')->group(function () {
             Route::post('/dosya', [FileController::class, 'settingsFileStore'])->name('dashboard.setting.fileStore');
         });
 
+
+        Route::get('/miktar-iceri-al', [QuantitiesController::class, 'index'])->name('dashboard.setting.quantities');
+        Route::post('/miktar-iceri-al', [QuantitiesController::class, 'upload'])->name('dashboard.setting.quantities.upload');
+        Route::get('/miktar-sil/{uuid}', [QuantitiesController::class, 'delete'])->name('dashboard.setting.quantities.delete');
 
         Route::prefix('/sil')->group(function () {
             Route::get('/sss/{id}', [QuestionController::class, 'destroy'])->name('dashboard.setting.sssDestroy');
