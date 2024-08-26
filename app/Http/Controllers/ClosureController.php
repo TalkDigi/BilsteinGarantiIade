@@ -141,7 +141,7 @@ class ClosureController extends Controller
 
 
         if ($Closure) {
-            Session::flash('warning', $this->months[$request->month] . ' ' . $request->year . ' için tamamlanmış bir ay kapama mevcut.');
+            Session::flash('warning', 'Tamamlanmış bir ay kapama mevcut.');
             return redirect()->route('dashboard.application.closure-show', ['uuid' => $Closure->uuid]);
         }
 
@@ -232,7 +232,7 @@ class ClosureController extends Controller
 
         if ($closure->save()) {
 
-            Session::flash('success', $this->months[$request->month] . ' ' . $request->year . ' için kapanış işlemi başarıyla yapıldı.');
+            Session::flash('success','Kapanış işlemi başarıyla yapıldı.');
             return redirect()->route('dashboard.application.closure-show', ['uuid' => $closure->uuid]);
         } else {
             Session::flash('error', 'Kapanış işlemi sırasında bir hata oluştu.');
