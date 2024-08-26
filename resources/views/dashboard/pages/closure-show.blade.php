@@ -1,3 +1,7 @@
+@php
+use Carbon\Carbon;
+@endphp
+
 @extends('layouts.dashboard')
 @section('content')
     <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
@@ -20,7 +24,7 @@
 
                                         <a href="javascript:void(0)"
                                            class="text-gray-800 text-hover-primary fs-2 fw-bold me-3">
-                                           {{$months[$Closure->month]}} {{$Closure->year}} Ay Kapama 
+                                           {{$months[$Closure->month]}} {{$Closure->year}} Ay Kapama
 
                                            @if(auth()->user()->hasRole('Yönetici'))
                                            ( {{$Closure->customer->No}} - {{$Closure->customer->SearchName}} )
@@ -121,11 +125,18 @@
                                                 data-quantity="{{$product['qty']}}"
                                                 data-price="{{ number_format($product['price'] * $product['qty'], 2, '.', '')}}">
 
-                                                <td class="text-start">{{$product['invoice']}}</td>
                                                 <td class="text-start">
-                                                    {{$product['desc']}}
+                                                    {{$product['invoice']}}
+
+                                                    <span class="text-muted d-block">
+                                                        {{Carbon::createFromFormat('Y-m-d', $invoices[$product['invoice']])->locale('tr_TR')->translatedFormat('d F Y')}}
+                                                                </span>
+                                                </td>
+                                                <td class="text-start">
+
+                                                    {{$product['code']}}
                                                     <br>
-                                                    <span class="text-muted">{{$product['code']}}</span>
+                                                    <span class="text-muted">{{$product['desc']}}</span>
                                                 </td>
                                                 <td class="text-start">{{$product['qty']}}</td>
                                                 <td class="text-start">

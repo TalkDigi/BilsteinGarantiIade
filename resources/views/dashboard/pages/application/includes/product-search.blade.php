@@ -25,7 +25,7 @@
             </div>
         @else
 
-            <div class="col-lg-5">
+            <div class="col-lg-10">
             <div class="d-flex align-items-center position-relative my-1">
                 <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
                     <span class="path1"></span>
@@ -36,15 +36,9 @@
                        placeholder="Ürün kodu ile ara." value=""/>
             </div>
         </div>
-
-            <div class="col-lg-5">
-            <div class="d-flex align-items-center position-relative my-1">
-
-                <input type="number" name="productCount" required
+<input type="hidden" name="productCount" required
                        class="form-control form-control-solid  ps-12"
                        placeholder="Adet." value=""/>
-            </div>
-        </div>
 
             @endif
         <div class="col-lg-2">
@@ -74,8 +68,7 @@
                     <th>Ürün Adı</th>
                     <th>Ürün Kodu</th>
                     <th>Adet</th>
-                    <th>Fatura</th>
-                    <th>Birim Fatura Fiyatı</th>
+
                     <th>İşlemler</th>
                 </tr>
                 </thead>
@@ -93,12 +86,7 @@
                                 <td> {{ $product['desc'] }}</td>
                                 <td> {{ $product['code'] }}</td>
                                 <td> {{ $product['qty'] }}</td>
-                                <td>{{$product['invoice']}}</td>
-                                <td class="text-center" >
-                                    {{
-                                        number_format($product['price'], 2, '.', '')
-                                    }}₺
-                                </td>
+
                                 <td><button class="btn btn-danger btnRemove" data-id="product{{$loop->index}}">Kaldır</button></td>
                         </tr>
                         @empty

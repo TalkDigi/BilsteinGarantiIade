@@ -12,10 +12,12 @@ use App\Models\Application;
 use App\Http\Controllers\ClosureController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use App\Models\Blockage;
 use App\Models\Type;
+
 
 Route::get('/assignRole', function () {
     $user = \App\Models\User::find(3);
@@ -24,6 +26,7 @@ Route::get('/assignRole', function () {
     $user->assignRole('Kullanıcı');
     return $user;
 });
+
 
 Route::middleware('auth')->group(function () {
 
@@ -66,6 +69,8 @@ Route::middleware('auth')->group(function () {
         /*Route::post('/taslak-olustur', [ApplicationController::class, 'create_draft'])->name('dashboard.application.draft');*/
 
         Route::post('/urun-ara', [ApplicationController::class, 'search'])->name('dashboard.application.search');
+        Route::post('/miktar-kontrol', [ApplicationController::class, 'quantity_check'])->name('dashboard.application.quantity_check');
+
 
         Route::post('/bridge', [ApplicationController::class, 'applicationBridge'])->name('dashboard.application.bridge');
 
@@ -163,6 +168,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
+
+Route::get('tum-ay-kapamaları-sil',[TestController::class,'delete_closures'])->name('test.delete.closure');
+Route::get('ay-kapama-maillerini-gonder',[TestController::class,'send_email'])->name('test.mail.closure');
 
 
 require __DIR__ . '/auth.php';

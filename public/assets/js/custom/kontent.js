@@ -266,16 +266,17 @@ $(document).on('click', '.delete-file', function () {
 $('.applicationCreateInvoice').on('click', function () {
 
     let claimNumber = $(this).data('claim-number');
+    let target = $(this).data('target');
 
     $.ajax({
         type: 'POST',
         url: create_invoice,
         data: {
-            claim_number : claimNumber,
+            claim_number: claimNumber,
+            target: target,
             _token: document.head.querySelector('meta[name="csrf-token"]').content
         },
         success: function (response) {
-            console.log(response);
             if (response.success) {
                 //put response.html niside .invoiceBody
                 $('.invoiceBody').html(response.html);
@@ -324,7 +325,7 @@ $(document).ready(function () {
                             // Bu stringi class olarak al ve class > input veya class > textarea readonly yap ve arka plan rengini değiştir
 
                             var elements = $('.' + key);
-                            
+
                             elements.hide();
                             var elementsInputs = $('.' + key + ' > input, .' + key + ' > textarea');
                             elementsInputs.attr('readonly', true);
@@ -342,7 +343,7 @@ $(document).ready(function () {
 
     $('.productSearchForm').submit(function (e) {
         e.preventDefault();
-        let data = $(this).serialize();
+
 
         const loadingEl = document.createElement("div");
         document.body.prepend(loadingEl);
@@ -356,46 +357,185 @@ $(document).ready(function () {
         // Show page loading
         KTApp.showPageLoading();
 
-        $.ajax({
-            url: $(this).attr('action'),
-            type: 'POST',
-            data: data,
-            success: function (response) {
-                if(response.success) {
-                    console.log(response);
-                    $('.filteredProductsTableBody').html(response.html);
+        //first check if is there any input with productCount name
+        let productCount = $('input[name=productCount]');
+        let productCountVal = productCount.val();
 
-                    if(response.hide_search) {
-                        isHide = true;
-                        $('.productSearchForm').hide();
+
+        if (productCount.length > 0 && productCountVal === '') {
+
+
+            let csrf = $('meta[name="csrf-token"]').attr('content');
+            let productCode = $('input[name=productCode]').val();
+
+            $.ajax({
+                url: check_quantity,
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrf
+                },
+                data: {
+                    productCode: productCode
+                },
+                success: function (data) {
+
+                    console.log('Response' + JSON.stringify(data));
+
+                    let qty = 1;
+
+                    if (data.success) {
+                        qty = data.quantity;
+
                     }
-                } else {
-                    isHide = false;
-                        toastr.error(response.message);
+
+                    // Hide page loading
+                    KTApp.hidePageLoading();
+                    loadingEl.remove();
+
+                    Swal.fire({
+                        title: 'Ürün Adedi',
+                        input: 'number',
+                        inputValue: qty,
+                        inputAttributes: {},
+                        showCancelButton: true,
+                        confirmButtonText: 'Tamam',
+                        cancelButtonText: 'İptal',
+                        showLoaderOnConfirm: true,
+                        preConfirm: (value) => {
+                            //check if value is step by qty
+                            if (value % qty !== 0) {
+                                Swal.showValidationMessage(
+                                    `Adet sayısı, kutu içeriği olan ${qty} ve katları olmalıdır.`
+                                );
+                            }
+
+                            //value should be minimun value
+                            if (value < qty) {
+                                Swal.showValidationMessage(
+                                    `Adet sayısı ${qty} den küçük olamaz.`
+                                );
+                            }
+
+                            return value;
+                        }
+
+                    }).then((result) => {
+                        const loadingEl = document.createElement("div");
+                        document.body.prepend(loadingEl);
+                        loadingEl.classList.add("page-loader");
+                        loadingEl.classList.add("flex-column");
+                        loadingEl.innerHTML = `
+                <span class="spinner-border text-primary" role="status"></span>
+                <span class="text-muted fs-6 fw-semibold mt-5">Sonuçlar aranıyor...</span>
+            `;
+                        KTApp.showPageLoading();
+
+                        if (result.isConfirmed) {
+
+
+                            productCount.val(result.value);
+
+                            let url = $('.productSearchForm').attr('action');
+
+                            let data = $('.productSearchForm').serialize();
+
+                            KTApp.showPageLoading();
+
+                            $.ajax({
+                                url: url,
+                                type: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                data: data,
+                                success: function (response) {
+                                    if (response.success) {
+                                        console.log(response);
+                                        $('.filteredProductsTableBody').html(response.html);
+
+                                        if (response.hide_search) {
+                                            isHide = true;
+                                            $('.productSearchForm').hide();
+                                        }
+                                    } else {
+                                        isHide = false;
+                                        toastr.error(response.message);
+                                    }
+                                },
+                                complete: function () {
+                                    // Hide page loading
+                                    KTApp.hidePageLoading();
+                                    loadingEl.remove();
+                                    $('input[name=productCode]').val('');
+                                    $('input[name=productName]').val('');
+                                    $('input[name=productCount]').val('');
+
+                                }
+                            });
+                        }
+
+
+                    });
                 }
-            },
-            complete: function () {
-                // Hide page loading
-                KTApp.hidePageLoading();
-                loadingEl.remove();
-                $('input[name=productCode]').val('');
-                $('input[name=productName]').val('');
-            }
-        });
+            });
+
+        } else {
+
+                   const loadingEl = document.createElement("div");
+                        document.body.prepend(loadingEl);
+                        loadingEl.classList.add("page-loader");
+                        loadingEl.classList.add("flex-column");
+                        loadingEl.innerHTML = `
+                <span class="spinner-border text-primary" role="status"></span>
+                <span class="text-muted fs-6 fw-semibold mt-5">Sonuçlar aranıyor...</span>
+            `;
+                        KTApp.showPageLoading();
+
+            let url = $('.productSearchForm').attr('action');
+
+            let data = $('.productSearchForm').serialize();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    if (response.success) {
+                        console.log(response);
+                        $('.filteredProductsTableBody').html(response.html);
+
+                        if (response.hide_search) {
+                            isHide = true;
+                            $('.productSearchForm').hide();
+                        }
+                    } else {
+                        isHide = false;
+                        toastr.error(response.message);
+                    }
+                },
+                complete: function () {
+                    // Hide page loading
+                    KTApp.hidePageLoading();
+                    loadingEl.remove();
+                    $('input[name=productCode]').val('');
+                    $('input[name=productName]').val('');
+                }
+            });
+        }
+
+
     });
 
     //on click btnRemove
     $(document).on('click', '.btnRemove', function () {
-       //get data-id
+        //get data-id
         let id = $(this).data('id');
         //remove row
         $('#' + id).remove();
         console.log(isHide);
-        if(isHide) {
+        if (isHide) {
             $('.productSearchForm').show();
         }
     });
-
 
 
     $('.application_form').submit(function (e) {
@@ -471,6 +611,31 @@ $(document).ready(function () {
 
         $('.applicationSummary').text('Toplam ' + products.length + ' ürün eklendi.');
 
+    });
+
+    const checkboxes = $('input[name="application[complain][]"]');
+    const requiredInputs = [
+        'textarea[name="application[fault]"]',
+        'input[name="application[engine_power]"]',
+        'input[name="application[engine_code]"]'
+    ];
+
+    checkboxes.on('change', function() {
+        alert('test');
+        const selectedValues = checkboxes.filter(':checked').map(function() {
+            return parseInt(this.value);
+        }).get();
+
+        const isRequired = selectedValues.includes(9) || selectedValues.includes(10);
+
+        requiredInputs.forEach(function(selector) {
+            const input = $(selector);
+            if (isRequired) {
+                input.attr('required', 'required');
+            } else {
+                input.removeAttr('required');
+            }
+        });
     });
 
 });

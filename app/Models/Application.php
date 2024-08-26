@@ -51,7 +51,7 @@ class Application extends Model
             'customer_name' => 'Müşteri Adı',
             'customer_phone' => 'Müşteri Telefon Numarası',
             'customer_complain' => 'Müşteri Şikayeti',
-            'Fault' => 'Sorunla, Arızayla Veya Ürünle İlgili Detaylı Görüşleriniz',
+            'fault' => 'Sorunla, Arızayla Veya Ürünle İlgili Detaylı Görüşleriniz',
             'invoice' => 'Servisin Müşteriye Kestiği İlk Fatura / İş Emri',
             'car_permit' => 'Araç Ruhsatı',
             'expense' => 'Masraf Proforma Faturası',
@@ -61,6 +61,76 @@ class Application extends Model
             'fault' => 'Parçaya Dair Arıza / Hata Görseli',
             'cost_request' => 'İlave Masraf'
     ];
+
+    const CAT_INPUTS = [
+    2 => [
+        "files" => [
+            'invoice',
+            'car_permit',
+            'expense',
+            'workmanship',
+            'video',
+            'gallery',
+        ],
+        "application" => [
+            'consent',
+            'car_brand',
+            'car_model',
+            'car_year',
+            'car_number',
+            'car_repair_date',
+            'car_repair_milage',
+            'car_found_date',
+            'car_found_milage',
+            'engine_power',
+            'engine_code',
+            'branch_name',
+            'branch_number',
+            'service_name',
+            'service_number',
+            'customer_name',
+            'customer_phone',
+            'customer_complain',
+            'fault',
+            'cost_request',
+        ],
+    ],
+    1 => [
+        "files" => [
+            'fault',
+        ],
+        "application" => [
+            'consent',
+            'car_brand',
+            'car_model',
+            'car_year',
+            'car_number',
+            'car_repair_date',
+            'car_repair_milage',
+            'car_found_date',
+            'car_found_milage',
+            'engine_power',
+            'engine_code',
+            'branch_name',
+            'branch_number',
+            'service_name',
+            'service_number',
+            'customer_name',
+            'customer_phone',
+            'customer_complain',
+            'fault',
+        ],
+    ],
+    3 => [
+        "files" => [
+            'fault',
+        ],
+        "application" => [
+            'customer_complain',
+            'fault',
+        ],
+    ],
+];
 
     const LABELS = [
             "fault" => "Sorunla ilgili görüş",

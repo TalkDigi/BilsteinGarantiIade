@@ -146,7 +146,7 @@
         @if ($Type->has_additional_payment)
             <div class="flex-row-fluid mb-5">
                 <div class="fv-row flex-row-fluid cost_request position-relative">
-                    <label class="form-label">Talep Edilen Masraf Tutarı</label>
+                    <label class="form-label">Talep Edilen Masraf Tutarı (KDV Hariç)</label>
                     <input class="form-control" name="application[cost_request]" type="text" required
                         @if (isset($Application->application['cost_request'])) value="{{ $Application->application['cost_request'] }}" @endif
                         pattern="\d+(,\d{1,2})?"

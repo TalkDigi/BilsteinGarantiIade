@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Models\Complaint;
 use App\Models\Invoice;
+use App\Models\Quantity;
 use App\Models\Status;
 use App\Models\Type;
 use Illuminate\Http\Request;
@@ -22,7 +23,6 @@ class ApplicationController extends Controller
 
     public function list($type = null, $tip = null)
     {
-        debug($type, $tip);
 
         $Types = Type::all();
 
@@ -48,9 +48,11 @@ class ApplicationController extends Controller
         }
 
         if ($tip !== null) {
+
             if ($tip !== 'tumu') {
-                $key = Application::findKeyByStatus($tip);
-                $query->where('status', $key);
+                $Status = Status::where('slug', $tip)->first();
+
+                $query->where('status', $Status->id);
             }
         }
 
@@ -86,11 +88,23 @@ class ApplicationController extends Controller
             return redirect()->route('dashboard');
         }
 
+        Log::info('Geldi'.print_r($request->all(), true));
+
         $application_quantity = null;
 
         if ($Type->quantity_limitor) {
 
-            $application_quantity = $Type->quantity_limitor;
+
+            //check quantitiy which imported
+
+            $Quantity = Quantity::where('ItemNo', $request->productCode)->first();
+
+            if($Quantity) {
+                $application_quantity = $Quantity->unit;
+            } else {
+                $application_quantity = $Type->quantity_limitor;
+            }
+
             $result['hide_search'] = true;
 
         } else {
@@ -170,6 +184,7 @@ class ApplicationController extends Controller
         $Labels = Application::LABELS;
 
         $FileMatches = Application::INPUT_MATCHES;
+        $CatInputs = Application::CAT_INPUTS[$Application->type];
 
         $brands = [];
 
@@ -179,7 +194,7 @@ class ApplicationController extends Controller
         }
 
 
-        return view('dashboard.pages.application.show', compact('Application', 'Logs', 'Status', 'Message', 'Files', 'Labels', 'FileMatches','brands'));
+        return view('dashboard.pages.application.show', compact('Application', 'Logs', 'Status', 'Message', 'Files', 'Labels', 'FileMatches','brands','CatInputs'));
 
     }
 
@@ -732,6 +747,30 @@ class ApplicationController extends Controller
         $query = $query->where('claim_number', $request->search)->orderBy('id', 'desc')->get();
         $Applications = $query;
         return view('dashboard.pages.application.index', compact('Applications', 'statusCounts', 'tip', 'basvuru_turu', 'Types', 'IntTypes'));
+    }
+
+    public function quantity_check(Request $request) {
+
+        Log::info('Quantity check request', $request->all());
+
+        if($request->productCode == 500) {
+            abort(404);
+        }
+
+
+        $Quantity = Quantity::where('ItemNo', $request->productCode)->first();
+
+        if($Quantity) {
+            return response()->json([
+                'success' => true,
+                'quantity' => $Quantity->unit
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'quantity' => 0
+            ]);
+        }
     }
 
 }

@@ -34,58 +34,9 @@
 											@include('dashboard.pages.application.includes.default-form', ['Type'=> $Type, 'Complaints' => $Type->complaints])
 
 											<div class="flex-column" data-kt-stepper-element="content">
-												<div class="fv-row invoice">
-													<label class=" form-label"><b>Servisin müşteriye kestiği ilk fatura/iş emri (Opsiyonel)</b></label>
-													<div class="dropzone" id="dropZone1">
-														<div class="dz-message needsclick">
-															<i class="ki-duotone ki-file-up fs-3x text-primary"><span class="path1"></span><span class="path2"></span></i>
-
-															<div class="ms-4 d-flex justify-content-center align-items-center">
-																<h3 class="fs-5 fw-bold text-gray-900 mb-1">Dosyaları sürükleyin veya tıklayarak seçim yapın.</h3>
-															</div>
-														</div>
-													</div>
-                                                    <input type="hidden" name="docs[invoice]" id="dropZone1Input" value="@if(isset($Application->files['invoice']) && !empty($Application->files['invoice'])){{$Application->files['invoice']}}@endif">
-												</div>
-
-                                                @php
-                                                $invoices = null;
-                                                $faults = null;
-                                                    if(isset($Application) && !empty($Application->files)){
-
-                                                        if(isset($Application->files['invoice']) && !empty($Application->files['invoice'])) {
-                                                            $invoices = explode(',',$Application->files['invoice']);
-                                                        }
-
-                                                        if(isset($Application->files['fault']) && !empty($Application->files['fault'])) {
-                                                            $faults = explode(',',$Application->files['fault']);
-                                                        }
-
-                                                    }
-                                                @endphp
-
-                                                @if(!empty($invoices))
-                                                    <div class="fv-row mt-5">
-                                                        <label class=" form-label"><b>Yüklü Dosyalar</b></label>
-                                                        <div class="d-flex " id="dropZone1InputAdditionalFiles">
-                                                            @forelse($invoices as $invoice)
-
-                                                                    <div class="d-flex inner-file">
-                                                                        <a  href="{{ Storage::url('application-files/'.$invoice) }}" target="_blank" data-file="{{$invoice}}" data-bind="dropZone1Input">
-                                                                            {{ $invoice }}
-                                                                        </a>
-                                                                        <span class="badge badge-danger delete-file d-inline-block ml-3" style="margin-left:5px">X</span>
-                                                                    </div>
-
-                                                                @empty
-                                                            @endforelse
-                                                        </div>
-                                                    </div>
-                                                @endif
-
 
                                                 <div class="fv-row mt-5 fault">
-													<label class=" form-label"><b>Parçaya Dair Arıza / Hata Görseli (Opsiyonel)</b></label>
+													<label class=" form-label"><b>Parçaya / Kutuya Dair Hata Görseli</b></label>
 													<div class="dropzone" id="dropZone2">
 														<div class="dz-message needsclick">
 															<i class="ki-duotone ki-file-up fs-3x text-primary"><span class="path1"></span><span class="path2"></span></i>
@@ -157,6 +108,12 @@
         @if(isset($allinputs))
             let allInputs = @json($allinputs);
         @endif
+
+        //if is there any input with name productCount
+        //when .productSearchForm form is submit preventDefault.
+        //send an ajax requext and open a swal, with number input
+        //when user submit swal, set the input value to swal input value
+        //submit the productSearchForm form
     </script>
 
 

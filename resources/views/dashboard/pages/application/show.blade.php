@@ -22,14 +22,15 @@
                                         <a href="javascript:void(0)"
                                            class="text-gray-800 text-hover-primary fs-2 fw-bold me-3">{{$Application->claim_number}}</a>
                                         {!!$Status->html!!}
-                                        
+
                                     </div>
                                     <!--end::Status-->
                                     <!--begin::Description-->
                                     <div
                                         class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-500">{{$Application->getType()->title }}</div>
-                                        <div
-                                        class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-500">{{$Application->getUser->customer->No}} - {{$Application->getUser->customer->SearchName}}</div>
+                                    <div
+                                        class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-500">{{$Application->getUser->customer->No}}
+                                        - {{$Application->getUser->customer->SearchName}}</div>
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Details-->
@@ -37,37 +38,40 @@
                                 <div class="d-flex mb-4 actionButtons">
                                     @if(auth()->user()->hasRole('Yönetici'))
 
-                                            <a href="{{route('dashboard.application.update_status',[2,$Application->claim_number])}}"
-                                               class="btn btn-sm btn-warning me-3">Ön Onay Bekleniyor</a>
+                                        <a href="{{route('dashboard.application.update_status',[2,$Application->claim_number])}}"
+                                           class="btn btn-sm btn-warning me-3">Ön Onay Bekleniyor</a>
 
-                                               <a href="{{route('dashboard.application.update_status',[3,$Application->claim_number])}}"
-                                                class="btn btn-sm btn-danger me-3">Ön Onay & Kargo Bekleniyor</a>
-                                               
+                                        <a href="#" class="btn btn-sm btn-info me-3 changeStatusButton"
+                                           data-bs-toggle="modal" data-bs-target="#change_status"
+                                           data-status-id="4">Düzenleme İste</a>
 
-                                            <a href="#" class="btn btn-sm btn-success me-3 changeStatusButton"
-                                               data-bs-toggle="modal" data-bs-target="#change_status"
-                                               data-status-id="5">Onayla</a>
+                                        <a href="{{route('dashboard.application.update_status',[3,$Application->claim_number])}}"
+                                           class="btn btn-sm btn-danger me-3">Kargo Bekleniyor</a>
 
-                                            <a href="#" class="btn btn-sm btn-info me-3 changeStatusButton"
-                                               data-bs-toggle="modal" data-bs-target="#change_status"
-                                               data-status-id="4">Düzenleme İste</a>
 
-                                            <a href="#" class="btn btn-sm btn-danger me-3 changeStatusButton"
-                                               data-bs-toggle="modal" data-bs-target="#change_status"
-                                               data-status-id="6">Reddet</a>
+                                        <a href="#" class="btn btn-sm btn-success me-3 changeStatusButton"
+                                           data-bs-toggle="modal" data-bs-target="#change_status"
+                                           data-status-id="5">Onayla</a>
 
-                                        @endif
 
-                                        <a id="downloadPdfButton"  href="javascript:void(0)" class="btn btn-sm btn-dark me-3" data-status-id="5">
-                                            <i class="ki-duotone ki-printer">
- <span class="path1"></span>
- <span class="path2"></span>
- <span class="path3"></span>
- <span class="path4"></span>
- <span class="path5"></span>
-</i>
-                                            PDF Çıktısı Al
-                                        </a>
+
+                                        <a href="#" class="btn btn-sm btn-danger me-3 changeStatusButton"
+                                           data-bs-toggle="modal" data-bs-target="#change_status"
+                                           data-status-id="6">Reddet</a>
+
+                                    @endif
+
+                                    <a id="downloadPdfButton" href="javascript:void(0)" class="btn btn-sm btn-dark me-3"
+                                       data-status-id="5">
+                                        <i class="ki-duotone ki-printer">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                            <span class="path4"></span>
+                                            <span class="path5"></span>
+                                        </i>
+                                        PDF Çıktısı Al
+                                    </a>
 
 
                                 </div>
@@ -190,9 +194,10 @@
                     @if($Application->editable && is_null($Application->viewed_by))
                         <div class="alert alert-info d-flex align-items-center p-5">
                             <div class="d-flex flex-column">
-                                <p class="text-dark">Başvurunuz henüz bir yönetici tarafından incelenmedi. Başvurunuz incelenene dek düzenleme yapabilirsiniz.</p>
-                                    <a href="{{route('dashboard.application.edit', [$Application->claim_number])}}">Başvuruyu
-                                        Düzenle</a>
+                                <p class="text-dark">Başvurunuz henüz bir yönetici tarafından incelenmedi. Başvurunuz
+                                    incelenene dek düzenleme yapabilirsiniz.</p>
+                                <a href="{{route('dashboard.application.edit', [$Application->claim_number])}}">Başvuruyu
+                                    Düzenle</a>
 
                             </div>
                         </div>
@@ -237,7 +242,8 @@
                                 @if($Status['showShipment'])
                                     <div class="d-flex mt-5 d-block flex-column">
                                         <h5>İade İçin Gönderim Adresi</h5>
-                                        <p class="text-black">Başvurunuz için ön onay verilmiştir. Başvuruya konu olan ürünleri aşağıdaki adrese kargolayabilirsiniz.</p>
+                                        <p class="text-black">Başvurunuz için ön onay verilmiştir. Başvuruya konu olan
+                                            ürünleri aşağıdaki adrese kargolayabilirsiniz.</p>
                                         <p class="text-black">{{$Settings['shipment_address']}}</p>
                                     </div>
                                 @endif
@@ -247,10 +253,19 @@
                                         <p>Başvurunuza dair <b>Hasar Yansıtma Faturası</b> oluşturabilirsiniz. Örnek
                                             fatura detaylarını görmek için <b>Fatura Oluştur</b> butonuna tıklayın.</p>
 
-                                        <a class="applicationCreateInvoice btn btn-warning me-2 mb-2" style="max-width: 220px;" data-claim-number = "{{$Application->claim_number}}">
+                                        <div class="d-flex flex-row">
+                                            <a class="applicationCreateInvoice btn btn-warning me-2 mb-2"
+                                           style="max-width: 220px;" data-claim-number="{{$Application->claim_number}}" data-target="item">
 
-                                            Örnek Fatura Oluştur
+                                            Ürün İade Örnek Fatura Oluştur
                                         </a>
+
+
+                                        <a class="applicationCreateInvoice btn btn-primary me-2 mb-2"
+                                           style="max-width: 220px;" data-claim-number="{{$Application->claim_number}}" data-target="cost">
+                                            Ek Masraf Örnek Fatura Oluştur
+                                        </a>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
@@ -327,15 +342,15 @@
                                             <td class="text-end">{{$brands[$product['code']]}}</td>
                                             @if($Application->type == 2)
                                                 <td class="text-end">
-                                                {{$product['invoice']}}
-                                            </td>
+                                                    {{$product['invoice']}}
+                                                </td>
                                             @endif
                                             {{--<td class="text-end">{{$product['product']->BrandName}}</td>--}}
                                             <td class="text-end">{{$product['qty']}}</td>
                                             @if($Application->type == 2)
                                                 <td class="text-end">
                                                     {{ number_format($product['price'], 2, ',', '.') }}₺
-                                            </td>
+                                                </td>
                                             @endif
                                         </tr>
 
@@ -424,16 +439,16 @@
                                         @endforeach</p>
                                 @endif
 
-                                 @if(isset($Application->application['consent']) && !empty($Application->application['consent']))
+                                @if(isset($Application->application['consent']) && !empty($Application->application['consent']))
                                     @if(isset($Application->application['consent']['confirm']))
                                         <p>Parçanın incelenmesi için gerekli olan tüm testleri onaylıyorum.</p>
-                                        @endif
-                                     @if(isset($Application->application['consent']['destroy']))
+                                    @endif
+                                    @if(isset($Application->application['consent']['destroy']))
                                         <p>Ürünün bertaraf şartlarına göre imhasını istiyorum.</p>
-                                        @endif
-                                     @if(isset($Application->application['consent']['return']))
+                                    @endif
+                                    @if(isset($Application->application['consent']['return']))
                                         <p>Tüm ek masraf ve riskleri kabul ederek ürünü geri istiyorum.</p>
-                                        @endif
+                                    @endif
                                 @endif
 
 
@@ -484,7 +499,7 @@
         </div>
         <!--end::Post-->
     </div>
-    @include('dashboard.modals.change-status',['Application' => $Application,'FileMatches' => $FileMatches,'Status' => $Status])
+    @include('dashboard.modals.change-status',['Application' => $Application,'FileMatches' => $FileMatches,'Status' => $Status,'CatInputs' => $CatInputs])
     <div class="modal fade" id="invoiceModal" tabindex="-1" aria-hidden="true">
         <!--begin::Modal dialog-->
         <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -524,67 +539,67 @@
 
 @section('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.plugin.standard_fonts_metrics.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.plugin.split_text_to_size.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.plugin.from_html.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.plugin.standard_fonts_metrics.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.plugin.split_text_to_size.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.plugin.from_html.js"></script>
     <script>
-document.getElementById('downloadPdfButton').addEventListener('click', function () {
-    var element = document.getElementById('kt_content');
-    var actionButtons = document.querySelector('.actionButtons');
-    var actionLogs = document.querySelector('.actionLogs');
-    var alertElements = document.querySelectorAll('.alert');
-    var applicationContent = document.querySelector('.applicationContent');
-    var applicationFiles = document.querySelector('.applicationFiles');
+        document.getElementById('downloadPdfButton').addEventListener('click', function () {
+            var element = document.getElementById('kt_content');
+            var actionButtons = document.querySelector('.actionButtons');
+            var actionLogs = document.querySelector('.actionLogs');
+            var alertElements = document.querySelectorAll('.alert');
+            var applicationContent = document.querySelector('.applicationContent');
+            var applicationFiles = document.querySelector('.applicationFiles');
 
-    // Change class and hide elements
-    if (applicationContent) applicationContent.classList.replace('col-lg-8', 'col-lg-12');
-    if (actionButtons) actionButtons.style.display = 'none';
-    if (actionLogs) actionLogs.style.display = 'none';
-    if(applicationFiles) applicationFiles.style.display = 'none';
-    alertElements.forEach(function(alertElement) {
-        alertElement.classList.remove('d-flex');
-        alertElement.style.display = 'none';
-    });
+            // Change class and hide elements
+            if (applicationContent) applicationContent.classList.replace('col-lg-8', 'col-lg-12');
+            if (actionButtons) actionButtons.style.display = 'none';
+            if (actionLogs) actionLogs.style.display = 'none';
+            if (applicationFiles) applicationFiles.style.display = 'none';
+            alertElements.forEach(function (alertElement) {
+                alertElement.classList.remove('d-flex');
+                alertElement.style.display = 'none';
+            });
 
-    html2canvas(element, {
-        scale: 2 // Increase the scale to improve quality
-    }).then(function (canvas) {
-        var imgData = canvas.toDataURL('image/png');
-        var doc = new jsPDF('p', 'mm', 'a4');
-        var imgWidth = 210; // A4 width in mm
-        var pageHeight = 297; // A4 height in mm
-        var imgHeight = canvas.height * imgWidth / canvas.width;
-        var heightLeft = imgHeight;
-        var position = 0;
+            html2canvas(element, {
+                scale: 2 // Increase the scale to improve quality
+            }).then(function (canvas) {
+                var imgData = canvas.toDataURL('image/png');
+                var doc = new jsPDF('p', 'mm', 'a4');
+                var imgWidth = 210; // A4 width in mm
+                var pageHeight = 297; // A4 height in mm
+                var imgHeight = canvas.height * imgWidth / canvas.width;
+                var heightLeft = imgHeight;
+                var position = 0;
 
-        // Set font to handle special characters
-        doc.setFont('Helvetica', 'normal');
+                // Set font to handle special characters
+                doc.setFont('Helvetica', 'normal');
 
-        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
 
-        while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            doc.addPage();
-            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-        }
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
 
-        doc.save('{{$Application->claim_number}}.pdf');
+                doc.save('{{$Application->claim_number}}.pdf');
 
-        // Restore class and show elements
-        if (applicationContent) applicationContent.classList.replace('col-lg-12', 'col-lg-8');
-        if (actionButtons) actionButtons.style.display = '';
-        if (actionLogs) actionLogs.style.display = '';
-        if(applicationFiles) applicationFiles.style.display = '';
-        alertElements.forEach(function(alertElement) {
-            alertElement.classList.add('d-flex');
-            alertElement.style.display = '';
+                // Restore class and show elements
+                if (applicationContent) applicationContent.classList.replace('col-lg-12', 'col-lg-8');
+                if (actionButtons) actionButtons.style.display = '';
+                if (actionLogs) actionLogs.style.display = '';
+                if (applicationFiles) applicationFiles.style.display = '';
+                alertElements.forEach(function (alertElement) {
+                    alertElement.classList.add('d-flex');
+                    alertElement.style.display = '';
+                });
+            });
         });
-    });
-});
     </script>
 @endsection
 

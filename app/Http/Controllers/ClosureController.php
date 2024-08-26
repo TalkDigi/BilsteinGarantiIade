@@ -32,37 +32,67 @@ class ClosureController extends Controller
 
     public function index()
     {
-        if(auth()->user()->hasRole('Yönetici')) {
+        if (auth()->user()->hasRole('Yönetici')) {
+
             $ListClosures = Closure::all();
 
             $byYear = [];
+
+            $invoices = [];
 
             foreach ($ListClosures as $Closure) {
 
                 $byYear[$Closure->year][] = $Closure;
 
+                foreach ($Closure->data as $product) {
+
+                    foreach ($product as $productItem) {
+
+                        $Invoice = Invoice::where('ExDocNo', $productItem['invoice'])->first();
+                        $invoices[$productItem['invoice']] = $Invoice->PostingDate;
+                    }
+                }
+
             }
 
             $months = $this->months;
 
-            return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months'));
+            return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices'));
         }
+
         return view('dashboard.pages.closure');
     }
 
     public function show($uuid)
     {
+
         $Closure = Closure::where('uuid', $uuid)->first();
         $months = $this->months;
-        return view('dashboard.pages.closure-show', compact('Closure', 'months'));
+
+        $invoices = [];
+
+        foreach ($Closure->data as $claim => $closure) {
+
+            foreach ($closure as $product) {
+                $Invoice = Invoice::where('ExDocNo', $product['invoice'])->first();
+                $invoices[$product['invoice']] = $Invoice->PostingDate;
+            }
+
+        }
+        return view('dashboard.pages.closure-show', compact('Closure', 'months', 'invoices'));
     }
 
     public function filter(Request $request)
     {
 
+
         //if user has role Yönetici
         if (auth()->user()->hasRole('Yönetici')) {
-            $Closures = Closure::where('CustNo', $request->CustNo);
+            $Closures = Closure::query();
+
+            if ($request->CustNo) {
+                $Closures = $Closures->where('CustNo', $request->CustNo);
+            }
 
             if ($request->month) {
                 $Closures = $Closures->where('month', $request->month);
@@ -74,25 +104,36 @@ class ClosureController extends Controller
 
             $ListClosures = $Closures->get();
 
+            $ListClosures = $Closures->get();
+
             $byYear = [];
-            
+
             $customers = [];
 
-            foreach ($ListClosures as $Closure) {
+            $invoices = [];
+
+            foreach ($ListClosures as $claim => $Closure) {
 
                 $byYear[$Closure->year][] = $Closure;
+
+                foreach ($Closure->data as $product) {
+                    foreach ($product as $productItem) {
+                        $Invoice = Invoice::where('ExDocNo', $productItem['invoice'])->first();
+                        $invoices[$productItem['invoice']] = $Invoice->PostingDate;
+                    }
+                }
 
             }
 
             $months = $this->months;
 
-            return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months'));
+            return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices'));
 
         }
 
 
-        $month = (int) $request->month;
-        $year = (int) $request->year;
+        $month = (int)$request->month;
+        $year = (int)$request->year;
 
 
         //check if aby closure exists for this month and year
@@ -104,14 +145,40 @@ class ClosureController extends Controller
             return redirect()->route('dashboard.application.closure-show', ['uuid' => $Closure->uuid]);
         }
 
-        $Applications = Application::whereYear('confirmed_at', $year)
-            ->whereMonth('confirmed_at', $month)
+        //get users all closures
+        $Closures = Closure::where('CustNo', auth()->user()->CustNo)->get();
+
+
+        $exist_applications = [];
+
+        foreach ($Closures as $closure) {
+            foreach ($closure->data as $claim => $data) {
+                $exist_applications[] = $claim;
+            }
+        }
+
+
+        $Applications = Application::whereNotIn('claim_number', $exist_applications)
             ->whereIn('type', [1, 3]) // Tip filtresi
             ->where('status', 5)
             ->where('user_id', auth()->id()) // Kullanıcı ID'si filtresi
             ->get();
 
-        return view('dashboard.pages.closure', compact('Applications', 'month', 'year'));
+
+        $invoices = [];
+
+        $applicationsByClaim = [];
+
+        foreach ($Applications as $Application) {
+            $applicationsByClaim[$Application->claim_number] = $Application;
+            foreach ($Application->products as $product) {
+                $Invoice = Invoice::where('ExDocNo', $product['invoice'])->first();
+                $invoices[$product['invoice']] = $Invoice->PostingDate;
+            }
+        }
+
+
+        return view('dashboard.pages.closure', compact('Applications', 'month', 'year', 'invoices', 'applicationsByClaim'));
     }
 
     public function process(Request $request)
@@ -125,9 +192,20 @@ class ClosureController extends Controller
             Session::flash('error', 'Bu ay için kapanış işlemi zaten yapılmış.');
         }
 
+        //get users other closures
+        $Closures = Closure::where('CustNo', auth()->user()->CustNo)->get();
 
-        $Applications = Application::whereYear('confirmed_at', $request->year)
-            ->whereMonth('confirmed_at', $request->month)
+
+        $exist_applications = [];
+
+        foreach ($Closures as $closure) {
+            foreach ($closure->data as $claim => $data) {
+                $exist_applications[] = $claim;
+            }
+        }
+
+
+        $Applications = Application::whereNotIn('claim_number', $exist_applications)
             ->whereIn('type', [1, 3]) // Tip filtresi
             ->where('status', 5)
             ->where('user_id', auth()->id()) // Kullanıcı ID'si filtresi
@@ -135,9 +213,13 @@ class ClosureController extends Controller
 
 
         $data = [];
+        $applicationsByClaim = [];
+
 
         foreach ($Applications as $application) {
+            $applicationsByClaim[$application->claim_number] = $application;
             $data[$application->claim_number] = $application->products;
+
         }
 
         $closure = new Closure();
@@ -156,14 +238,6 @@ class ClosureController extends Controller
             Session::flash('error', 'Kapanış işlemi sırasında bir hata oluştu.');
         }
 
-
-
-
-
-
-
-        dd($request->all());
-
     }
 
     public function create_invoice(Request $request)
@@ -177,18 +251,27 @@ class ClosureController extends Controller
 
         $total = 0;
 
-        foreach ($lines as $line) {
-            $total += $line['price'] * $line['qty'];
+        $target = null;
+
+        if ($request->target === 'cost') {
+
+            $target = 'cost';
+            $total += $Application->application['accepted_cost'];
+
+        } else {
+
+            $target = 'item';
+            foreach ($lines as $line) {
+                $total += $line['price'] * $line['qty'];
+            }
+
         }
 
-        if (isset($Application->application['accepted_cost'])) {
-            $total += $Application->application['accepted_cost'];
-        }
         $tax = $total * 0.20;
         $total_with_tax = $total + $tax;
         $total_with_tax = number_format($total_with_tax, 2, '.', '');
 
-        $html = view('dashboard.pages.invoice', compact('lines', 'total', 'tax', 'total_with_tax', 'Application'))->render();
+        $html = view('dashboard.pages.invoice', compact('lines', 'total', 'tax', 'total_with_tax', 'Application', 'target'))->render();
 
         return response()->json([
             'success' => true,
@@ -390,7 +473,6 @@ class ClosureController extends Controller
             ->first();
 
 
-
         if (!$Blockage) {
             return response()->json([
                 'success' => false,
@@ -425,7 +507,6 @@ class ClosureController extends Controller
         $Application->products = $current_products;
 
 
-
         if (!$Application->save()) {
             return response()->json([
                 'success' => false,
@@ -440,9 +521,6 @@ class ClosureController extends Controller
                 'claim' => $Application->claim_number
             ]);
         }
-
-
-
 
 
         die();

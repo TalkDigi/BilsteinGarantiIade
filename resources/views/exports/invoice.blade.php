@@ -85,7 +85,7 @@
             <td>{{ number_format($total, 2, ',', '.') }}₺</td>
         </tr>
         <tr>
-            <td colspan="6">Vergi 20%:</td>
+            <td colspan="6">KDV 20%:</td>
             <td>{{ number_format($tax, 2, ',', '.') }}₺</td>
         </tr>
         <tr>

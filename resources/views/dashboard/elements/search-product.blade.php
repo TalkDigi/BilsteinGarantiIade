@@ -62,12 +62,7 @@
         <td> {{ $product['line']['ItemDesc'] }}</td>
         <td> {{ $product['line']['ItemNo'] }}</td>
         <td> {{ $product['usedQty'] }}</td>
-        <td>{{$product['invoice']}}</td>
-        <td class="text-center" >
-            {{
-                number_format($product['line']['Amt'] / $product['line']['Qty'], 2, '.', '')
-            }}₺
-        </td>
+
         <td><button class="btn btn-danger btnRemove" data-id="product{{$loop->index}}">Kaldır</button></td>
 </tr>
 @empty

@@ -1,3 +1,6 @@
+@php
+use Carbon\Carbon;
+@endphp
 @extends('layouts.dashboard')
 @section('content')
     <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
@@ -70,7 +73,7 @@
 
                                     <div class="col-lg-4 p-2">
                                         <select class="form-select form-select-solid form-select-lg" data-control="select2"
-                                            data-hide-search="true" name="CustNo" required>
+                                            data-hide-search="true" name="CustNo">
                                             <option value="">Müşteri Seçin</option>
 
                                             @forelse($Customers as $customer)
@@ -142,7 +145,15 @@
                                 <!--begin::Card body-->
                                 <div class="card-body pt-0">
                                     @forelse($Applications as $application)
-                                        <h4 class="mb-4 mt-4">{{ $application->claim_number }}</h4>
+                                        @php
+                                     $date = $applicationsByClaim[$application->claim_number]->confirmed_at;
+                                    @endphp
+                                        <h4 class="mb-4 mt-4">{{ $application->claim_number }} - {{Carbon::createFromFormat('Y-m-d H:i:s', $date)->locale('tr_TR')->translatedFormat('d F Y')}}</h4>
+
+
+
+
+
                                         <div class="table-responsive">
                                             <!--begin::Table-->
                                             <table
@@ -159,6 +170,9 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody class="fw-semibold text-gray-600 {{ $application->claim_number }}">
+                                                @php
+                                                setlocale(LC_TIME, 'tr_TR.UTF-8', 'turkish');
+@endphp
 
                                                     @forelse($application->products as $product)
                                                         <tr data-name="{{ $product['desc'] }}"
@@ -166,11 +180,17 @@
                                                             data-quantity="{{ $product['qty'] }}"
                                                             data-price="{{ number_format($product['price'] * $product['qty'], 2, '.', '') }}">
 
-                                                            <td class="text-start">{{ $product['invoice'] }}</td>
                                                             <td class="text-start">
-                                                                {{ $product['desc'] }}
+                                                                {{ $product['invoice'] }}
+                                                                <span class="text-muted d-block">
+                                                                    {{Carbon::createFromFormat('Y-m-d', $invoices[$product['invoice']])->locale('tr_TR')->translatedFormat('d F Y')}}
+                                                                </span>
+                                                            </td>
+                                                            <td class="text-start">
+
+                                                                {{ $product['code'] }}
                                                                 <br>
-                                                                <span class="text-muted">{{ $product['code'] }}</span>
+                                                                <span class="text-muted">{{ $product['desc'] }}</span>
                                                             </td>
                                                             <td class="text-start">{{ $product['qty'] }}</td>
                                                             <td class="text-start">
@@ -249,7 +269,7 @@
                                                 <th class="min-w-175px">Ay</th>
                                                 <th class="min-w-100px text-start">Müşteri</th>
                                                 <th class="min-w-100px text-start">#</th>
-                                                
+
 
                                             </tr>
                                         </thead>
@@ -263,7 +283,7 @@
                                                     <td>
                                                         <a href="{{route('dashboard.application.closure-show',['uuid' => $closure->uuid])}}" class="btn btn-sm btn-success">Detay</a>
                                                     </td>
-                                                    
+
 
                                                 </tr>
 

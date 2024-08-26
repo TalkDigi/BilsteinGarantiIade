@@ -44,7 +44,12 @@
 
                         <!--begin::Nav item-->
                         <li class="nav-item mt-2">
-                            <a class="nav-link text-active-primary ms-0 me-10 py-5 active" href="javascript:void(0)">Dosyalar</a>
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5" href="{{route('dashboard.setting.file')}}">Dosyalar</a>
+                        </li>
+
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-active-primary ms-0 me-10 py-5 active"
+                               href="javascript:void(0);">Adet İçe Aktar</a>
                         </li>
 
                     </ul>

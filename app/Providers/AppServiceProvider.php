@@ -59,6 +59,9 @@ class AppServiceProvider extends ServiceProvider
 
         $NonViewed = Application::whereNull('viewed_by')->get();
 
+
+        $WaitingForEdit = Application::where('status',4)->get();
+
         view()->share('Settings', $Settings);
 
         view()->share('ProviderComplaints', $ProviderComplaints);
@@ -74,6 +77,8 @@ class AppServiceProvider extends ServiceProvider
         view()->share('Customers', $Customers);
 
         view()->share('NonViewed', $NonViewed);
+
+        view()->share('WaitingForEdit', $WaitingForEdit);
 
 
     }

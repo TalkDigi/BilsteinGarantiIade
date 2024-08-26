@@ -76,7 +76,6 @@ class Invoice extends Model
         Log::info('checkInvoice', ['custNo' => $custNo, 'itemNo' => $itemNo, 'basvuruAdedi' => $basvuruAdedi]);
 
         $invoices = Invoice::where('CustNo', $custNo)->whereJsonContains('Line', [['ItemNo' => $itemNo]])->orderBy('PostingDate', 'desc')->get();
-        Log::info('Invoices'.print_r($invoices, true));
 
         if($invoices->isEmpty()) {
 

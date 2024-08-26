@@ -81,8 +81,6 @@
 												</i>
 											</span>
 											<span class="menu-title fw-bold text-gray-700">{{$status['name']}}</span>
-											<span class="badge badge-light-{{$status['color']}}">{{$statusCounts[$key]}}</span>
-
 										</span>
 									</a>
                                 @endforeach
