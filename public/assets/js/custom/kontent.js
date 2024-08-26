@@ -621,7 +621,6 @@ $(document).ready(function () {
     ];
 
     checkboxes.on('change', function() {
-        alert('test');
         const selectedValues = checkboxes.filter(':checked').map(function() {
             return parseInt(this.value);
         }).get();
