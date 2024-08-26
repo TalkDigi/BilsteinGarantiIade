@@ -131,9 +131,18 @@ class ClosureController extends Controller
 
         }
 
+        //if mont and year is not exist, return back
+        if (!$request->month || !$request->year) {
+            Session::flash('error', 'Ay ve yıl seçmelisiniz.');
+            return back();
+        }
+
+
 
         $month = (int)$request->month;
         $year = (int)$request->year;
+
+
 
 
         //check if aby closure exists for this month and year

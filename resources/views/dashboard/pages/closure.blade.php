@@ -90,7 +90,11 @@ use Carbon\Carbon;
                                             setlocale(LC_TIME, 'tr_TR', 'Turkish');
                                         @endphp
                                         <select name="month" id="month"
-                                            class="form-control form-control-solid mb-3 mb-lg-0">
+                                            class="form-control form-control-solid mb-3 mb-lg-0"
+                                        @if (!auth()->user()->hasRole('Yönetici'))
+                                            required
+                                        @endif
+                                        >
                                             <option selected disabled> Ay Seçin</option>
                                             @for ($i = 1; $i <= 12; $i++)
                                                 @if ($i <= date('m'))
@@ -104,7 +108,11 @@ use Carbon\Carbon;
                                     <div class="col-lg-6 p-3">
                                         <label for="month">Yıl:</label>
                                         <select name="year" id="year"
-                                            class="form-control form-control-solid mb-3 mb-lg-0">
+                                            class="form-control form-control-solid mb-3 mb-lg-0"
+                                                @if (!auth()->user()->hasRole('Yönetici'))
+                                            required
+                                        @endif
+                                        >
                                             <option selected disabled> Yıl Seçin</option>
                                             @for ($i = 2021; $i <= date('Y'); $i++)
                                                 <option value="{{ $i }}">{{ $i }}</option>

@@ -3149,6 +3149,10 @@
     toastr.success("{{ Session::get('success') }}", "Başarılı");
     @endif
 
+        @if(Session::has('error'))
+    toastr.error("{{ Session::get('error') }}", "Hata");
+    @endif
+
     @if(count($NonViewed) > 0 && auth()->user()->hasRole('Yönetici'))
     // Check if the Swal alert was shown within the last minute
     const lastShown = localStorage.getItem('swalLastShown');
