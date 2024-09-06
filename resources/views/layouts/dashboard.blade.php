@@ -78,6 +78,12 @@
             font-weight: bold;
         }
 
+        .alert-light {
+            background-color: #F3F6F9;
+border-color: #F3F6F9;
+color: #7E8299;
+        }
+
     </style>
 </head>
 <body id="kt_body" class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled">

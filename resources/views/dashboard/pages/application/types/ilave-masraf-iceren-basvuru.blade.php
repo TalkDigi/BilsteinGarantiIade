@@ -14,6 +14,26 @@
 
                     <div class="card-body pt-0">
 
+                        <div class="alert alert-light">
+                            <h4 class="mb-3">İlave Masraflı Başvuru Prosedürü</h4>
+<ol>
+    <li class="mb-3">Detaylı sorunu anlatır resimler.(De montaj öncesi ve sonrasında detaylıca hasar alan parçaları ve aracı fotoğraflayın.)</li>
+ 
+    <li class="mb-3">Ürünün montaj yapıldığı tarihteki faturası.(Ürünün montaj yapıldığı tarihteki değişen tüm parçaların yer aldığı müşteriye kesilen fatura)</li>
+      
+    <li class="mb-3">Hasarlı parça veya parçalar</li>
+      
+    <li class="mb-3">Yapılacak son onarım ile ilgili masraf talep listesi; Aracın kullanılan ürünümüzden kaynaklı bir sorununun tespit edilmesi halinde onarımı yapan servisin aracın eski haline getirilmesi için istenen parça listesi ve işçiliğin olduğu ön fatura.  </li>
+</ol>
+ 
+<p>Başvurunun <b>onaylanması</b> halinde servise bu masraf talep listesindeki <b>tutar ödenecektir</b>, <b>sonrasında oluşan hiçbir ekstra masraf kabul edilmez.</b></p>
+ 
+<p>Belgeler ve hasarlı parçalar tarafımıza ulaştıktan sonra başvurunuz hazırlanıp hasarlı parçalarla birlikte Genel Merkezimiz Almanya ile paylaşılır. <b>Süreç yaklaşık 20 ile 45 gün sürmektedir.</b></p>
+
+
+                        </div>
+
+
                         @if(isset($Application))
                             @include('dashboard.pages.application.includes.product-search', ['Type' => $Type, 'Application' => $Application])
                         @else
