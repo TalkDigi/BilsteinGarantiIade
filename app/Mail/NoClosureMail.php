@@ -47,6 +47,7 @@ class NoClosureMail extends Mailable
                     ->with([
                         'customerName' => $this->customer->Name,
                         'date' => $date
-                    ]);
+                    ])
+                    ->cc(['umut.yilmaz@talk.com.tr', 'dorukhan.alpaslan@bilsteingroup.com']); // CC ekleme
     }
 }

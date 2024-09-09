@@ -49,9 +49,13 @@ class CheckCustomerClosures extends Command
 
         $customers = array_unique($customers);
 
+        Log::info('Customerlar alındı'.print_r($customers,true));
+
         foreach ($customers as $key => $customer) {
 
             $closures = Closure::where('CustNo', $key)->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->get();
+
+            Log::info('bU KADAR BAŞVURU'.count($closures));
 
             if ($closures->count() == 0) {
                 Log::info('No closure found for customer: ' . $key);

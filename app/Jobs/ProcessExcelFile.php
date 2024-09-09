@@ -18,6 +18,9 @@ class ProcessExcelFile implements ShouldQueue
 
     protected $fileName;
 
+    public $timeout = 1800; // 30 dakika
+
+
     public function __construct($fileName)
     {
         $this->fileName = $fileName;

@@ -19,3 +19,11 @@ yarn-error.log
 /.vscode
 /public/processes
 /public/processes/*
+/public/processes/waiting-jobs
+/public/processes/waiting-jobs/*
+/public/processes/running-jobs
+/public/processes/running-jobs/*
+/public/processes/failed-jobs
+/public/processes/failed-jobs/*
+/public/processes/completed-jobs
+/public/processes/completed-jobs/*

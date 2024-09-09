@@ -6,8 +6,10 @@ use App\Models\Quantity;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class QuantityImport implements ToModel, WithHeadingRow
+class QuantityImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
 {
 
     protected $filePath;
@@ -78,4 +80,10 @@ class QuantityImport implements ToModel, WithHeadingRow
     {
         return 1000; // Process 1000 rows at a time
     }
+
+    public function batchSize(): int
+    {
+        return 1000;
+    }
+
 }
