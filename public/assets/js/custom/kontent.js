@@ -549,15 +549,15 @@ $(document).ready(function () {
         let trs = document.querySelectorAll('.filteredProductsTableBody tr');
         console.log(trs);
         products = [];
-        trs.forEach(function (tr) {
-            products.push({
-                code: tr.getAttribute('data-code'),
-                desc: tr.getAttribute('data-desc'),
-                qty: tr.getAttribute('data-qty'),
-                invoice: tr.getAttribute('data-invoice'),
-                price: tr.getAttribute('data-price')
-            });
-        });
+        document.querySelectorAll('tr.calculate').forEach(function (tr) {
+    products.push({
+        code: tr.getAttribute('data-code'),
+        desc: tr.getAttribute('data-desc'),
+        qty: tr.getAttribute('data-qty'),
+        invoice: tr.getAttribute('data-invoice'),
+        price: tr.getAttribute('data-price')
+    });
+});
 
 
         let data = $(this).serialize();

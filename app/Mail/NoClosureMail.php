@@ -38,7 +38,7 @@ class NoClosureMail extends Mailable
     {
 
         //bugünün tarihinin sadece ay ve yılını al (örn Ağustos 2024)
-        $date = now()->format('F Y');
+        $date = now()->setTimezone('Europe/Istanbul')->format('F Y');
 
         Log::info('Customer'.print_r($this->customer,true));
 

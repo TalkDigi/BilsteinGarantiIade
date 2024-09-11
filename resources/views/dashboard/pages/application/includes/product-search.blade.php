@@ -65,8 +65,9 @@
             <table class="table gs-7 gy-7 gx-7">
                 <thead>
                 <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-                    <th>Ürün Adı</th>
                     <th>Ürün Kodu</th>
+                    <th>Ürün Adı</th>
+                    
                     <th>Adet</th>
 
                     <th>İşlemler</th>
@@ -83,8 +84,9 @@
                                  data-invoice = "{{$product['invoice']}}"
                                 data-price = {{ number_format($product['price'], 2, '.', '')}}
                             >
+                            <td> {{ $product['code'] }}</td>
                                 <td> {{ $product['desc'] }}</td>
-                                <td> {{ $product['code'] }}</td>
+                                
                                 <td> {{ $product['qty'] }}</td>
 
                                 <td><button class="btn btn-danger btnRemove" data-id="product{{$loop->index}}">Kaldır</button></td>

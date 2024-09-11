@@ -52,21 +52,32 @@
 </div>
 --}}
 @forelse($products as $product)
-    <tr id="product{{$loop->index}}"
+    <tr class="calculate" id="product{{$loop->index}}"
         data-desc = "{{ $product['line']['ItemDesc'] }}"
          data-code ="{{ $product['line']['ItemNo'] }}"
          data-qty = "{{ $product['usedQty'] }}"
          data-invoice = "{{$product['invoice']}}"
         data-price = {{ number_format($product['line']['Amt'] / $product['line']['Qty'], 2, '.', '')}}
+        style="display: none;" <!-- Satırları gizle -->
     >
+    <td> {{ $product['line']['ItemNo'] }}</td>
         <td> {{ $product['line']['ItemDesc'] }}</td>
-        <td> {{ $product['line']['ItemNo'] }}</td>
-        <td> {{ $product['usedQty'] }}</td>
 
+        <td> {{ $product['usedQty'] }}</td>
         <td><button class="btn btn-danger btnRemove" data-id="product{{$loop->index}}">Kaldır</button></td>
-</tr>
+    </tr>
 @empty
     <tr>
         <td colspan="5">Başvuru için ilgili ürünü seçin.</td>
     </tr>
 @endforelse
+
+@if(!empty($products))
+    <tr>
+        <td>{{ $products[0]['line']['ItemNo'] ?? '' }}</td> <!-- İlk ürünün ItemNo'su -->
+    <td>{{ $products[0]['line']['ItemDesc'] ?? '' }}</td> <!-- İlk ürünün ItemDesc'i -->
+
+    <td>{{ array_sum(array_column($products, 'usedQty')) }}</td> <!-- Toplam usedQty değeri -->
+
+</tr>
+@endif
