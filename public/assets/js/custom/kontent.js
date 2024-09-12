@@ -529,9 +529,11 @@ $(document).ready(function () {
     $(document).on('click', '.btnRemove', function () {
         //get data-id
         let id = $(this).data('id');
-        //remove row
-        $('#' + id).remove();
-        console.log(isHide);
+        //remove alltr's with data-product = id
+        $('tr[data-code=' + id + ']').remove();
+
+        $(this).closest('tr').remove();
+
         if (isHide) {
             $('.productSearchForm').show();
         }

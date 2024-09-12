@@ -306,7 +306,7 @@
                                 <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 closure-table">
                                     <thead>
                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                        <th class="min-w-100px text-end">Kod</th>
+                                        <th class="min-w-100px ">Kod</th>
                                         <th class="min-w-175px">Ürün</th>
 
                                         <th class="min-w-100px text-end">Marka</th>
@@ -329,7 +329,7 @@
                                             data-no="{{$product['code']}}"
                                             data-quantity="{{$product['qty']}}"
                                             data-price="{{ number_format($product['price'], 2, '.', '')}}">
-                                            <td class="text-end">{{$product['code']}}</td>
+                                            <td >{{$product['code']}}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="ms-5">
