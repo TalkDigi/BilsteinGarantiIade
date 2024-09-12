@@ -80,8 +80,21 @@
 
         .alert-light {
             background-color: #F3F6F9;
-border-color: #F3F6F9;
-color: #7E8299;
+            border-color: #F3F6F9;
+            color: #7E8299;
+        }
+
+        .notify-span {
+            color: white;
+            background: red;
+            font-size: 9px;
+            padding: 3px 6px;
+            border-radius: 25px;
+            text-align: center;
+            padding-right: 8px;
+            position: absolute;
+            top: 0;
+            right: -20px;
         }
 
     </style>
@@ -418,7 +431,8 @@ color: #7E8299;
 
                         <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-1">
                             <li class="breadcrumb-item text-white opacity-75">
-                                <a href="{{route('test.mail.closure')}}"  target="blank" class="text-white text-hover-primary">(Test) Ay
+                                <a href="{{route('test.mail.closure')}}" target="blank"
+                                   class="text-white text-hover-primary">(Test) Ay
                                     Kapama Mail</a>
                             </li>
 
@@ -3155,7 +3169,7 @@ color: #7E8299;
     toastr.success("{{ Session::get('success') }}", "Başarılı");
     @endif
 
-        @if(Session::has('error'))
+    @if(Session::has('error'))
     toastr.error("{{ Session::get('error') }}", "Hata");
     @endif
 

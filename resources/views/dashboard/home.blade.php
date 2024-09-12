@@ -57,12 +57,22 @@
                                             <!--begin::Stats-->
                                             <div class="m-0">
                                                 <!--begin::Number-->
-                                                <span
-                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$Types[0]->application_counts()}}</span>
+                                                <a href="basvurular/{{$Types[0]->id}}/tumu"
+                                                    class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
+                                                    {{$Types[0]->application_counts()}}
+                                                    @if(auth()->user()->hasRole('Yönetici'))
+                                                        <span class="notify-span">
+                                                            {{$Types[0]->non_viewed_counts()}}
+                                                        </span>
+                                                    @endif
+
+
+                                                </a>
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
                                                 <a href="basvurular/{{$Types[0]->id}}/tumu"
-                                                    class="text-gray-500 fw-semibold fs-6">{{$Types[0]->title}}</a>
+                                                    class="text-gray-500 fw-semibold d-block fs-6">{{$Types[0]->title}}</a>
+
                                                 <!--end::Desc-->
                                             </div>
                                             <!--end::Stats-->
@@ -82,12 +92,22 @@
                                             <!--begin::Stats-->
                                             <div class="m-0">
                                                 <!--begin::Number-->
-                                                <span
-                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$Types[1]->application_counts()}}</span>
+                                                <a href="basvurular/{{$Types[1]->id}}/tumu"
+                                                    class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
+                                                    {{$Types[1]->application_counts()}}
+                                                    @if(auth()->user()->hasRole('Yönetici'))
+                                                        <span class="notify-span">
+                                                            {{$Types[1]->non_viewed_counts()}}
+                                                        </span>
+                                                    @endif
+
+
+                                                </a>
+
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
                                                 <a href="basvurular/{{$Types[1]->id}}/tumu"
-                                                    class="text-gray-500 fw-semibold fs-6">{{$Types[1]->title}}</a>
+                                                    class="text-gray-500 fw-semibold d-block fs-6">{{$Types[1]->title}}</a>
                                                 <!--end::Desc-->
                                             </div>
                                             <!--end::Stats-->
@@ -107,12 +127,21 @@
                                             <!--begin::Stats-->
                                             <div class="m-0">
                                                 <!--begin::Number-->
-                                          <span
-                                                    class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{$Types[2]->application_counts()}}</span>
+                                          <a href="basvurular/{{$Types[2]->id}}/tumu"
+                                                    class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
+                                                    {{$Types[2]->application_counts()}}
+                                                    @if(auth()->user()->hasRole('Yönetici'))
+                                                        <span class="notify-span">
+                                                            {{$Types[2]->non_viewed_counts()}}
+                                                        </span>
+                                                    @endif
+
+
+                                                </a>
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
                                                 <a href="basvurular/{{$Types[2]->id}}/tumu"
-                                                    class="text-gray-500 fw-semibold fs-6">{{$Types[2]->title}}</a>
+                                                    class="text-gray-500 fw-semibold d-block fs-6">{{$Types[2]->title}}</a>
                                                 <!--end::Desc-->
                                             </div>
                                             <!--end::Stats-->
@@ -153,7 +182,7 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                             İncelenmemiş {{count($NonViewed)}} başvuru bulunmakta.
                                         </div>
                                     </div>
-                                    
+
 
                                     <a href="{{route('dashboard.application.list')}}" class="btn btn-primary fw-semibold" >+</a>
                                     </div>
