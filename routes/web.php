@@ -19,6 +19,7 @@ use App\Models\Blockage;
 use App\Models\Type;
 
 
+
 Route::get('/assignRole', function () {
     $user = \App\Models\User::find(3);
     $user->assignRole('Kullanıcı');
@@ -112,6 +113,9 @@ Route::middleware('auth')->group(function () {
 
     });
 
+    Route::get('/tum-basvurular', [ApplicationController::class, 'allApplications'])->name('dashboard.application.all');
+    Route::post('/tum-basvurular', [ApplicationController::class, 'allApplicationsFilter'])->name('dashboard.applications.filter');
+
     Route::prefix('/yonetim')->group(function () {
         Route::get('/ayarlar', [SettingController::class, 'index'])->name('dashboard.setting.index');
         Route::get('/sss', [SettingController::class, 'sss'])->name('dashboard.setting.sss');
@@ -145,7 +149,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::post('/fatura-olustur', [ClosureController::class, 'create_invoice'])->name('dashboard.application.create-invoice');
-    Route::get('/fatura-cikti/{claim}', [ClosureController::class, 'export_invoice'])->name('dashboard.application.export-invoice');
+    Route::get('/fatura-cikti/{claim}/{type?}', [ClosureController::class, 'export_invoice'])->name('dashboard.application.export-invoice');
     Route::get('/ay-kapama-fatura-cikti/{uuid}', [ClosureController::class, 'export_invoice_closure'])->name('dashboard.application.export-invoice-closure');
 
     Route::post('/file', [FileController::class, 'store'])->name('file.store');
@@ -157,7 +161,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('user.index');
         Route::post('/olustur', [UserController::class, 'store'])->name('user.store');
         Route::get('/duzenle/{id}', [UserController::class, 'show'])->name('user.show');
-
+        Route::post('/guncelle', [UserController::class, 'update'])->name('user.update');
     });
 
 });

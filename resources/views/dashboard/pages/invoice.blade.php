@@ -66,7 +66,7 @@
 
                                         @endif
 
-                                        @if($target == 'cost' &&isset($Application->application['accepted_cost']))
+                                        @if($target == 'cost' && isset($Application->application['accepted_cost']))
                                             <tr class="fw-bold text-gray-700 fs-5 text-end">
                                                 <td>#</td>
                                                 <td class="d-flex align-items-start flex-column">
@@ -131,7 +131,7 @@
                                         </div>
 
                                         <a class="btn btn-success w-100"
-                                           href="{{route('dashboard.application.export-invoice',['claim' => $Application->claim_number])}}">Excel
+                                           href="{{route('dashboard.application.export-invoice',['claim' => $Application->claim_number,'type' => $target])}}">Excel
                                             Çıktısı Al</a>
 
                                     </div>

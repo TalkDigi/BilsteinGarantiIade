@@ -18,16 +18,16 @@
                             <h4 class="mb-3">İlave Masraflı Başvuru Prosedürü</h4>
 <ol>
     <li class="mb-3">Detaylı sorunu anlatır resimler.(De montaj öncesi ve sonrasında detaylıca hasar alan parçaları ve aracı fotoğraflayın.)</li>
- 
+
     <li class="mb-3">Ürünün montaj yapıldığı tarihteki faturası.(Ürünün montaj yapıldığı tarihteki değişen tüm parçaların yer aldığı müşteriye kesilen fatura)</li>
-      
+
     <li class="mb-3">Hasarlı parça veya parçalar</li>
-      
+
     <li class="mb-3">Yapılacak son onarım ile ilgili masraf talep listesi; Aracın kullanılan ürünümüzden kaynaklı bir sorununun tespit edilmesi halinde onarımı yapan servisin aracın eski haline getirilmesi için istenen parça listesi ve işçiliğin olduğu ön fatura.  </li>
 </ol>
- 
+
 <p>Başvurunun <b>onaylanması</b> halinde servise bu masraf talep listesindeki <b>tutar ödenecektir</b>, <b>sonrasında oluşan hiçbir ekstra masraf kabul edilmez.</b></p>
- 
+
 <p>Belgeler ve hasarlı parçalar tarafımıza ulaştıktan sonra başvurunuz hazırlanıp hasarlı parçalarla birlikte Genel Merkezimiz Almanya ile paylaşılır. <b>Süreç yaklaşık 20 ile 45 gün sürmektedir.</b></p>
 
 
@@ -42,6 +42,7 @@
 
                         <form
                             class="form d-flex flex-column flex-lg-row application_form @if(isset($Application)) update @endif"
+                            autocomplete="off"
                             @if(isset($Application))
                                 action="{{ route('dashboard.application.update',[$Application->claim_number]) }}"
                             @endif
@@ -431,6 +432,21 @@
 
 
         $(document).ready(function () {
+
+    $('input[name="application[car_brand]"], ' +
+      'input[name="application[car_model]"], ' +
+      'input[name="application[car_year]"], ' +
+      'input[name="application[car_number]"], ' +
+      'input[name="application[car_repair_date]"], ' +
+      'input[name="application[car_repair_milage]"], ' +
+      'input[name="application[car_found_date]"], ' +
+      'input[name="application[car_found_milage]"], ' +
+      'input[name="application[engine_power]"], ' +
+      'input[name="application[engine_code]"], ' +
+      'textarea[name="application[fault]"], ' +
+      'input[name="application[cost_request]"]').prop('required', true);
+
+
 
             /*if ($('#application_form').length > 0) {
                 $('#application_form').on('submit', function (e) {

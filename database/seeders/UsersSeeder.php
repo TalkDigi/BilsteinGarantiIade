@@ -18,6 +18,7 @@ class UsersSeeder extends Seeder
             "email"=> "umut.yilmaz@talk.com.tr",
             "password"=> bcrypt("test"),
             "created_at"=> now(),
+            "uuid"=> \Str::uuid(),
         ];
         \DB::table('users')->insert($users);
     }

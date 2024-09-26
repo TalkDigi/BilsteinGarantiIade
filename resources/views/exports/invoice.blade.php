@@ -32,7 +32,8 @@
         </tr>
     </thead>
     <tbody>
-        @foreach($lines as $line)
+        @if($type != 'cost')
+            @foreach($lines as $line)
             <tr>
                 <td>{{ $line['code'] }}</td>
                 <td>{{ $line['desc'] }}</td>
@@ -43,7 +44,9 @@
                 <td>{{ number_format($line['price'] * $line['qty'], 2, ',', '.') }}₺</td>
             </tr>
         @endforeach
-        @if(isset($Application->application['accepted_cost']))
+            @endif
+        @if($type == 'cost')
+            @if(isset($Application->application['accepted_cost']))
             <tr>
                 <td>İlave Masraf</td>
                 <td></td>
@@ -54,6 +57,7 @@
                 <td>{{ number_format($Application->application['accepted_cost'], 2, ',', '.') }}₺</td>
             </tr>
         @endif
+            @endif
     <tr>
         <td></td>
         <td></td>

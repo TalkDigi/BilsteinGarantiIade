@@ -1,15 +1,43 @@
 if ($('.changeStatusButton').length > 0) {
 
-    $('.changeStatusButton').on('click', function () {
+    $('.changeStatusButton').on('click', function (e) {
         let status_id = $(this).data('status-id');
 
         let status = statuses[status_id];
 
-        console.log('Status hereeeee');
-        console.log(statuses);
+        let buttonText = $(this).text().trim();
+        
+        let cargoHistory = $(this).data('cargo-history');
 
-        console.log('status_id');
-        console.log(status_id);
+         // Eğer status_id 5 veya 6 ise ve cargo_history false ise
+         if ((status_id == 5 || status_id == 6) && !cargoHistory) {
+            
+            let modalTarget = $(this).data('bs-target');
+            alert('test');
+            e.preventDefault(); // Varsayılan tıklama davranışını engelle
+            
+            Swal.fire({
+                title: 'Dikkat!',
+                text: `Bu başvuru henüz "Kargo Bekleniyor" durumuna alınmadı. Durumu "${buttonText}" olarak güncellemek istediğinize emin misiniz?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Evet, eminim',
+                cancelButtonText: 'İptal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var modal = new bootstrap.Modal(document.querySelector(modalTarget));
+                    modal.show();
+                }
+            });
+        } 
+
+        if ((status_id == 5 || status_id == 6) && cargoHistory) {
+            let modalTarget = $(this).data('bs-target');
+            var modal = new bootstrap.Modal(document.querySelector(modalTarget));
+                    modal.show();
+        }
 
         $('.newStatus').html(status.html);
         $('.newStatus').val(status_id);
@@ -155,6 +183,7 @@ var updatedFileNamesSeven = {};
 var updatedFileNamesEight = {};
 var updatedFileNamesNine = {};
 var updatedFileNamesTen = {};
+var updatedFileNamesEleven = {};
 
 // Dropzone rneklerini başlat
 if (document.getElementById("dropZone1")) {
@@ -196,6 +225,10 @@ if (document.getElementById("dropZone9")) {
 $('#change_status').on('shown.bs.modal', function () {
     initializeDropzone("#dropZone10", updatedFileNames);
 });
+
+if (document.getElementById("dropZone11")) {
+    initializeDropzone("#dropZone11", updatedFileNamesEleven);
+}
 
 
 function getAllFileNames(dropzoneInstance, inputId, updatedNamesObj) {
@@ -543,6 +576,25 @@ $(document).ready(function () {
     $('.application_form').submit(function (e) {
         e.preventDefault();
 
+        if ($('input[name="application[complain][]"]').length > 0) {
+            if ($('input[name="application[complain][]"]:checked').length === 0) {
+                e.preventDefault();
+                alert('Lütfen en az bir müşteri şikayeti seçin.');
+                return;
+            }
+        }
+
+        if (document.getElementById('dropZone11Input')) {
+            if (!$('#dropZone11Input').val()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Uyarı',
+                    text: 'Parçaya / Kutuya Dair Hata Görseli alanına en az bir dosya ekleyin.',
+                });
+                return false;
+            }
+        }
+
         //if form has update class, just post it
         if ($(this).hasClass('update')) {
             $(this).off('submit').submit();
@@ -560,7 +612,17 @@ $(document).ready(function () {
         price: tr.getAttribute('data-price')
     });
 });
-
+console.log(products);
+alert(products);
+//if productCount is empty, show warning
+if (products.length === 0) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Uyarı',
+        text: 'Lütfen en az bir ürün ekleyin.',
+    });
+    return false;
+}
 
         let data = $(this).serialize();
         data += '&products=' + JSON.stringify(products);

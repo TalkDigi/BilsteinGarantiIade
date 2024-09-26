@@ -20,11 +20,11 @@
                                 @endif
                                 <div class="fs-4 text-white">
                                     @php
-                                    $count = 0;
+                                        $count = 0;
                                     @endphp
                                     @forelse($Types as $type)
                                         @php
-                                        $count += $type->application_counts();
+                                            $count += $type->application_counts();
                                         @endphp
                                     @empty
                                     @endforelse
@@ -58,9 +58,9 @@
                                             <div class="m-0">
                                                 <!--begin::Number-->
                                                 <a href="basvurular/{{$Types[0]->id}}/tumu"
-                                                    class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
+                                                   class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
                                                     {{$Types[0]->application_counts()}}
-                                                    @if(auth()->user()->hasRole('Yönetici'))
+                                                    @if(auth()->user()->hasRole('Yönetici') && $Types[0]->non_viewed_counts() != 0)
                                                         <span class="notify-span">
                                                             {{$Types[0]->non_viewed_counts()}}
                                                         </span>
@@ -71,7 +71,7 @@
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
                                                 <a href="basvurular/{{$Types[0]->id}}/tumu"
-                                                    class="text-gray-500 fw-semibold d-block fs-6">{{$Types[0]->title}}</a>
+                                                   class="text-gray-500 fw-semibold d-block fs-6">{{$Types[0]->title}}</a>
 
                                                 <!--end::Desc-->
                                             </div>
@@ -93,9 +93,9 @@
                                             <div class="m-0">
                                                 <!--begin::Number-->
                                                 <a href="basvurular/{{$Types[1]->id}}/tumu"
-                                                    class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
+                                                   class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
                                                     {{$Types[1]->application_counts()}}
-                                                    @if(auth()->user()->hasRole('Yönetici'))
+                                                    @if(auth()->user()->hasRole('Yönetici') && $Types[1]->non_viewed_counts() != 0)
                                                         <span class="notify-span">
                                                             {{$Types[1]->non_viewed_counts()}}
                                                         </span>
@@ -107,7 +107,7 @@
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
                                                 <a href="basvurular/{{$Types[1]->id}}/tumu"
-                                                    class="text-gray-500 fw-semibold d-block fs-6">{{$Types[1]->title}}</a>
+                                                   class="text-gray-500 fw-semibold d-block fs-6">{{$Types[1]->title}}</a>
                                                 <!--end::Desc-->
                                             </div>
                                             <!--end::Stats-->
@@ -127,10 +127,10 @@
                                             <!--begin::Stats-->
                                             <div class="m-0">
                                                 <!--begin::Number-->
-                                          <a href="basvurular/{{$Types[2]->id}}/tumu"
-                                                    class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
+                                                <a href="basvurular/{{$Types[2]->id}}/tumu"
+                                                   class="text-gray-700 fw-bolder  fs-2qx lh-1 ls-n1 mb-1 position-relative">
                                                     {{$Types[2]->application_counts()}}
-                                                    @if(auth()->user()->hasRole('Yönetici'))
+                                                    @if(auth()->user()->hasRole('Yönetici') && $Types[2]->non_viewed_counts() != 0)
                                                         <span class="notify-span">
                                                             {{$Types[2]->non_viewed_counts()}}
                                                         </span>
@@ -141,7 +141,7 @@
                                                 <!--end::Number-->
                                                 <!--begin::Desc-->
                                                 <a href="basvurular/{{$Types[2]->id}}/tumu"
-                                                    class="text-gray-500 fw-semibold d-block fs-6">{{$Types[2]->title}}</a>
+                                                   class="text-gray-500 fw-semibold d-block fs-6">{{$Types[2]->title}}</a>
                                                 <!--end::Desc-->
                                             </div>
                                             <!--end::Stats-->
@@ -175,31 +175,33 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                         <div class="col-xl-9">
                             <div class="card h-150px card-xl-stretch">
                                 @if(auth()->user()->hasRole('Yönetici'))
-                                <div class="card-body d-flex align-items-center justify-content-between flex-wrap">
-                                    <div class="me-2">
-                                        <h2 class="fw-bold text-gray-800 mb-3">Başvurular</h2>
-                                        <div class="text-muted fw-semibold fs-6">
-                                            İncelenmemiş {{count($NonViewed)}} başvuru bulunmakta.
+                                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap">
+                                        <div class="me-2">
+                                            <h2 class="fw-bold text-gray-800 mb-3">Başvurular</h2>
+                                            <div class="text-muted fw-semibold fs-6">
+                                                İncelenmemiş {{count($NonViewed)}} başvuru bulunmakta.
+                                            </div>
                                         </div>
-                                    </div>
 
 
-                                    <a href="{{route('dashboard.application.list')}}" class="btn btn-primary fw-semibold" >+</a>
+                                        <a href="{{route('dashboard.application.list')}}"
+                                           class="btn btn-primary fw-semibold">+</a>
                                     </div>
                                 @else
-                                <div class="card-body d-flex align-items-center justify-content-between flex-wrap">
-                                    <div class="me-2">
-                                        <h2 class="fw-bold text-gray-800 mb-3">Yeni Başvuru Oluştur</h2>
-                                        <div class="text-muted fw-semibold fs-6">
-                                            Başvuru formlarını buradan oluşturabilirsiniz.
+                                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap">
+                                        <div class="me-2">
+                                            <h2 class="fw-bold text-gray-800 mb-3">Yeni Başvuru Oluştur</h2>
+                                            <div class="text-muted fw-semibold fs-6">
+                                                Başvuru formlarını buradan oluşturabilirsiniz.
+                                            </div>
                                         </div>
-                                    </div>
-                                    <a href="#" class="btn btn-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#bl_new_application_type_modal">+</a>
+                                        <a href="#" class="btn btn-primary fw-semibold" data-bs-toggle="modal"
+                                           data-bs-target="#bl_new_application_type_modal">+</a>
 
-                                    {{-- <a href="{{route('dashboard.application.index')}}" class="btn btn-primary fw-semibold" >+</a>--}}
+                                        {{-- <a href="{{route('dashboard.application.index')}}" class="btn btn-primary fw-semibold" >+</a>--}}
                                     </div>
 
-                                    @endif
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -210,9 +212,9 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <h2 class="text-white fw-bold ">Ay Kapama</h2>
                                     @if(auth()->user()->hasRole('Yönetici'))
-                                    <span class="text-white mb-5 d-block"> Müşterilere ait ay kapama hesaplamalarını görüntüleyin. </span>
+                                        <span class="text-white mb-5 d-block"> Müşterilere ait ay kapama hesaplamalarını görüntüleyin. </span>
                                     @else
-                                    <span class="text-white mb-5 d-block"> İstediğiniz aya ait onaylanmış başvurularınız için örnek fatura oluşturun. </span>
+                                        <span class="text-white mb-5 d-block"> İstediğiniz aya ait onaylanmış başvurularınız için örnek fatura oluşturun. </span>
                                     @endif
                                     <div class="m-0">
                                         <a href='{{route('dashboard.application.closure')}}'
@@ -286,23 +288,37 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                         </div>
                         <div class="card-body pt-5">
                             <div class="timeline-label">
-                                @forelse($Activities as $l)
-                                    <div class="timeline-item">
-                                        <div
-                                            class="timeline-label fw-bold text-gray-800 fs-6">{{$l->getFormattedCreatedAtAttribute()}}
-                                            <br>
-                                            <span class="text-muted">{{$l->created_at->format('H:i')}}</span>
-                                        </div>
-                                        <div class="timeline-badge">
-                                            <i class="fa fa-genderless text-success fs-1"></i>
-                                        </div>
-                                        <div class="timeline-content">
-                                            <p class="fw-semibold text-gray-800 ps-3">{!! $l->description !!}</p>
-
-                                        </div>
-                                    </div>
-                                @empty
-                                @endforelse
+                            @forelse($Activities as $l)
+    <div class="timeline-item">
+        <div class="timeline-label fw-bold text-gray-800 fs-6">
+            {{$l->getFormattedCreatedAtAttribute()}}
+            <br>
+            <span class="text-muted">{{$l->created_at->format('H:i')}}</span>
+        </div>
+        <div class="timeline-badge">
+            <i class="fa fa-genderless text-success fs-1"></i>
+        </div>
+        <div class="timeline-content">
+            <p class="fw-semibold text-gray-800 ps-3">
+                
+            @if(auth()->user()->hasRole('Yönetici'))
+            
+                    {!! $l->description !!}
+            @else
+            @if($l->causer->hasRole('Yönetici'))
+                    @php
+                        $description = str_replace($l->causer->name, 'Bilstein Yöneticisi', $l->description);
+                    @endphp
+                    {!! $description !!}
+                @else
+                    {!! $l->description !!}
+                @endif
+            @endif
+            </p>
+        </div>
+    </div>
+@empty
+@endforelse
                             </div>
                         </div>
                     </div>

@@ -266,6 +266,7 @@ class ClosureController extends Controller
 
             $target = 'cost';
             $total += $Application->application['accepted_cost'];
+            $lines = [];
 
         } else {
 
@@ -313,7 +314,7 @@ class ClosureController extends Controller
         return Excel::download(new InvoiceExport($lines, $total, $tax, $total_with_tax, $data, $brands), 'kapanis-faturasi.xlsx');
     }
 
-    public function export_invoice($claim_number)
+    public function export_invoice($claim_number,$type = null)
     {
         $Application = Application::where('claim_number', $claim_number)->first();
         $lines = $Application->products;
@@ -326,15 +327,20 @@ class ClosureController extends Controller
             $brands[$line['code']] = $Product;
         }
 
-        if (isset($Application->application['accepted_cost'])) {
-            $total += $Application->application['accepted_cost'];
+        if($type == 'cost') {
+            if (isset($Application->application['accepted_cost'])) {
+                $total = 0;
+                $total += $Application->application['accepted_cost'];
+            }
+            $lines = [];
         }
 
         $tax = $total * 0.20;
         $total_with_tax = $total + $tax;
         $total_with_tax = number_format($total_with_tax, 2, '.', '');
 
-        return Excel::download(new InvoiceExport($lines, $total, $tax, $total_with_tax, $Application, $brands), $Application->claim_number . '-fatura.xlsx');
+
+        return Excel::download(new InvoiceExport($lines, $total, $tax, $total_with_tax, $Application, $brands,$type), $Application->claim_number . '-fatura.xlsx');
     }
 
 

@@ -87,14 +87,23 @@
         .notify-span {
             color: white;
             background: red;
-            font-size: 9px;
-            padding: 3px 6px;
+            font-size: 12px;
+            padding: 5px 6px;
             border-radius: 25px;
             text-align: center;
             padding-right: 8px;
             position: absolute;
             top: 0;
-            right: -20px;
+            right: -25px;
+        }
+
+        .activeCat {
+            background: rgb(247, 245, 245);
+            border-radius: 8px;
+        }
+
+        .activeCat .svg-icon {
+            color: #1b84ff
         }
 
     </style>
@@ -167,6 +176,17 @@
 												</span>
 
                                     </a>
+
+                                    @if(auth()->user()->hasRole('Yönetici'))
+
+                                    <a href="{{route('dashboard.application.list')}}"
+                                       class="menu-item menu-lg-down-accordion me-0 me-lg-2">
+												<span class="menu-link py-3">
+													<span class="menu-title">Başvurular Liste</span>
+													<span class="menu-arrow d-lg-none"></span>
+												</span>
+                                    </a>
+                                    @endif
 
                                     <a href="{{route('dashboard.application.closure')}}"
                                        class="menu-item menu-lg-down-accordion me-0 me-lg-2">
@@ -430,20 +450,22 @@
                         <h1 class="d-flex text-white fw-bold my-1 fs-3">Dashboard</h1>
 
                         <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-1">
-                            <li class="breadcrumb-item text-white opacity-75">
-                                <a href="{{route('test.mail.closure')}}" target="blank"
-                                   class="text-white text-hover-primary">(Test) Ay
-                                    Kapama Mail</a>
-                            </li>
+                            @if(auth()->user()->hasRole('Yönetici'))
+                                <li class="breadcrumb-item text-white opacity-75">
+                                    <a href="{{route('test.mail.closure')}}" target="blank"
+                                       class="text-white text-hover-primary">(Test) Ay
+                                        Kapama Mail</a>
+                                </li>
 
-                            <li class="breadcrumb-item">
-                                <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
-                            </li>
+                                <li class="breadcrumb-item">
+                                    <span class="bullet bg-white opacity-75 w-5px h-2px"></span>
+                                </li>
 
-                            <li class="breadcrumb-item text-white opacity-75">
-                                <a href="{{route('test.delete.closure')}}" class="text-white text-hover-primary">(Test)
-                                    Ay Kapamaları Sil</a>
-                            </li>
+                                <li class="breadcrumb-item text-white opacity-75">
+                                    <a href="{{route('test.delete.closure')}}" class="text-white text-hover-primary">(Test)
+                                        Ay Kapamaları Sil</a>
+                                </li>
+                            @endif
 
                         </ul>
 
@@ -3173,72 +3195,52 @@
     toastr.error("{{ Session::get('error') }}", "Hata");
     @endif
 
-    @if(count($NonViewed) > 0 && auth()->user()->hasRole('Yönetici'))
+    @if(count($NonViewed) > 0 && auth()->user()->hasRole('Yönetici') && Request::route()->getName() == 'dashboard')
     // Check if the Swal alert was shown within the last minute
     const lastShown = localStorage.getItem('swalLastShown');
     const now = new Date().getTime();
-    if (!lastShown || now - lastShown > 60000) {
-        // Show Swal alert
-        var html = '';
-        @foreach($NonViewed as $invoice)
-            html += '<span class="badge badge-success mt-2"><a class="text-white" href="{{route('dashboard.application.show', $invoice->claim_number)}}">{{$invoice->claim_number}}</a></span> ';
-        @endforeach
-        Swal.fire({
-            title: 'İncelenmemiş başvurular var.',
-            html: html,
-            icon: 'info',
-            confirmButtonText: 'İncele',
-            showCancelButton: true,
-            cancelButtonText: 'Kapat',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{{route('dashboard.application.list')}}";
-            }
-        });
+    // Show Swal alert
+    var html = '';
+    @foreach($NonViewed as $invoice)
+        html += '<span class="badge badge-success mt-2"><a class="text-white" href="{{route('dashboard.application.show', $invoice->claim_number)}}">{{$invoice->claim_number}}</a></span> ';
+    @endforeach
+    Swal.fire({
+        title: 'İncelenmemiş başvurular var.',
+        html: html,
+        icon: 'info',
+        confirmButtonText: 'İncele',
+        showCancelButton: true,
+        cancelButtonText: 'Kapat',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{{route('dashboard.application.list')}}";
+        }
+    });
 
-        // Set the flag in localStorage
-        localStorage.setItem('swalLastShown', now);
-
-        // Clear the flag after 1 minute
-        setTimeout(() => {
-            localStorage.removeItem('swalLastShown');
-        }, 60000);
-    }
     @endif
 
-    @if(count($WaitingForEdit->where('user_id', auth()->user()->id)) > 0)
+    @if(count($WaitingForEdit->where('user_id', auth()->user()->id)) > 0 && Request::route()->getName() == 'dashboard')
 
-    // Check if the Swal alert was shown within the last minute
-    const lastShownEdit = localStorage.getItem('swalLastShownEdit');
-    const nowEdit = new Date().getTime();
-    if (!lastShownEdit || nowEdit - lastShownEdit > 60000) {
-        // Show Swal alert
-        var htmlEdit = '';
-        @foreach($WaitingForEdit->where('user_id', auth()->user()->id) as $application)
 
-            htmlEdit += '<span class="badge badge-warning mt-2"><a class="text-white" href="{{route('dashboard.application.show', $application->claim_number)}}">{{$application->claim_number}}</a></span> ';
-        @endforeach
-        Swal.fire({
-            title: 'Düzenleme bekleyen başvurular var.',
-            html: htmlEdit,
-            icon: 'warning',
-            confirmButtonText: 'İncele',
-            showCancelButton: true,
-            cancelButtonText: 'Kapat'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "{{route('dashboard.application.list')}}";
-            }
-        });
+    // Show Swal alert
+    var htmlEdit = '';
+    @foreach($WaitingForEdit->where('user_id', auth()->user()->id) as $application)
 
-        // Set the flag in localStorage
-        localStorage.setItem('swalLastShownEdit', nowEdit);
+        htmlEdit += '<span class="badge badge-warning mt-2"><a class="text-white" href="{{route('dashboard.application.show', $application->claim_number)}}">{{$application->claim_number}}</a></span> ';
+    @endforeach
+    Swal.fire({
+        title: 'Düzenleme bekleyen başvurular var.',
+        html: htmlEdit,
+        icon: 'warning',
+        confirmButtonText: 'İncele',
+        showCancelButton: true,
+        cancelButtonText: 'Kapat'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{{route('dashboard.application.list')}}";
+        }
+    });
 
-        // Clear the flag after 1 minute
-        setTimeout(() => {
-            localStorage.removeItem('swalLastShownEdit');
-        }, 60000);
-    }
     @endif
 
 </script>

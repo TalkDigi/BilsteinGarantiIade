@@ -54,4 +54,8 @@ class User extends Authenticatable
     public function customer() {
         return $this->belongsTo(Customer::class, 'CustNo', 'No');
     }
+
+    public function applications() {
+        return $this->hasMany(Application::class, 'user_id', 'id');
+    }
 }

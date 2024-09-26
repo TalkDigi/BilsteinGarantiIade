@@ -39,25 +39,25 @@
                                     @if(auth()->user()->hasRole('Yönetici'))
 
                                         <a href="{{route('dashboard.application.update_status',[2,$Application->claim_number])}}"
-                                           class="btn btn-sm btn-warning me-3">Ön Onay Bekleniyor</a>
+                                           class="btn btn-sm btn-warning me-3" data-cargo-history="{{$Application->cargo_history}}">Ön Onay Bekleniyor</a>
 
                                         <a href="#" class="btn btn-sm btn-info me-3 changeStatusButton"
                                            data-bs-toggle="modal" data-bs-target="#change_status"
-                                           data-status-id="4">Düzenleme İste</a>
+                                           data-status-id="4" data-cargo-history="{{$Application->cargo_history}}">Düzenleme İste</a>
 
                                         <a href="{{route('dashboard.application.update_status',[3,$Application->claim_number])}}"
-                                           class="btn btn-sm btn-danger me-3">Kargo Bekleniyor</a>
+                                           class="btn btn-sm btn-danger me-3" data-cargo-history="{{$Application->cargo_history}}">Kargo Bekleniyor</a>
 
 
-                                        <a href="#" class="btn btn-sm btn-success me-3 changeStatusButton"
-                                           data-bs-toggle="modal" data-bs-target="#change_status"
-                                           data-status-id="5">Onayla</a>
+                                           <a href="javascript:void(0);" class="btn btn-sm btn-success me-3 changeStatusButton"
+   data-bs-target="#change_status"
+   data-status-id="5" 
+   data-cargo-history="{{$Application->cargo_history}}">Onayla</a>
 
-
-
-                                        <a href="#" class="btn btn-sm btn-danger me-3 changeStatusButton"
-                                           data-bs-toggle="modal" data-bs-target="#change_status"
-                                           data-status-id="6">Reddet</a>
+<a href="javascript:void(0);" class="btn btn-sm btn-danger me-3 changeStatusButton"
+   data-bs-target="#change_status"
+   data-status-id="6" 
+   data-cargo-history="{{$Application->cargo_history}}">Reddet</a>
 
                                     @endif
 

@@ -18,7 +18,7 @@ class UserController extends Controller
         $Users = User::all();
         $Customers = Customer::all();
 
-        return view('dashboard.pages.user.index', compact('Users','Roles','Customers'));
+        return view('dashboard.pages.user.index', compact('Users', 'Roles', 'Customers'));
     }
 
     /**
@@ -39,28 +39,35 @@ class UserController extends Controller
             'email' => 'required|unique:users',
             'password' => 'required',
             'role' => 'required',
-            'customer' => 'required',
-        ],[
+        ], [
             'name.required' => 'Ad & Soyad boş bırakılamaz.',
             'email.required' => 'E-Posta adresi boş bırakılamaz.',
             'email.unique' => 'Bu e-posta adresi zaten kullanılmakta.',
             'password.required' => 'Şifre boş bırakılamaz',
             'role.required' => 'Rol seçimi yapmalısınız.',
-            'customer.required' => 'Müşteri seçimi yapmalısınız.',
         ]);
 
 
-        $user = User::create([
-            'uuid' => \Illuminate\Support\Str::uuid(),
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'CustNo' => $request->customer,
-        ]);
+        try {
 
-        $Role = Role::find($request->role);
+            $values = [
+                'uuid' => \Illuminate\Support\Str::uuid(),
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password)
+            ];
 
-        $user->assignRole($Role);
+            if (isset($request->customer) && $request->customer != null) {
+                $values['customer_id'] = $request->customer;
+            }
+            $user = User::create($values);
+
+            $Role = Role::find($request->role);
+
+            $user->assignRole($Role);
+        } catch (\Exception $e) {
+            dd($e);
+        }
 
 
         return redirect()->route('user.index');
@@ -71,7 +78,11 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $User = User::where('uuid', $id)->first();
+
+        $Role = $User->roles->first();
+        
+        return response()->json(['user' => $User, 'role' => $Role]);
     }
 
     /**
@@ -85,9 +96,31 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+        //uuid ile kullanıcı var mı kontrol et. yoksa hata dön
+        $User = User::where('uuid', $request->uuid)->first();
+        if (!$User) {
+            return redirect()->route('user.index')->with('error', 'Kullanıcı bulunamadı');
+        }
+
+        //eğer kullanıcı varsa
+        //şifre var mı kontrol et. varsa güncelle yoksa eski şifre ile aynı kalır. kalan kısımları güncelle
+        if (isset($request->password) && $request->password != null) {
+            $User->password = bcrypt($request->password);
+        }
+        $User->name = $request->name;
+        $User->email = $request->email;
+        $User->CustNo = $request->customer;
+        $User->save();
+
+        //kullanıcının rolünü güncelle
+        $Role = Role::find($request->role);
+        //remove all roles from user
+        $User->roles()->detach();
+        $User->assignRole($Role);
+
+        return redirect()->route('user.index');
     }
 
     /**

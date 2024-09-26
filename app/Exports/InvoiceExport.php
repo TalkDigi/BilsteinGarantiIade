@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceExport implements FromView, WithHeadings, WithTitle, WithStyles, WithColumnWidths
 {
@@ -17,8 +18,9 @@ class InvoiceExport implements FromView, WithHeadings, WithTitle, WithStyles, Wi
     protected $total_with_tax;
     protected $Application;
     protected $brands;
+    protected $type;
 
-    public function __construct($lines, $total, $tax, $total_with_tax, $Application,$brands)
+    public function __construct($lines, $total, $tax, $total_with_tax, $Application,$brands,$type = null)
     {
         $this->lines = $lines;
         $this->total = $total;
@@ -26,6 +28,10 @@ class InvoiceExport implements FromView, WithHeadings, WithTitle, WithStyles, Wi
         $this->total_with_tax = $total_with_tax;
         $this->Application = $Application;
         $this->brands = $brands;
+        $this->type = $type;
+
+        Log::info('tYPE BURADA');
+        Log::info($type);
     }
 
     public function view(): View
@@ -36,7 +42,8 @@ class InvoiceExport implements FromView, WithHeadings, WithTitle, WithStyles, Wi
             'tax' => $this->tax,
             'total_with_tax' => $this->total_with_tax,
             'Application' => $this->Application,
-            'brands' => $this->brands
+            'brands' => $this->brands,
+            'type' => $this->type
         ]);
     }
 
@@ -49,7 +56,7 @@ class InvoiceExport implements FromView, WithHeadings, WithTitle, WithStyles, Wi
             [''], // Empty row for spacing
             [''], // Empty row for spacing
             ['Logo'], // Placeholder for logo
-            ['Örnek Fatura'], // Title
+            ['Örnek Fatura2'], // Title
             [''], // Empty row for spacing
         ];
     }

@@ -18,7 +18,7 @@
 
 
                 </div>
-                <form action="{{route('dashboard.application.update_status_with_message')}}" method="POST">
+                <form action="{{route('dashboard.application.update_status_with_message')}}" method="POST" autocomplete="off">
                     @csrf
                     <div class="form-group">
                         <div class="text-muted fw-semibold fs-5 mb-5 text-center">Başvuru sahibine gösterilecek metin.

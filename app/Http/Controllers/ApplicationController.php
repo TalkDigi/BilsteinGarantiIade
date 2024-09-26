@@ -17,7 +17,7 @@ use App\Models\Activity;
 use App\Models\Blockage;
 use Illuminate\Support\Str;
 use PDF;
-
+use App\Models\Closure;
 class ApplicationController extends Controller
 {
 
@@ -88,7 +88,7 @@ class ApplicationController extends Controller
             return redirect()->route('dashboard');
         }
 
-        Log::info('Geldi'.print_r($request->all(), true));
+        Log::info('Geldi' . print_r($request->all(), true));
 
         $application_quantity = null;
 
@@ -99,7 +99,7 @@ class ApplicationController extends Controller
 
             $Quantity = Quantity::where('ItemNo', $request->productCode)->first();
 
-            if($Quantity) {
+            if ($Quantity) {
                 $application_quantity = $Quantity->unit;
             } else {
                 $application_quantity = $Type->quantity_limitor;
@@ -146,10 +146,10 @@ class ApplicationController extends Controller
 
         }
 
-        if(auth()->user()->hasRole('Yönetici')) {
+        if (auth()->user()->hasRole('Yönetici')) {
 
             $Application = Application::where('claim_number', $claim)->first();
-            if(!$Application->getStatus->canEdit) {
+            if (!$Application->getStatus->canEdit) {
                 $Application->editable = 0;
             }
             $Application->viewed_by = auth()->id();
@@ -188,13 +188,13 @@ class ApplicationController extends Controller
 
         $brands = [];
 
-        foreach($Application->products as $product) {
+        foreach ($Application->products as $product) {
             $Product = Product::where('No', $product['code'])->first()->getBrand->brand;
             $brands[$product['code']] = $Product;
         }
 
 
-        return view('dashboard.pages.application.show', compact('Application', 'Logs', 'Status', 'Message', 'Files', 'Labels', 'FileMatches','brands','CatInputs'));
+        return view('dashboard.pages.application.show', compact('Application', 'Logs', 'Status', 'Message', 'Files', 'Labels', 'FileMatches', 'brands', 'CatInputs'));
 
     }
 
@@ -217,6 +217,10 @@ class ApplicationController extends Controller
 
 
         $Application->status = $status;
+
+        if($status == 3) {
+            $Application->cargo_history = true;
+        }
 
         $Status = Status::where('id', $status)->first();
 
@@ -341,7 +345,7 @@ class ApplicationController extends Controller
 
         if ($Application->save()) {
 
-            if($request->new_status == 5) {
+            if ($request->new_status == 5) {
                 //update application confirmed_at
                 $Application->confirmed_at = date('Y-m-d H:i:s');
                 $Application->save();
@@ -455,6 +459,8 @@ class ApplicationController extends Controller
 
         if (!$request->has('products') || empty($request->products)) {
 
+            Log::info('Products check' . print_r($request->products, true));
+
             return response()->json([
                 'success' => false,
                 'message' => 'Lütfen ürün seçiniz.'
@@ -491,7 +497,7 @@ class ApplicationController extends Controller
         foreach ($quantities as $no => $quantity) {
 
             //make $no string
-            $no = (string)$no;
+            $no = (string) $no;
 
             $check_invoice = Invoice::checkInvoice(auth()->user()->CustNo, $no, $quantity);
 
@@ -749,18 +755,19 @@ class ApplicationController extends Controller
         return view('dashboard.pages.application.index', compact('Applications', 'statusCounts', 'tip', 'basvuru_turu', 'Types', 'IntTypes'));
     }
 
-    public function quantity_check(Request $request) {
+    public function quantity_check(Request $request)
+    {
 
         Log::info('Quantity check request', $request->all());
 
-        if($request->productCode == 500) {
+        if ($request->productCode == 500) {
             abort(404);
         }
 
 
         $Quantity = Quantity::where('ItemNo', $request->productCode)->first();
 
-        if($Quantity) {
+        if ($Quantity) {
             return response()->json([
                 'success' => true,
                 'quantity' => $Quantity->unit
@@ -771,6 +778,62 @@ class ApplicationController extends Controller
                 'quantity' => 0
             ]);
         }
+    }
+
+    public function allApplications()
+    {
+        return view('dashboard.pages.applications.index');
+    }
+
+    public function allApplicationsFilter(Request $request)
+    {
+        $year = $request->input('year');
+        $custNo = $request->input('CustNo');
+
+        $query = Application::query();
+
+        if ($year) {
+            $query->whereYear('created_at', $year);
+        }
+
+        if ($custNo) {
+            $query->whereHas('user', function ($q) use ($custNo) {
+                $q->where('CustNo', $custNo);
+            });
+        }
+
+        $Applications = $query->with('user.customer')->get();
+
+        //group applications by created_at month with month name in Turkish
+        $Applications = $Applications->groupBy(function ($application) {
+            return $application->created_at->locale('tr')->isoFormat('MMMM');
+        });
+
+        //get all closures
+        $Closures = Closure::all();
+
+        //in closure data column there is a data like this.
+        // {"BL-22CA1A": [{"qty": "1", "code": "06161", "desc": "Hidrolik yağ", "price": 52.80583333333333, "invoice": "FRD2020092100001"}]}
+        //or something like this
+        // {"BL-22CA1A": [{"qty": "1", "code": "06161", "desc": "Hidrolik yağ", "price": 52.80583333333333, "invoice": "FRD2020092100001"}], "BL-22CA1Z": [{"qty": "1", "code": "06161", "desc": "Hidrolik yağ", "price": 52.80583333333333, "invoice": "FRD2020092100001"}]}
+        //and it has year,month columns
+        //for exp. find BL-22CA1A inside applications -> claim_number. add month year and uuid form closures to applications
+        
+        //loop every closures, create new array. bl-22ca1a should be key of array. value of array is month and year  and uuid of closure.
+        $FilteredClosures = [];
+        foreach ($Closures as $Closure) {
+            
+            foreach ($Closure->data as $key => $value) {
+                $FilteredClosures[$key] = [
+                    'month' => $Closure->month,
+                    'year' => $Closure->year,
+                    'uuid' => $Closure->uuid
+                ];
+            }
+        }
+
+        return view('dashboard.pages.applications.index', compact('Applications', 'FilteredClosures'));
+
     }
 
 }
