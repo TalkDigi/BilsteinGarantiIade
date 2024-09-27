@@ -611,8 +611,7 @@ $(document).ready(function () {
         price: tr.getAttribute('data-price')
     });
 });
-console.log(products);
-alert(products);
+
 //if productCount is empty, show warning
 if (products.length === 0) {
     Swal.fire({
