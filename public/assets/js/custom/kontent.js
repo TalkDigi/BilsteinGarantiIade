@@ -6,16 +6,15 @@ if ($('.changeStatusButton').length > 0) {
         let status = statuses[status_id];
 
         let buttonText = $(this).text().trim();
-        
+
         let cargoHistory = $(this).data('cargo-history');
 
          // Eğer status_id 5 veya 6 ise ve cargo_history false ise
          if ((status_id == 5 || status_id == 6) && !cargoHistory) {
-            
+
             let modalTarget = $(this).data('bs-target');
-            alert('test');
             e.preventDefault(); // Varsayılan tıklama davranışını engelle
-            
+
             Swal.fire({
                 title: 'Dikkat!',
                 text: `Bu başvuru henüz "Kargo Bekleniyor" durumuna alınmadı. Durumu "${buttonText}" olarak güncellemek istediğinize emin misiniz?`,
@@ -31,7 +30,7 @@ if ($('.changeStatusButton').length > 0) {
                     modal.show();
                 }
             });
-        } 
+        }
 
         if ((status_id == 5 || status_id == 6) && cargoHistory) {
             let modalTarget = $(this).data('bs-target');
