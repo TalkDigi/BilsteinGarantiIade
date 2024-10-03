@@ -19,7 +19,6 @@ use App\Models\Blockage;
 use App\Models\Type;
 
 
-
 Route::get('/assignRole', function () {
     $user = \App\Models\User::find(3);
     $user->assignRole('Kullanıcı');
@@ -40,7 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/', function () {
 
 
-
         $Activities = \App\Models\Activity::orderBy('created_at', 'desc')->limit(15)->get();
 
         //find applications where viewed_by is null
@@ -56,7 +54,7 @@ Route::middleware('auth')->group(function () {
         $Types = Type::all();
 
 
-        return view('dashboard.home', compact('Types','Activities' ));
+        return view('dashboard.home', compact('Types', 'Activities'));
 
     })->name('dashboard');
 
@@ -147,7 +145,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/fiyat-degistir', [ClosureController::class, 'set_price'])->name('dashboard.application.set_price');
 
 
-
     Route::post('/fatura-olustur', [ClosureController::class, 'create_invoice'])->name('dashboard.application.create-invoice');
     Route::get('/fatura-cikti/{claim}/{type?}', [ClosureController::class, 'export_invoice'])->name('dashboard.application.export-invoice');
     Route::get('/ay-kapama-fatura-cikti/{uuid}', [ClosureController::class, 'export_invoice_closure'])->name('dashboard.application.export-invoice-closure');
@@ -173,8 +170,8 @@ Route::middleware('auth')->group(function () {
 
 });
 
-Route::get('tum-ay-kapamaları-sil',[TestController::class,'delete_closures'])->name('test.delete.closure');
-Route::get('ay-kapama-maillerini-gonder',[TestController::class,'send_email'])->name('test.mail.closure');
+Route::get('tum-ay-kapamaları-sil', [TestController::class, 'delete_closures'])->name('test.delete.closure');
+Route::get('ay-kapama-maillerini-gonder', [TestController::class, 'send_email'])->name('test.mail.closure');
 
 
 require __DIR__ . '/auth.php';
