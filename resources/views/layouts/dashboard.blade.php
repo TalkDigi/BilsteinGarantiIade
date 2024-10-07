@@ -179,7 +179,7 @@
 
                                     @if(auth()->user()->hasRole('Yönetici'))
 
-                                    <a href="{{route('dashboard.application.list')}}"
+                                    <a href="{{route('dashboard.application.all')}}"
                                        class="menu-item menu-lg-down-accordion me-0 me-lg-2">
 												<span class="menu-link py-3">
 													<span class="menu-title">Başvurular Liste</span>

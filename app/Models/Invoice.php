@@ -71,115 +71,106 @@ class Invoice extends Model
     }
 
     public static function checkInvoice($custNo, $itemNo, $basvuruAdedi)
-    {
+{
+    Log::info('checkInvoice', ['custNo' => $custNo, 'itemNo' => $itemNo, 'basvuruAdedi' => $basvuruAdedi]);
 
-        Log::info('checkInvoice', ['custNo' => $custNo, 'itemNo' => $itemNo, 'basvuruAdedi' => $basvuruAdedi]);
+    $invoices = Invoice::whereJsonContains('Line', [['ItemNo' => $itemNo]])
+        ->orderBy('PostingDate', 'desc')
+        ->get();
 
-        $invoices = Invoice::where('CustNo', $custNo)->whereJsonContains('Line', [['ItemNo' => $itemNo]])->orderBy('PostingDate', 'desc')->get();
-
-        if($invoices->isEmpty()) {
-
-            return [
-                'success' => false,
-                'message' => 'Ürüne ait uygun fatura bulunamadı. Lütfen ürün kodunu kontrol ediniz.'
-            ];
-
-        }
-
-        $totalQty = 0;
-
-        $totalBlockageQty = 0;
-
-        foreach ($invoices as $invoice) {
-
-            $line = collect($invoice->Line)->firstWhere('ItemNo', $itemNo);
-
-            if ($line) {
-
-                $totalQty += $line['Qty'];
-
-                $blockages = Blockage::where('InvoiceNo', $invoice->ExDocNo)->get();
-
-                //eğer blokaj varsa toplam blokaj miktarını hesapla
-
-                if(!$blockages) {
-                    $totalBlockageQty += $blockages->sum('Qty');
-                }
-            }
-        }
-
-        if (($totalQty - $totalBlockageQty) < $basvuruAdedi) {
-
-            return [
-                'success' => false,
-                'message' => 'Başvuru adedini karşılayacak satın alım bulunamadı.'
-            ];
-
-        }
-
-        $remainingQty = $basvuruAdedi;
-
-        $result = [];
-
-        foreach ($invoices as $invoice) {
-
-            $line = collect($invoice->Line)->firstWhere('ItemNo', $itemNo);
-
-            if ($line) {
-
-                $invoiceQty = $line['Qty'];
-
-                $blockages = Blockage::where('InvoiceNo', $invoice->ExDocNo)->get();
-
-                $totalBlockageQty = $blockages->sum('Qty');
-
-                $availableQty = $invoiceQty - $totalBlockageQty;
-
-                if ($availableQty > 0) {
-
-                    if ($remainingQty <= $availableQty) {
-
-                        $result[] = [
-                            'invoice' => $invoice->ExDocNo,
-                            'posting_date' => $invoice->PostingDate,
-                            'line' => $line,
-                            'usedQty' => $remainingQty
-                        ];
-
-                        $remainingQty = 0;
-
-                        break;
-
-                    } else {
-
-                        $result[] = [
-                            'invoice' => $invoice->ExDocNo,
-                            'posting_date' => $invoice->PostingDate,
-                            'line' => $line,
-                            'usedQty' => $availableQty
-                        ];
-
-                        $remainingQty -= $availableQty;
-
-                    }
-                }
-            }
-        }
-
-
-        if ($remainingQty > 0) {
-
-            return [
-                'success' => false,
-                'message' => 'Yeterli miktarda uygun fatura bulunamadı.'
-            ];
-
-        }
-
-
+    if($invoices->isEmpty()) {
         return [
-            'success' => true,
-            'result' => $result
+            'success' => false,
+            'message' => 'Ürüne ait uygun fatura bulunamadı. Lütfen ürün kodunu kontrol ediniz.'
         ];
     }
+
+    Log::info('Ürün arama başladı'.print_r($invoices, true));
+
+    $totalQty = 0;
+    $totalBlockageQty = 0;
+
+    foreach ($invoices as $invoice) {
+        $lines = collect($invoice->Line)->where('ItemNo', $itemNo);
+
+        foreach ($lines as $line) {
+            Log::info('Satır bulundu'.print_r($line, true));
+
+            $totalQty += $line['Qty'];
+
+            $blockages = Blockage::where('InvoiceNo', $invoice->ExDocNo)
+                ->where('line', $line['LineNumber'])
+                ->get();
+
+            $totalBlockageQty += $blockages->sum('Qty');
+        }
+    }
+
+    Log::info('Toplam miktar'.print_r($totalQty, true));
+    Log::info('Toplam blokaj miktarı'.print_r($totalBlockageQty, true));
+    Log::info('Kalan miktar'.print_r($totalQty - $totalBlockageQty, true));
+    Log::info('Başvuru adedi'.print_r($basvuruAdedi, true));
+
+    if (($totalQty - $totalBlockageQty) < $basvuruAdedi) {
+        return [
+            'success' => false,
+            'message' => 'Başvuru adedini karşılayacak satın alım bulunamadı.'
+        ];
+    }
+
+    $remainingQty = $basvuruAdedi;
+    $result = [];
+
+    foreach ($invoices as $invoice) {
+        $lines = collect($invoice->Line)->where('ItemNo', $itemNo);
+
+        foreach ($lines as $line) {
+            $invoiceQty = $line['Qty'];
+
+            $blockages = Blockage::where('InvoiceNo', $invoice->ExDocNo)
+                ->where('line', $line['LineNumber'])
+                ->get();
+
+            $totalBlockageQty = $blockages->sum('Qty');
+            $availableQty = $invoiceQty - $totalBlockageQty;
+
+            if ($availableQty > 0) {
+                if ($remainingQty <= $availableQty) {
+                    $result[] = [
+                        'invoice' => $invoice->ExDocNo,
+                        'posting_date' => $invoice->PostingDate,
+                        'line' => $line,
+                        'usedQty' => $remainingQty,
+                        'LineNumber' => $line['LineNumber']
+                    ];
+
+                    $remainingQty = 0;
+                    break 2; // İki döngüden de çık
+                } else {
+                    $result[] = [
+                        'invoice' => $invoice->ExDocNo,
+                        'posting_date' => $invoice->PostingDate,
+                        'line' => $line,
+                        'usedQty' => $availableQty,
+                        'LineNumber' => $line['LineNumber']
+                    ];
+
+                    $remainingQty -= $availableQty;
+                }
+            }
+        }
+    }
+
+    if ($remainingQty > 0) {
+        return [
+            'success' => false,
+            'message' => 'Yeterli miktarda uygun fatura bulunamadı.'
+        ];
+    }
+
+    return [
+        'success' => true,
+        'result' => $result
+    ];
+}
 }

@@ -24,6 +24,31 @@ class ApplicationController extends Controller
     public function list($type = null, $tip = null)
     {
 
+        //get all closures
+        $Closures = Closure::all();
+
+        //in closure data column there is a data like this.
+        // {"BL-22CA1A": [{"qty": "1", "code": "06161", "desc": "Hidrolik yağ", "price": 52.80583333333333, "invoice": "FRD2020092100001"}]}
+        //or something like this
+        // {"BL-22CA1A": [{"qty": "1", "code": "06161", "desc": "Hidrolik yağ", "price": 52.80583333333333, "invoice": "FRD2020092100001"}], "BL-22CA1Z": [{"qty": "1", "code": "06161", "desc": "Hidrolik yağ", "price": 52.80583333333333, "invoice": "FRD2020092100001"}]}
+        //and it has year,month columns
+        //for exp. find BL-22CA1A inside applications -> claim_number. add month year and uuid form closures to applications
+
+        //loop every closures, create new array. bl-22ca1a should be key of array. value of array is month and year  and uuid of closure.
+        $FilteredClosures = [];
+        foreach ($Closures as $Closure) {
+
+            foreach ($Closure->data as $key => $value) {
+                $FilteredClosures[$key] = [
+                    'month' => $Closure->month,
+                    'year' => $Closure->year,
+                    'uuid' => $Closure->uuid
+                ];
+            }
+        }
+
+        
+
         $Types = Type::all();
 
         $basvuru_turu = 'tumu';
@@ -59,7 +84,7 @@ class ApplicationController extends Controller
         $Applications = $query->orderBy('id', 'desc')->get();
 
 
-        return view('dashboard.pages.application.index', compact('Applications', 'statusCounts', 'tip', 'basvuru_turu', 'Types'));
+        return view('dashboard.pages.application.index', compact('Applications', 'statusCounts', 'tip', 'basvuru_turu', 'Types','FilteredClosures'));
 
     }
 
@@ -73,9 +98,6 @@ class ApplicationController extends Controller
 
         $result = [];
 
-        //log all request
-        Log::info('Application search request', $request->all());
-
         //check if $request->uuid is exist and valid uuid
 
         if (!$request->has('uuid') || Str::isUuid($request->uuid) === false) {
@@ -88,7 +110,6 @@ class ApplicationController extends Controller
             return redirect()->route('dashboard');
         }
 
-        Log::info('Geldi' . print_r($request->all(), true));
 
         $application_quantity = null;
 
@@ -124,6 +145,8 @@ class ApplicationController extends Controller
         } else {
             $result['success'] = true;
         }
+
+        Log::info('Filtered products', ['products' => $filtered_products]);
 
         $result['html'] = view('dashboard.elements.search-product', ['products' => $filtered_products['result']])->render();
 
@@ -495,37 +518,52 @@ class ApplicationController extends Controller
         $CompareData = [];
 
         foreach ($quantities as $no => $quantity) {
-
-            //make $no string
             $no = (string) $no;
-
             $check_invoice = Invoice::checkInvoice(auth()->user()->CustNo, $no, $quantity);
 
             if ($check_invoice['success'] === false) {
-
                 return response()->json([
                     'success' => false,
                     'message' => $check_invoice['message']
                 ]);
-
             } else {
-
                 foreach ($check_invoice['result'] as $result) {
-
-                    $CompareData[$result['invoice']] = $result;
-
+                    if (!isset($CompareData[$result['invoice']])) {
+                        $CompareData[$result['invoice']] = [];
+                    }
+                    $CompareData[$result['invoice']][] = $result;
                 }
-
             }
-
         }
 
+        Log::info('Product control'.print_r($products,true));
+        Log::info('Compare date'.print_r($CompareData,true));
 
         foreach ($products as $product) {
+            $invoiceLines = $CompareData[$product->invoice];
+            $matchingLine = null;
 
-            $line = $CompareData[$product->invoice]['line'];
+            
 
-            $price = number_format($line['Amt'] / $line['Qty'], 2, '.', '');
+            foreach ($invoiceLines as $line) {
+                Log::info('Ürün'.print_r($product,true));
+                if ($line['line']['ItemNo'] == $product->code && $line['line']['LineNumber'] == $product->line) {
+                    $matchingLine = $line;
+                    break;
+                }
+            }
+
+            if (!$matchingLine) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ürün bulunamadı. Ürün kodu: ' . $product->code
+                ]);
+            }
+
+            $price = number_format($matchingLine['line']['Amt'] / $matchingLine['line']['Qty'], 2, '.', '');
+
+            Log::info('Price 1: '.$price);
+            Log::info('Price 2: '.$product->price);
 
             if ($price != $product->price) {
                 return response()->json([
@@ -534,15 +572,11 @@ class ApplicationController extends Controller
                 ]);
             }
 
-            //check if quantity is correct
-
-            if ($CompareData[$product->invoice]['usedQty'] != $product->qty) {
-
+            if ($matchingLine['usedQty'] != $product->qty) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Stokta yeterli ürün bulunmamaktadır. Ürün kodu: ' . $product->code
                 ]);
-
             }
         }
 
@@ -572,12 +606,15 @@ class ApplicationController extends Controller
 
             //Create blockages
             $blockages = [];
+
+            Log::info('Gelen ürünler burada'.print_r($products,true));
             foreach ($products as $product) {
                 $blockages[] = [
                     'InvoiceNo' => $product->invoice,
                     'ItemNo' => $product->code,
                     'Qty' => $product->qty,
                     'ClaimNo' => $Application->claim_number,
+                    'line' => $product->line,
                     'created_at' => date('Y-m-d H:i:s'),
                 ];
             }
@@ -818,11 +855,11 @@ class ApplicationController extends Controller
         // {"BL-22CA1A": [{"qty": "1", "code": "06161", "desc": "Hidrolik yağ", "price": 52.80583333333333, "invoice": "FRD2020092100001"}], "BL-22CA1Z": [{"qty": "1", "code": "06161", "desc": "Hidrolik yağ", "price": 52.80583333333333, "invoice": "FRD2020092100001"}]}
         //and it has year,month columns
         //for exp. find BL-22CA1A inside applications -> claim_number. add month year and uuid form closures to applications
-        
+
         //loop every closures, create new array. bl-22ca1a should be key of array. value of array is month and year  and uuid of closure.
         $FilteredClosures = [];
         foreach ($Closures as $Closure) {
-            
+
             foreach ($Closure->data as $key => $value) {
                 $FilteredClosures[$key] = [
                     'month' => $Closure->month,

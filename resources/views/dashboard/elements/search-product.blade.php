@@ -51,12 +51,17 @@
 
 </div>
 --}}
+
+@php
+debug($products);
+@endphp
 @forelse($products as $product)
     <tr class="calculate" id="product{{$loop->index}}"
         data-desc="{{ $product['line']['ItemDesc'] }}"
         data-code="{{ $product['line']['ItemNo'] }}"
         data-qty="{{ $product['usedQty'] }}"
         data-invoice="{{$product['invoice']}}"
+        data-line="{{$product['LineNumber']}}"
         data-price={{ number_format($product['line']['Amt'] / $product['line']['Qty'], 2, '.', '')}}
         style="display: none;" <!-- Satırları gizle -->
     >

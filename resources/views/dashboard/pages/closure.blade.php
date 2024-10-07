@@ -273,7 +273,53 @@ use Carbon\Carbon;
                         <!--begin::Card body-->
                         <div class="card-body pt-0">
                             @forelse($byYear as $year => $closures)
+                            
                                 <h4 class="mb-4 mt-4">{{$year}} Yılı Ay Kapamalar</h4>
+
+                                @if(isset($onlyCustomer) && $onlyCustomer)
+                                <div class="table-responsive">
+                            <!--begin::Table-->
+                            <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5 mb-0 closure-table">
+                                <thead>
+                                    <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                        <th class="min-w-175px">Ay</th>
+                                        <th class="min-w-100px text-start">Müşteri</th>
+                                        <th class="min-w-100px text-start">Yıl</th>
+                                        <th class="min-w-100px text-start">#</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="fw-semibold text-gray-600">
+                                    @foreach($months as $monthNumber => $monthName)
+                                        <tr>
+                                            <td class="text-start">{{ $monthName }}</td>
+                                            <td class="text-start">
+                                                @if($closure = $ListClosures->where('month', $monthNumber)->first())
+                                                    ( {{$closure->customer->No}} - {{$closure->customer->SearchName}} )
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td class="text-start">
+                                                @if($closure)
+                                                    {{ $closure->year }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($closure)
+                                                    <a href="{{route('dashboard.application.closure-show',['uuid' => $closure->uuid])}}" class="btn btn-sm btn-success">Detay</a>
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <!--end::Table-->
+                        </div>
+                                @else
                                 <div class="table-responsive">
                                     <!--begin::Table-->
                                     <table
@@ -307,6 +353,7 @@ use Carbon\Carbon;
                                     </table>
                                     <!--end::Table-->
                                 </div>
+                                @endif
                             @empty
                             @endforelse
 

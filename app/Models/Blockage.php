@@ -14,6 +14,7 @@ class Blockage extends Model
         'ClaimNo',
         'ItemNo',
         'Qty',
+        'line'
     ];
 
 

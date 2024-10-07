@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 @section('content')
-    <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
+    <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl" style="max-width:1600px">
         <!--begin::Post-->
         <div class="content flex-row-fluid" id="kt_content">
             <!--begin::Inbox App - Messages -->
@@ -151,6 +151,7 @@
                                         <th class="text-center">Müşteri</th>
                                         <th class="text-center">Durum</th>
                                         <th class="text-center">Tip</th>
+                                        <th class="text-center">Ay Kapama</th>
                                         <th class="text-center">Oluşturma Tarihi</th>
                                         <th class="text-center">Güncelleme Tarihi</th>
                                         <th class="text-center">Eylemler</th>
@@ -175,6 +176,15 @@
 
                                             <td>
                                                 <span style="font-size: 12px">{{$a->getType()->title}}</span>
+                                            </td>
+                                            <td>
+                                                @if(isset($FilteredClosures[$a->claim_number]))
+                                                <a href="{{route('dashboard.application.closure-show',['uuid' => $FilteredClosures[$a->claim_number]['uuid']])}}"
+                                                   class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary">
+                                                    {{$FilteredClosures[$a->claim_number]['month']}} / {{$FilteredClosures[$a->claim_number]['year']}}
+                                                </a>
+                                                @else
+                                                @endif
                                             </td>
 
                                             <td class="text-center">

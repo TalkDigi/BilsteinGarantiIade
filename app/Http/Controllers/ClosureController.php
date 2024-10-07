@@ -85,6 +85,8 @@ class ClosureController extends Controller
     public function filter(Request $request)
     {
 
+        $onlyCustomer = true;
+
 
         //if user has role Yönetici
         if (auth()->user()->hasRole('Yönetici')) {
@@ -95,10 +97,12 @@ class ClosureController extends Controller
             }
 
             if ($request->month) {
+                $onlyCustomer = false;
                 $Closures = $Closures->where('month', $request->month);
             }
 
             if ($request->year) {
+                $onlyCustomer = false;
                 $Closures = $Closures->where('year', $request->year);
             }
 
@@ -127,7 +131,7 @@ class ClosureController extends Controller
 
             $months = $this->months;
 
-            return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices'));
+            return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices','onlyCustomer'));
 
         }
 
@@ -180,8 +184,10 @@ class ClosureController extends Controller
 
         foreach ($Applications as $Application) {
             $applicationsByClaim[$Application->claim_number] = $Application;
+            Log::info('Başvuru ürünleri'.print_r($Application->products,true));
             foreach ($Application->products as $product) {
                 $Invoice = Invoice::where('ExDocNo', $product['invoice'])->first();
+                
                 $invoices[$product['invoice']] = $Invoice->PostingDate;
             }
         }

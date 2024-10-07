@@ -608,7 +608,8 @@ $(document).ready(function () {
         desc: tr.getAttribute('data-desc'),
         qty: tr.getAttribute('data-qty'),
         invoice: tr.getAttribute('data-invoice'),
-        price: tr.getAttribute('data-price')
+        price: tr.getAttribute('data-price'),
+        line : tr.getAttribute('data-line')
     });
 });
 
