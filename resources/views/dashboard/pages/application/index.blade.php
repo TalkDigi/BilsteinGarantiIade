@@ -115,6 +115,17 @@
                         <div class="card-header align-items-center py-5 gap-2 gap-md-5">
                             <!--begin::Actions-->
                             <div class="d-flex flex-wrap gap-2">
+                            <select class="form-select form-select-solid form-select-lg customer-select" id="customer-select" data-control="select2"
+                                            data-hide-search="true" name="CustNo">
+                                            <option value="">Müşteri Seçin</option>
+                                            <option value="all">Tümü</option>
+
+                                            @forelse($Customers as $customer)
+                                                <option value="{{ $customer->No }}">{{ $customer->No }} -
+                                                    {{ $customer->SearchName }}</option>
+                                            @empty
+                                            @endforelse
+                                        </select>
 
                             </div>
                             <!--end::Actions-->
@@ -159,7 +170,7 @@
                                     </thead>
                                     <tbody class="fw-semibold text-gray-600">
                                     @forelse($Applications as $a)
-                                        <tr>
+                                        <tr data-customer-no="{{$a->getUser->customer->No}}">
                                             <td>{{$a->id}}</td>
                                             <td>
                                                 <span class="fw-bold">{{$a->claim_number}}</span>
@@ -235,4 +246,20 @@
 
 @section('scripts')
     <script src="{{ asset('assets/js/custom/apps/ecommerce/catalog/products.js') }}"></script>
+    <script>
+    $(document).ready(function() {
+        $('#customer-select').change(function() {
+            var selectedCustomer = $(this).val();
+            
+            if (selectedCustomer === 'all') {
+                $('table tbody tr').show();
+            } else {
+                $('table tbody tr').hide();
+                $('table tbody tr[data-customer-no="' + selectedCustomer + '"]').show();
+            }
+        });
+    });
+
+
+    </script>
 @endsection

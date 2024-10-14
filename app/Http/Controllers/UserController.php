@@ -15,7 +15,8 @@ class UserController extends Controller
     public function index()
     {
         $Roles = Role::all();
-        $Users = User::all();
+        $Users = User::where('status', true)->get();
+        
         $Customers = Customer::all();
 
         return view('dashboard.pages.user.index', compact('Users', 'Roles', 'Customers'));
@@ -128,6 +129,18 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        // UUID ile kullanıcıyı bul
+    $user = User::where('uuid', $id)->first();
+
+    if (!$user) {
+        return redirect()->route('user.index')->with('error', 'Kullanıcı bulunamadı');
+    }
+
+    // Kullanıcıyı yumuşak sil
+    $user->status = false;
+    $user->save();
+
+    // Başarı mesajı ile sayfaya yönlendir
+    return redirect()->route('user.index')->with('success', 'Kullanıcı başarıyla silindi');
     }
 }

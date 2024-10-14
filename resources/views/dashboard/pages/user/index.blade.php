@@ -488,6 +488,7 @@
                                 <td class="text-end">
                                     <a data-user-id="{{$user->uuid}}"
                                        class="btn btn-light btn-active-light-primary btn-flex btn-center btn-sm edit-user">Düzenle</a>
+                                    <a href="{{ route('user.destroy', $user->uuid) }}" class="btn btn-danger btn-active-light-danger btn-flex btn-center btn-sm delete-user ms-2">Sil</a>
                                 </td>
                             </tr>
                         @empty
@@ -512,6 +513,33 @@
 @section('scripts')
     <script src="{{ asset('assets/js/custom/utilities/modals/users-search.js') }}"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-user');
+            
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const userId = this.getAttribute('href').split('/').pop();
+                    
+                    Swal.fire({
+                        title: 'Emin misiniz?',
+                        text: "Bu kullanıcıyı silmek istediğinizden emin misiniz?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Evet, sil!',
+                        cancelButtonText: 'Hayır, vazgeç'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = this.getAttribute('href');
+                        }
+                    });
+                });
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             const roleInputs = document.querySelectorAll('input[name="role"]');
             roleInputs.forEach(input => {

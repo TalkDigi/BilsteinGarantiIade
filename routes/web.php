@@ -159,6 +159,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/olustur', [UserController::class, 'store'])->name('user.store');
         Route::get('/duzenle/{id}', [UserController::class, 'show'])->name('user.show');
         Route::post('/guncelle', [UserController::class, 'update'])->name('user.update');
+        Route::get('/sil/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+        
     });
 
 });
