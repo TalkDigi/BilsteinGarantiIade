@@ -38,7 +38,10 @@ class QuantityImport implements ToModel, WithHeadingRow, WithBatchInserts, WithC
     
         Log::info('Processing Quantity: ' . $data['ItemNo']);
     
-        return new Quantity($data);
+        return Quantity::updateOrCreate(
+            ['ItemNo' => $data['ItemNo']],
+            $data
+        );
     }
 
     public function uniqueBy()
