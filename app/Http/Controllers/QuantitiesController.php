@@ -57,9 +57,8 @@ class QuantitiesController extends Controller
             }
         }
 
-        $Quantities = Quantity::all();
 
-        return view('dashboard.pages.settings.quantities.index', compact('files', 'Quantities'));
+        return view('dashboard.pages.settings.quantities.index', compact('files'));
     }
 
     public function upload(Request $request) {

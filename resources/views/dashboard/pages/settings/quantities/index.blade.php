@@ -137,46 +137,6 @@
                 <!--end::Content-->
             </div>
 
-            <div class="card">
-                 <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse"
-                     data-bs-target="#kt_account_profile_details" aria-expanded="true"
-                     aria-controls="kt_account_profile_details">
-                    <!--begin::Card title-->
-                    <div class="card-title m-0">
-                        <h3 class="fw-bold m-0">İçe aktarılanlar</h3>
-                    </div>
-                </div>
-                <div class="card-body">
-                     <table id="kt_datatable_zero_configuration" class="table table-row-bordered gy-5">
-								<thead>
-									<tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                        <th class="text-start">#</th>
-										<th class="text-center min-w-100px">Ürün No</th>
-										<th class="text-center min-w-100px">Adet</th>
-
-									</tr>
-								</thead>
-								<tbody class="fw-semibold text-gray-600">
-									@forelse($Quantities as $a)
-										<tr>
-                                            <td class="text-start">{{$a->id}}</td>
-											<td class="text-center">
-												<span class="fw-bold">{{$a->ItemNo}}</span>
-											</td>
-
-                                            <td class="text-center">
-												<span class="fw-bold">{{$a->unit}}</span>
-											</td>
-
-										</tr>
-										@empty
-
-									@endforelse
-
-								</tbody>
-							</table>
-                </div>
-            </div>
 
         </div>
         <!--end::Post-->
