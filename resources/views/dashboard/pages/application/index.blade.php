@@ -115,6 +115,7 @@
                         <div class="card-header align-items-center py-5 gap-2 gap-md-5">
                             <!--begin::Actions-->
                             <div class="d-flex flex-wrap gap-2">
+                            @if(auth()->user()->hasRole('Yönetici'))
                             <select class="form-select form-select-solid form-select-lg customer-select" id="customer-select" data-control="select2"
                                             data-hide-search="true" name="CustNo">
                                             <option value="">Müşteri Seçin</option>
@@ -126,6 +127,8 @@
                                             @empty
                                             @endforelse
                                         </select>
+                                    @endif
+                           
 
                             </div>
                             <!--end::Actions-->
