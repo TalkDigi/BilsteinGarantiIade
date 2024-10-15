@@ -18,6 +18,8 @@ class ProcessExcelFiles extends Command
 
     public function handle()
     {
+
+        Log::info('ProcessExcelFiles command started');
         $waitingPath = public_path('processes/waiting-jobs');
         $runningPath = public_path('processes/running-jobs');
 
