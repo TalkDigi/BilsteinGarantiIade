@@ -20,21 +20,25 @@ class ProcessExcelFiles extends Command
     {
 
         Log::info('ProcessExcelFiles command started');
+        
         $waitingPath = public_path('processes/waiting-jobs');
+        
         $runningPath = public_path('processes/running-jobs');
 
         $files = array_diff(scandir($waitingPath), ['..', '.']);
-        Log::info('Files found: '.print_r($files,true));
+        
+        Log::info('Files found: ' . print_r($files, true));
 
         $files = array_values($files);
 
         if (count($files) > 0) {
+
             $file = $files[0];
 
             rename("$waitingPath/$file", "$runningPath/$file");
 
-            // Dispatch the job to process the file
             \App\Jobs\ProcessExcelFile::dispatch($file);
+
         }
     }
 }
