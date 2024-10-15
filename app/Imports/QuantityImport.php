@@ -8,16 +8,14 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithUpserts;
 
-class QuantityImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
+class QuantityImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading, WithUpserts
 {
-
     protected $filePath;
 
     public function __construct($filePath)
     {
-
-
         $lastDashPos = strrpos($filePath, '-');
 
         if ($lastDashPos !== false) {
@@ -28,57 +26,29 @@ class QuantityImport implements ToModel, WithHeadingRow, WithBatchInserts, WithC
         $this->filePath = $uuid;
 
         Log::info('Clean file path' . $this->filePath);
-
     }
 
-
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
     public function model(array $row)
     {
-
         $data = [
             'ItemNo' => $row[0],
             'unit' => $row[1],
             'file_id' => $this->filePath,
         ];
-
-
-        $quantity = Quantity::where('ItemNo', $row['0'])->first();
-
-        if ($quantity) {
-
-            $quantity->update($data);
-            return $quantity;
-
-        } else {
-
-            return new Quantity($data);
-
-        }
+    
+        Log::info('Processing Quantity: ' . $data['ItemNo']);
+    
+        return new Quantity($data);
     }
 
-    /**
-     * Ignore the first row of the file.
-     *
-     * @return int
-     */
+    public function uniqueBy()
+    {
+        return 'ItemNo';
+    }
+
     public function headingRow(): int
     {
-        return 0; // Ignore the first row
-    }
-
-    /**
-     * Define the chunk size for processing the file.
-     *
-     * @return int
-     */
-    public function chunkSize(): int
-    {
-        return 1000; // Process 1000 rows at a time
+        return 0;
     }
 
     public function batchSize(): int
@@ -86,4 +56,8 @@ class QuantityImport implements ToModel, WithHeadingRow, WithBatchInserts, WithC
         return 1000;
     }
 
+    public function chunkSize(): int
+    {
+        return 1000;
+    }
 }
