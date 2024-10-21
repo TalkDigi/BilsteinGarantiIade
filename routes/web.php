@@ -30,6 +30,9 @@ Route::get('/assignRole', function () {
 
 Route::middleware('auth')->group(function () {
 
+    Route::get('/profil', [UserController::class, 'profile'])->name('user.profile');
+    Route::post('/profil', [UserController::class, 'profileUpdate'])->name('user.profile.update');
+
     Route::post('/logout', function () {
         auth()->logout();
         return redirect('/');
@@ -39,7 +42,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/', function () {
 
 
-        $Activities = \App\Models\Activity::orderBy('created_at', 'desc')->limit(15)->get();
+        if (auth()->user()->hasRole('Kullanıcı')) {
+            $userApplicationIds = auth()->user()->applications()->pluck('id');
+            $Activities = \App\Models\Activity::where('subject_type', 'App\Models\Application')
+                ->whereIn('subject_id', $userApplicationIds)
+                ->orderBy('created_at', 'desc')
+                ->limit(15)
+                ->get();
+        } else {
+            $Activities = \App\Models\Activity::orderBy('created_at', 'desc')
+                ->limit(15)
+                ->get();
+        }
 
         //find applications where viewed_by is null
 

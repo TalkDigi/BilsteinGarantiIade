@@ -68,13 +68,6 @@ class CheckCustomerClosures extends Command
             }
         }
 
-
-        die();
-
-
-
-
-
         /*Mail::to($customer->email)->send(new \App\Mail\NoClosureMail($customer));*/
 
         $this->info('Cron job executed successfully.');

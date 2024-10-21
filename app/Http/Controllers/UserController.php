@@ -30,6 +30,32 @@ class UserController extends Controller
         //
     }
 
+    public function profile() {
+        // Mevcut kullanıcıyı al
+        $user = auth()->user();
+        return view('dashboard.pages.user.profile', compact('user'));
+    }
+
+    public function profileUpdate(Request $request) {
+        $user = auth()->user();
+        if (!password_verify($request->old_password, $user->password)) {
+            return back()->withErrors(['old_password' => 'Eski şifre yanlış.']);
+        }
+        
+        $request->validate([
+            'new_password' => 'required|min:6|confirmed',
+        ], [
+            'new_password.required' => 'Yeni şifre alanı boş bırakılamaz.',
+            'new_password.min' => 'Yeni şifre en az 6 karakter olmalıdır.',
+            'new_password.confirmed' => 'Yeni şifre tekrarı eşleşmiyor.',
+        ]);
+
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Şifreniz başarıyla güncellendi.');
+    }
+
     /**
      * Store a newly created resource in storage.
      */

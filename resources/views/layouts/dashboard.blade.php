@@ -408,7 +408,7 @@
                                     </div>
                                     <div class="separator my-2"></div>
                                     <div class="menu-item px-5">
-                                        <a href="javascript:void(0)" class="menu-link px-5">Profil</a>
+                                        <a href="{{route('user.profile')}}" class="menu-link px-5">Profil</a>
                                     </div>
                                     <div class="menu-item px-5">
                                         <a href="{{route('dashboard.application.list')}}" class="menu-link px-5">
