@@ -101,12 +101,14 @@ class ApplicationController extends Controller
         //check if $request->uuid is exist and valid uuid
 
         if (!$request->has('uuid') || Str::isUuid($request->uuid) === false) {
+            Log::info('step1');
             return redirect()->route('dashboard');
         }
 
         $Type = Type::where('uuid', $request->uuid)->first();
 
         if (!$Type) {
+            Log::info('step2');
             return redirect()->route('dashboard');
         }
 
@@ -114,15 +116,17 @@ class ApplicationController extends Controller
         $application_quantity = null;
 
         if ($Type->quantity_limitor) {
-
+            Log::info('step3');
 
             //check quantitiy which imported
 
             $Quantity = Quantity::where('ItemNo', $request->productCode)->first();
 
             if ($Quantity) {
+                Log::info('step4');
                 $application_quantity = $Quantity->unit;
             } else {
+                Log::info('step5');
                 $application_quantity = $Type->quantity_limitor;
             }
 
@@ -136,13 +140,15 @@ class ApplicationController extends Controller
 
         $filtered_products = Invoice::checkInvoice(auth()->user()->CustNo, $request->productCode, $application_quantity);
 
-
+        Log::info('step6');
         if ($filtered_products['success'] === false) {
+            Log::info('step7');
             return response()->json([
                 'success' => false,
                 'message' => $filtered_products['message']
             ]);
         } else {
+            Log::info('step8');
             $result['success'] = true;
         }
 
