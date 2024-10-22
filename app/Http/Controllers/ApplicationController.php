@@ -115,12 +115,19 @@ class ApplicationController extends Controller
 
         $application_quantity = null;
 
+        $productCode = $request->productCode;
+
+        // Ürün kodunun uzunluğunu kontrol et ve gerekirse düzelt
+        if (strlen($request->productCode) == 4) {
+            $productCode = '0' . $productCode;
+        } 
+
         if ($Type->quantity_limitor) {
             Log::info('step3');
 
             //check quantitiy which imported
 
-            $Quantity = Quantity::where('ItemNo', $request->productCode)->first();
+            $Quantity = Quantity::where('ItemNo', $productCode)->first();
 
             if ($Quantity) {
                 Log::info('step4');
@@ -138,7 +145,7 @@ class ApplicationController extends Controller
         }
 
 
-        $filtered_products = Invoice::checkInvoice(auth()->user()->CustNo, $request->productCode, $application_quantity);
+        $filtered_products = Invoice::checkInvoice(auth()->user()->CustNo, $productCode, $application_quantity);
 
         Log::info('step6');
         if ($filtered_products['success'] === false) {
