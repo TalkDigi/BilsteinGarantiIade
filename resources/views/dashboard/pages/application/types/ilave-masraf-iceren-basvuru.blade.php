@@ -46,6 +46,12 @@
                     @else
                         @include('dashboard.pages.application.includes.product-search', ['Type' => $Type])
                     @endif
+                    
+                    @if($Type->has_additional_payment)
+                    <div class="has_additional_payment" style="display: none">
+
+                    </div>
+                    @endif
 
                     <form
                         class="form d-flex flex-column flex-lg-row application_form @if(isset($Application)) update @endif"

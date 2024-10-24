@@ -9,8 +9,8 @@ if ($('.changeStatusButton').length > 0) {
 
         let cargoHistory = $(this).data('cargo-history');
 
-         // Eğer status_id 5 veya 6 ise ve cargo_history false ise
-         if ((status_id == 5 || status_id == 6) && !cargoHistory) {
+        // Eğer status_id 5 veya 6 ise ve cargo_history false ise
+        if ((status_id == 5 || status_id == 6) && !cargoHistory) {
 
             let modalTarget = $(this).data('bs-target');
             e.preventDefault(); // Varsayılan tıklama davranışını engelle
@@ -35,7 +35,7 @@ if ($('.changeStatusButton').length > 0) {
         if ((status_id == 5 || status_id == 6) && cargoHistory) {
             let modalTarget = $(this).data('bs-target');
             var modal = new bootstrap.Modal(document.querySelector(modalTarget));
-                    modal.show();
+            modal.show();
         }
 
         $('.newStatus').html(status.html);
@@ -513,15 +513,15 @@ $(document).ready(function () {
 
         } else {
 
-                   const loadingEl = document.createElement("div");
-                        document.body.prepend(loadingEl);
-                        loadingEl.classList.add("page-loader");
-                        loadingEl.classList.add("flex-column");
-                        loadingEl.innerHTML = `
+            const loadingEl = document.createElement("div");
+            document.body.prepend(loadingEl);
+            loadingEl.classList.add("page-loader");
+            loadingEl.classList.add("flex-column");
+            loadingEl.innerHTML = `
                 <span class="spinner-border text-primary" role="status"></span>
                 <span class="text-muted fs-6 fw-semibold mt-5">Sonuçlar aranıyor...</span>
             `;
-                        KTApp.showPageLoading();
+            KTApp.showPageLoading();
 
             let url = $('.productSearchForm').attr('action');
 
@@ -594,6 +594,58 @@ $(document).ready(function () {
             }
         }
 
+        //check if .has_additional_payment exist
+        if (document.querySelector('.has_additional_payment')) {
+
+            if (!$('#dropZone1Input').val()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Uyarı',
+                    text: 'Servisin Müşteriye Kestiği İlk Fatura / İş Emri alanına en az bir dosya ekleyin.',
+                });
+                return false;
+            }
+            if (!$('#dropZone2Input').val()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Uyarı',
+                    text: 'Araç Ruhsatı Görseli alanına en az bir dosya ekleyin.',
+                });
+                return false;
+            }
+
+            if (!$('#dropZone4Input').val()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Uyarı',
+                    text: 'Masraf Proforma Faturası alanına en az bir dosya ekleyin.',
+                });
+                return false;
+            }
+
+            if (!$('#dropZone7Input').val()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Uyarı',
+                    text: 'Sorunu Anlatan Görseller alanına en az bir dosya ekleyin.',
+                });
+                return false;
+            }
+
+            // Onay kutularını kontrol et
+            let consentDestroy = document.querySelector('input[name="application[consent][destroy]"]');
+            let consentReturn = document.querySelector('input[name="application[consent][return]"]');
+
+            if (!consentDestroy.checked && !consentReturn.checked) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Uyarı',
+                    text: 'Lütfen "Ürünün bertaraf şartlarına göre imhasını istiyorum." veya "Tüm ek masraf ve riskleri kabul ederek ürünü geri istiyorum." seçeneklerinden en az birini işaretleyin.',
+                });
+                return false;
+            }
+        }
+
         //if form has update class, just post it
         if ($(this).hasClass('update')) {
             $(this).off('submit').submit();
@@ -603,25 +655,25 @@ $(document).ready(function () {
         console.log(trs);
         products = [];
         document.querySelectorAll('tr.calculate').forEach(function (tr) {
-    products.push({
-        code: tr.getAttribute('data-code'),
-        desc: tr.getAttribute('data-desc'),
-        qty: tr.getAttribute('data-qty'),
-        invoice: tr.getAttribute('data-invoice'),
-        price: tr.getAttribute('data-price'),
-        line : tr.getAttribute('data-line')
-    });
-});
+            products.push({
+                code: tr.getAttribute('data-code'),
+                desc: tr.getAttribute('data-desc'),
+                qty: tr.getAttribute('data-qty'),
+                invoice: tr.getAttribute('data-invoice'),
+                price: tr.getAttribute('data-price'),
+                line: tr.getAttribute('data-line')
+            });
+        });
 
-//if productCount is empty, show warning
-if (products.length === 0) {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Uyarı',
-        text: 'Lütfen en az bir ürün ekleyin.',
-    });
-    return false;
-}
+        //if productCount is empty, show warning
+        if (products.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Uyarı',
+                text: 'Lütfen en az bir ürün ekleyin.',
+            });
+            return false;
+        }
 
         let data = $(this).serialize();
         data += '&products=' + JSON.stringify(products);
@@ -683,14 +735,14 @@ if (products.length === 0) {
         'input[name="application[engine_code]"]'
     ];
 
-    checkboxes.on('change', function() {
-        const selectedValues = checkboxes.filter(':checked').map(function() {
+    checkboxes.on('change', function () {
+        const selectedValues = checkboxes.filter(':checked').map(function () {
             return parseInt(this.value);
         }).get();
 
         const isRequired = selectedValues.includes(9) || selectedValues.includes(10);
 
-        requiredInputs.forEach(function(selector) {
+        requiredInputs.forEach(function (selector) {
             const input = $(selector);
             if (isRequired) {
                 input.attr('required', 'required');
