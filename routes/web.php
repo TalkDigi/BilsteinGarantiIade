@@ -117,6 +117,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/durum-degistir', [ApplicationController::class, 'update_status_with_message'])->name('dashboard.application.update_status_with_message');
 
         Route::get('/pdf-cikti/{claim}', [ApplicationController::class, 'generatePDF'])->name('dashboard.application.pdf');
+
+        Route::post('/onaylanan-masraf-tutarı-guncelle', [ApplicationController::class, 'update_accepted_cost'])->name('dashboard.application.update_accepted_cost');
+
     });
 
     Route::prefix('/icerik')->group(function () {

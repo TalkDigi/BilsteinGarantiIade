@@ -168,12 +168,16 @@
                                         <div
                                             class="border border-success border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3 ">
                                             <!--begin::Number-->
-                                            <div class="d-flex align-items-center">
-                                                <div
-                                                    class="fs-4 fw-bold">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="fs-4 fw-bold">
                                                     {{ number_format($Application->application['accepted_cost'], 2, ',', '.') }}
                                                     ₺
                                                 </div>
+                                                @if($Application->status == 5 && auth()->user()->hasRole('Yönetici'))
+                                                <button type="button" class="btn btn-sm btn-light-primary ms-2" data-bs-toggle="modal" data-bs-target="#editAcceptedCostModal">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                @endif
                                             </div>
                                             <!--end::Number-->
                                             <!--begin::Label-->
@@ -181,6 +185,34 @@
                                             <!--end::Label-->
                                         </div>
                                         <!--end::Stat-->
+                                        @if($Application->status == 5 && auth()->user()->hasRole('Yönetici'))
+                                        <div class="modal fade" id="editAcceptedCostModal" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Onaylanan Masraf Tutarını Düzenle</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form action="{{ route('dashboard.application.update_accepted_cost') }}" method="POST">
+
+                                                        @csrf
+
+                                                        <input type="hidden" name="claim" value="{{ $Application->claim_number }}">
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Onaylanan Masraf Tutarı</label>
+                                                                <input type="number" class="form-control" name="accepted_cost" value="{{ $Application->application['accepted_cost'] }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
                                     @endif
                                 </div>
                                 <!--end::Stats-->

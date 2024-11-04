@@ -886,4 +886,21 @@ class ApplicationController extends Controller
 
     }
 
+    public function update_accepted_cost(Request $request)
+    {
+        $application = Application::where('claim_number', $request->claim)->first();
+
+        if (!$application) {
+            return redirect()->back()->with('error', 'Başvuru bulunamadı');
+        }
+
+        $applicationData = $application->application;
+        $applicationData['accepted_cost'] = $request->accepted_cost;
+        
+        $application->application = $applicationData;
+        $application->save();
+
+        return redirect()->back()->with('success', 'Onaylanan masraf tutarı güncellendi');
+    }
+
 }
