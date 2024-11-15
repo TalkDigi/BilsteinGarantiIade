@@ -634,15 +634,17 @@ $(document).ready(function () {
 
             // Onay kutularını kontrol et
             let consentDestroy = document.querySelector('input[name="application[consent][destroy]"]');
-            let consentReturn = document.querySelector('input[name="application[consent][return]"]');
-
-            if (!consentDestroy.checked && !consentReturn.checked) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Uyarı',
-                    text: 'Lütfen "Ürünün bertaraf şartlarına göre imhasını istiyorum." veya "Tüm ek masraf ve riskleri kabul ederek ürünü geri istiyorum." seçeneklerinden en az birini işaretleyin.',
-                });
-                return false;
+            if (consentDestroy) {
+                let consentReturn = document.querySelector('input[name="application[consent][return]"]');
+                
+                if (!consentDestroy.checked && !consentReturn.checked) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Uyarı',
+                        text: 'Lütfen "Ürünün bertaraf şartlarına göre imhasını istiyorum." veya "Tüm ek masraf ve riskleri kabul ederek ürünü geri istiyorum." seçeneklerinden en az birini işaretleyin.',
+                    });
+                    return false;
+                }
             }
         }
 

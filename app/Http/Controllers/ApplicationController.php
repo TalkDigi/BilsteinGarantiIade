@@ -788,8 +788,8 @@ class ApplicationController extends Controller
     public function claim_search(Request $request)
     {
 
-        $Types = Application::TYPES;
-        $IntTypes = Application::INT_TYPES;
+        $Types = Type::all();
+        
         $basvuru_turu = 'tumu';
         $tip = 'tumu';
 
@@ -802,7 +802,7 @@ class ApplicationController extends Controller
         }
         $query = $query->where('claim_number', $request->search)->orderBy('id', 'desc')->get();
         $Applications = $query;
-        return view('dashboard.pages.application.index', compact('Applications', 'statusCounts', 'tip', 'basvuru_turu', 'Types', 'IntTypes'));
+        return view('dashboard.pages.application.index', compact('Applications', 'statusCounts', 'tip', 'basvuru_turu', 'Types'));
     }
 
     public function quantity_check(Request $request)

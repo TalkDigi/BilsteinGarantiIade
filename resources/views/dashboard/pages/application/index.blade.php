@@ -250,18 +250,21 @@
 @section('scripts')
     <script src="{{ asset('assets/js/custom/apps/ecommerce/catalog/products.js') }}"></script>
     <script>
-    $(document).ready(function() {
-        $('#customer-select').change(function() {
-            var selectedCustomer = $(this).val();
-            
-            if (selectedCustomer === 'all') {
-                $('table tbody tr').show();
-            } else {
-                $('table tbody tr').hide();
-                $('table tbody tr[data-customer-no="' + selectedCustomer + '"]').show();
-            }
-        });
+   $(document).ready(function() {
+    // DataTable'ı başlat
+    var table = $('#kt_ecommerce_products_table').DataTable();
+    
+    $('#customer-select').change(function() {
+        var selectedCustomer = $(this).val();
+        
+        if (selectedCustomer === 'all') {
+            table.column(2).search('').draw(); // 2. sütun müşteri sütunu
+        } else {
+            table.column(2).search(selectedCustomer).draw();
+        }
     });
+});
+</script>
 
 
     </script>

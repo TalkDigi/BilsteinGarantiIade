@@ -356,9 +356,7 @@
 
 
                                     </div>
-                                @endif
-
-                                <div class="row consent mt-10 consent-secondary" style="display: none">
+                                    <div class="row consent mt-10 consent-secondary" style="display: none">
                                     <div class="col-lg-6">
                                         <div
                                             class="border border-gray-700 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
@@ -387,6 +385,9 @@
                                     </div>
 
                                 </div>
+                                @endif
+
+                                
 
                                 <button type="submit" class="btn btn-primary mt-5 float-end">
                                     <span class="indicator-label">
