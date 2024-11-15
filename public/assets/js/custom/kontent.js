@@ -597,39 +597,47 @@ $(document).ready(function () {
         //check if .has_additional_payment exist
         if (document.querySelector('.has_additional_payment')) {
 
-            if (!$('#dropZone1Input').val()) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Uyarı',
-                    text: 'Servisin Müşteriye Kestiği İlk Fatura / İş Emri alanına en az bir dosya ekleyin.',
-                });
-                return false;
+            if ($('#dropZone1Input').length && !$('#dropZone1Input').prop('readonly')) {
+                if (!$('#dropZone1Input').val()) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Uyarı',
+                        text: 'Servisin Müşteriye Kestiği İlk Fatura / İş Emri alanına en az bir dosya ekleyin.',
+                    });
+                    return false;
+                }
             }
-            if (!$('#dropZone2Input').val()) {
-                Swal.fire({
-                    icon: 'warning',
+            if ($('#dropZone2Input').length && !$('#dropZone2Input').prop('readonly')) {
+                if (!$('#dropZone2Input').val()) {
+                    Swal.fire({
+                        icon: 'warning',
                     title: 'Uyarı',
                     text: 'Araç Ruhsatı Görseli alanına en az bir dosya ekleyin.',
                 });
                 return false;
+                }
             }
 
-            if (!$('#dropZone4Input').val()) {
+            if ($('#dropZone4Input').length && !$('#dropZone4Input').prop('readonly')) {
+                if (!$('#dropZone4Input').val()) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Uyarı',
                     text: 'Masraf Proforma Faturası alanına en az bir dosya ekleyin.',
                 });
-                return false;
+                    return false;
+                }
             }
 
-            if (!$('#dropZone7Input').val()) {
+            if ($('#dropZone7Input').length && !$('#dropZone7Input').prop('readonly')) {
+                if (!$('#dropZone7Input').val()) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Uyarı',
                     text: 'Sorunu Anlatan Görseller alanına en az bir dosya ekleyin.',
                 });
-                return false;
+                    return false;
+                }
             }
 
             // Onay kutularını kontrol et
