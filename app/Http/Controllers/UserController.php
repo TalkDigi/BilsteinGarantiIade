@@ -145,6 +145,7 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
+
         //uuid ile kullanıcı var mı kontrol et. yoksa hata dön
         $User = User::where('uuid', $request->uuid)->first();
         if (!$User) {
@@ -162,9 +163,14 @@ class UserController extends Controller
             $User->CustNo = $request->customer;
         }
 
-        if (isset($request->branch) && $request->branch != null) {
+        if (isset($request->branch)) {
             $User->BranchNo = $request->branch;
         }
+
+        if ($request->branch == null) {
+            $User->BranchNo = null;
+        }
+
         $User->save();
 
         //kullanıcının rolünü güncelle
