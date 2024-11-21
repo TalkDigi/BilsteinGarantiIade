@@ -70,12 +70,15 @@ class Invoice extends Model
         return $prices;
     }
 
-    public static function checkInvoice($custNo, $itemNo, $basvuruAdedi)
+    public static function checkInvoice($cust, $itemNo, $basvuruAdedi)
 {
-    Log::info('checkInvoice', ['custNo' => $custNo, 'itemNo' => $itemNo, 'basvuruAdedi' => $basvuruAdedi]);
+    Log::info('checkInvoice', ['custNo' => $cust->CustNo, 'itemNo' => $itemNo, 'basvuruAdedi' => $basvuruAdedi]);
 
     $invoices = Invoice::whereJsonContains('Line', [['ItemNo' => $itemNo]])
-    ->where('CustNo', $custNo)
+    ->where('CustNo', $cust->CustNo)
+    ->when(!empty($cust->BranchNo), function($query) use ($cust) {
+        return $query->where('BranchID', $cust->BranchNo);
+    })
     ->orderBy('PostingDate', 'desc')
     ->get();
 
@@ -106,11 +109,6 @@ class Invoice extends Model
             $totalBlockageQty += $blockages->sum('Qty');
         }
     }
-
-    Log::info('Toplam miktar'.print_r($totalQty, true));
-    Log::info('Toplam blokaj miktarı'.print_r($totalBlockageQty, true));
-    Log::info('Kalan miktar'.print_r($totalQty - $totalBlockageQty, true));
-    Log::info('Başvuru adedi'.print_r($basvuruAdedi, true));
 
     if (($totalQty - $totalBlockageQty) < $basvuruAdedi) {
         return [

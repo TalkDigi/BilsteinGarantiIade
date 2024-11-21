@@ -131,6 +131,7 @@ class ClosureController extends Controller
 
             $months = $this->months;
 
+
             return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices','onlyCustomer'));
 
         }
@@ -150,7 +151,13 @@ class ClosureController extends Controller
 
 
         //check if aby closure exists for this month and year
-        $Closure = Closure::where('month', $month)->where('year', $year)->where('CustNo', auth()->user()->CustNo)->first();
+        $Closure = Closure::where('month', $month)
+            ->where('year', $year)
+            ->where('CustNo', auth()->user()->CustNo)
+            ->when(!empty(auth()->user()->BranchNo), function($query) {
+                return $query->where('BranchNo', auth()->user()->BranchNo);
+            })
+            ->first();
 
 
         if ($Closure) {
@@ -175,7 +182,13 @@ class ClosureController extends Controller
             ->whereIn('type', [1, 3]) // Tip filtresi
             ->where('status', 5)
             ->where('user_id', auth()->id()) // Kullanıcı ID'si filtresi
+            ->when(!empty(auth()->user()->BranchNo), function($query) {
+                return $query->whereHas('user', function($q) {
+                    $q->where('BranchNo', auth()->user()->BranchNo);
+                });
+            })
             ->get();
+
 
 
         $invoices = [];
@@ -193,6 +206,7 @@ class ClosureController extends Controller
         }
 
 
+
         return view('dashboard.pages.closure', compact('Applications', 'month', 'year', 'invoices', 'applicationsByClaim'));
     }
 
@@ -201,7 +215,13 @@ class ClosureController extends Controller
 
 
         //check if aby closure exists for this month and year
-        $closure = Closure::where('month', $request->month)->where('year', $request->year)->where('CustNo', auth()->user()->CustNo)->first();
+        $closure = Closure::where('month', $request->month)
+            ->where('year', $request->year)
+            ->where('CustNo', auth()->user()->CustNo)
+            ->when(!empty(auth()->user()->BranchNo), function($query) {
+                return $query->where('BranchNo', auth()->user()->BranchNo);
+            })
+            ->first();
 
         if ($closure) {
             Session::flash('error', 'Bu ay için kapanış işlemi zaten yapılmış.');
@@ -243,6 +263,9 @@ class ClosureController extends Controller
         $closure->year = $request->year;
         $closure->CustNo = auth()->user()->CustNo;
         $closure->data = $data;
+        if (!empty(auth()->user()->BranchNo)) {
+            $closure->BranchNo = auth()->user()->BranchNo;
+        }
         $closure->created_at = now();
 
         if ($closure->save()) {
@@ -381,6 +404,10 @@ class ClosureController extends Controller
 
 
         $Invoice = Invoice::where('CustNo', auth()->user()->CustNo)->whereJsonContains('Line', [['ItemNo' => $product_code]]);
+
+        if(auth()->user()->BranchNo) {
+            $Invoice = $Invoice->where('BranchID', auth()->user()->BranchNo);
+        }
         $Invoice = $Invoice->where('ExDocNo', '!=', $current_invoice)->orderBy('PostingDate', 'desc')->get();
 
 

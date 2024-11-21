@@ -58,6 +58,15 @@ class ApplicationController extends Controller
             $query = Application::query();
             $statusCounts = Application::getTotalStatusCounts();
 
+        } elseif(Auth::user()->hasRole('Şube Yöneticisi')) {
+
+            $query = Application::whereHas('getUser', function($query) {
+                $query->where('CustNo', auth()->user()->CustNo);
+            });
+
+
+            $statusCounts = Application::getTotalStatusCounts();
+
         } else {
 
             $query = Application::where('user_id', auth()->id());
@@ -82,6 +91,7 @@ class ApplicationController extends Controller
         }
 
         $Applications = $query->orderBy('id', 'desc')->get();
+
 
 
         return view('dashboard.pages.application.index', compact('Applications', 'statusCounts', 'tip', 'basvuru_turu', 'Types','FilteredClosures'));
@@ -123,8 +133,6 @@ class ApplicationController extends Controller
         } 
 
         if ($Type->quantity_limitor) {
-            Log::info('step3');
-
             //check quantitiy which imported
 
             $Quantity = Quantity::where('ItemNo', $productCode)->first();
@@ -145,7 +153,7 @@ class ApplicationController extends Controller
         }
 
 
-        $filtered_products = Invoice::checkInvoice(auth()->user()->CustNo, $productCode, $application_quantity);
+        $filtered_products = Invoice::checkInvoice(auth()->user(), $productCode, $application_quantity);
 
         Log::info('step6');
         if ($filtered_products['success'] === false) {
@@ -532,7 +540,7 @@ class ApplicationController extends Controller
 
         foreach ($quantities as $no => $quantity) {
             $no = (string) $no;
-            $check_invoice = Invoice::checkInvoice(auth()->user()->CustNo, $no, $quantity);
+            $check_invoice = Invoice::checkInvoice(auth()->user(), $no, $quantity);
 
             if ($check_invoice['success'] === false) {
                 return response()->json([
@@ -548,9 +556,6 @@ class ApplicationController extends Controller
                 }
             }
         }
-
-        Log::info('Product control'.print_r($products,true));
-        Log::info('Compare date'.print_r($CompareData,true));
 
         foreach ($products as $product) {
             $invoiceLines = $CompareData[$product->invoice];
@@ -575,8 +580,6 @@ class ApplicationController extends Controller
 
             $price = number_format($matchingLine['line']['Amt'] / $matchingLine['line']['Qty'], 2, '.', '');
 
-            Log::info('Price 1: '.$price);
-            Log::info('Price 2: '.$product->price);
 
             if ($price != $product->price) {
                 return response()->json([
@@ -612,6 +615,9 @@ class ApplicationController extends Controller
         $Application->user_id = auth()->id();
         $Application->claim_number = $Application->generateClaimNumber();
         $Application->products = $products;
+        if (!empty(auth()->user()->BranchNo)) {
+            $Application->BranchNo = auth()->user()->BranchNo;
+        }
 
         if ($Application->save()) {
 
@@ -795,6 +801,11 @@ class ApplicationController extends Controller
 
         if (Auth::user()->hasRole('Yönetici')) {
             $query = Application::query();
+            $statusCounts = Application::getTotalStatusCounts();
+        }elseif(Auth::user()->hasRole('Şube Yöneticisi')) {
+            $query = Application::whereHas('getUser', function($query) {
+                $query->where('CustNo', auth()->user()->CustNo);
+            });
             $statusCounts = Application::getTotalStatusCounts();
         } else {
             $query = Application::where('user_id', auth()->id());

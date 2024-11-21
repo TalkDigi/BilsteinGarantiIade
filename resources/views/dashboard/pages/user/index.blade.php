@@ -34,93 +34,6 @@
                         </div>
                         <!--end::Toolbar-->
 
-                        <!--begin::Modal - Adjust Balance-->
-                        <div class="modal fade" id="kt_modal_export_users" tabindex="-1" aria-hidden="true">
-                            <!--begin::Modal dialog-->
-                            <div class="modal-dialog modal-dialog-centered mw-650px">
-                                <!--begin::Modal content-->
-                                <div class="modal-content">
-                                    <!--begin::Modal header-->
-                                    <div class="modal-header">
-                                        <!--begin::Modal title-->
-                                        <h2 class="fw-bold">Export Users</h2>
-                                        <!--end::Modal title-->
-                                        <!--begin::Close-->
-                                        <div class="btn btn-icon btn-sm btn-active-icon-primary"
-                                             data-kt-users-modal-action="close">
-                                            <i class="ki-duotone ki-cross fs-1">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </div>
-                                        <!--end::Close-->
-                                    </div>
-                                    <!--end::Modal header-->
-                                    <!--begin::Modal body-->
-                                    <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
-                                        <!--begin::Form-->
-                                        <form id="kt_modal_export_users_form" class="form" action="#" novalidate="novalidate">
-                                            <!--begin::Input group-->
-                                            <div class="fv-row mb-10">
-                                                <!--begin::Label-->
-                                                <label class="fs-6 fw-semibold form-label mb-2">Select Roles:</label>
-                                                <!--end::Label-->
-                                                <!--begin::Input-->
-                                                <select name="role" data-control="select2"
-                                                        data-placeholder="Select a role" data-hide-search="true"
-                                                        class="form-select form-select-solid fw-bold">
-                                                    <option></option>
-                                                    <option value="Administrator">Administrator</option>
-                                                    <option value="Analyst">Analyst</option>
-                                                    <option value="Developer">Developer</option>
-                                                    <option value="Support">Support</option>
-                                                    <option value="Trial">Trial</option>
-                                                </select>
-                                                <!--end::Input-->
-                                            </div>
-                                            <!--end::Input group-->
-                                            <!--begin::Input group-->
-                                            <div class="fv-row mb-10">
-                                                <!--begin::Label-->
-                                                <label class="required fs-6 fw-semibold form-label mb-2">Select Export
-                                                    Format:</label>
-                                                <!--end::Label-->
-                                                <!--begin::Input-->
-                                                <select name="format" data-control="select2"
-                                                        data-placeholder="Select a format" data-hide-search="true"
-                                                        class="form-select form-select-solid fw-bold">
-                                                    <option></option>
-                                                    <option value="excel">Excel</option>
-                                                    <option value="pdf">PDF</option>
-                                                    <option value="cvs">CVS</option>
-                                                    <option value="zip">ZIP</option>
-                                                </select>
-                                                <!--end::Input-->
-                                            </div>
-                                            <!--end::Input group-->
-                                            <!--begin::Actions-->
-                                            <div class="text-center">
-                                                <button type="reset" class="btn btn-light me-3"
-                                                        data-kt-users-modal-action="cancel">Discard
-                                                </button>
-                                                <button type="submit" class="btn btn-primary"
-                                                        data-kt-users-modal-action="submit">
-                                                    <span class="indicator-label">Submit</span>
-                                                    <span class="indicator-progress">Please wait...
-																	<span
-                                                                        class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                                                </button>
-                                            </div>
-                                            <!--end::Actions-->
-                                        </form>
-                                        <!--end::Form-->
-                                    </div>
-                                    <!--end::Modal body-->
-                                </div>
-                                <!--end::Modal content-->
-                            </div>
-                            <!--end::Modal dialog-->
-                        </div>
                         <!--end::Modal - New Card-->
                         <!--begin::Modal - Add task-->
                         <div class="modal fade" id="kt_modal_add_user" tabindex="-1" aria-hidden="true">
@@ -195,10 +108,11 @@
                                                 <!--end::Input group-->
                                                 <div class="fv-row mb-7 customerSelect">
                                                     <label class="form-label fs-6 fw-semibold">Müşteri:</label>
-                                                    <select class="form-select form-select-solid fw-bold"
+                                                    <select class="form-select form-select-solid fw-bold customerSelect"
                                                             name="customer" data-kt-select2="true" data-placeholder=" ."
                                                             data-allow-clear="true" data-kt-user-table-filter="two-step"
-                                                            data-hide-search="true" >
+                                                            data-hide-search="true" 
+                                                            >
                                                         <option></option>
                                                         @forelse($Customers as $customer)
                                                             <option
@@ -207,6 +121,14 @@
                                                         @endforelse
                                                     </select>
                                                 </div>
+
+                                                <div class="branchSelectContainer" style="display: none;">
+    <label for="branchSelect" class="form-label fs-6 fw-semibold">Şube:</label>
+    <select class="form-select form-select-solid fw-bold branchSelect" name="branch">
+        <!-- Branch seçenekleri buraya eklenecek -->
+    </select>
+</div>
+
 
                                                 <!--begin::Input group-->
                                                 <div class="mb-5">
@@ -340,10 +262,11 @@
                                                 <!--end::Input group-->
                                                 <div class="fv-row mb-7 customerSelect">
                                                     <label class="form-label fs-6 fw-semibold">Müşteri:</label>
-                                                    <select class="form-select form-select-solid fw-bold"
+                                                    <select class="form-select form-select-solid fw-bold customerSelect"
                                                             name="customer" data-kt-select2="true" data-placeholder=" ."
                                                             data-allow-clear="true" data-kt-user-table-filter="two-step"
-                                                            data-hide-search="true" >
+                                                            data-hide-search="true" 
+                                                            >
                                                         <option></option>
                                                         @forelse($Customers as $customer)
                                                             <option
@@ -352,6 +275,13 @@
                                                         @endforelse
                                                     </select>
                                                 </div>
+
+                                                <div class="branchSelectContainer" style="display: none;">
+    <label for="branchSelect" class="form-label fs-6 fw-semibold">Şube:</label>
+    <select class="form-select form-select-solid fw-bold branchSelect" name="branch">
+        <!-- Branch seçenekleri buraya eklenecek -->
+    </select>
+</div>
 
                                                 <!--begin::Input group-->
                                                 <div class="mb-5">
@@ -426,6 +356,7 @@
 
                             <th class="min-w-125px">Kullanıcı</th>
                             <th class="min-w-125px">Müşteri</th>
+							<th class="min-w-125px">Şube</th>
                             <th class="min-w-125px">Rol</th>
                             <th class="min-w-125px">Durum</th>
                             <th class="min-w-125px">Oluşturma Tarihi</th>
@@ -461,6 +392,13 @@
                                         <span class="badge badge-danger">Müşteri ataması yapılmadı.</span>
                                     @endif
                                 </td>
+								<td>
+									@if($user->branch)
+										<span class="badge badge-light">{{$user->branch->BranchName}}</span>
+									@else
+										<span class="badge badge-danger">Şube ataması yapılmadı.</span>
+									@endif
+								</td>
                                 <td>
                                     @if($user->roles[0]->name == 'Yönetici')
 
@@ -468,7 +406,11 @@
 
                                     @else
 
-                                        <span class="badge badge-info">{{$user->roles[0]->name}}</span>
+                                        @forelse($user->roles as $role)
+                                            <span class="badge badge-info">{{$role->name}}</span>
+                                        @empty
+                                            <span class="badge badge-danger">Rol atanmamış</span>
+                                        @endforelse 
 
                                     @endif
 
@@ -555,6 +497,7 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 document.querySelector('.customerSelect').style.display = 'none';
+                                document.querySelector('.branchSelectContainer').style.display = 'none';
                             } else {
                                 this.checked = false;
                                 document.querySelector('.role1').remove();
@@ -597,12 +540,77 @@
                             document.getElementById('kt_modal_edit_user_form').querySelector('[name="uuid"]').value = data.user.uuid;
                             
                             // Rol seçimini güncelle
+                            console.log(data.role);
+                            // Önce tüm radio butonları temizle
+                            const allRoleRadios = document.querySelectorAll('#kt_modal_edit_user_form [name="role"]');
+                            allRoleRadios.forEach(radio => {
+                                radio.checked = false;
+                            });
+
+                            // Eğer data.role bir dizi ise
+                            if (Array.isArray(data.role)) {
+                                // Şube yöneticisi rolü var mı kontrol et
+                                const hasManagerRole = data.role.some(role => role.id === 3);
+                                
+                                if (hasManagerRole) {
+                                    // Şube yöneticisi rolünü seç
+                                    allRoleRadios.forEach(radio => {
+                                        if (radio.value == 3) {
+                                            radio.checked = true;
+                                        }
+                                    });
+                                } else {
+                                    // İlk rolü seç
+                                    allRoleRadios.forEach(radio => {
+                                        if (radio.value == data.role[0].id) {
+                                            radio.checked = true;
+                                        }
+                                    });
+                                }
+                            } else {
+                                // Tek rol varsa onu seç
+                                allRoleRadios.forEach(radio => {
+                                    if (radio.value == data.role.id) {
+                                        radio.checked = true;
+                                    }
+                                });
+                            }
+
                             const roleRadios = document.querySelectorAll('#kt_modal_edit_user_form [name="role"]');
                             roleRadios.forEach(radio => {
                                 if (radio.value == data.role.id) {
                                     radio.checked = true;
                                 }
                             });
+
+                            // Şube seçimini güncelle
+                            if (data.branches && data.branches.length > 0) {
+                                const branchContainer = document.getElementById('kt_modal_edit_user_form').querySelector('.branchSelectContainer');
+                                const branchSelect = document.getElementById('kt_modal_edit_user_form').querySelector('.branchSelect');
+                                
+                                if (branchContainer && branchSelect) {
+                                    // Şube container'ı göster
+                                    branchContainer.style.display = 'block';
+                                    
+                                    // Mevcut seçenekleri temizle
+                                    branchSelect.innerHTML = '';
+                                    
+                                    // Şubeleri select'e ekle
+                                    data.branches.forEach(branch => {
+                                        const option = document.createElement('option');
+                                        option.value = branch.BranchID;
+                                        option.textContent = branch.BranchName;
+                                        branchSelect.appendChild(option);
+                                    });
+
+                                    // Eğer kullanıcının şubesi varsa seç
+                                    console.log('User branch no',data.user.BranchNo);
+
+                                    if (data.user.BranchNo) {
+                                        $(branchSelect).val(data.user.BranchNo).trigger('change');
+                                    }
+                                }
+                            }
 
                             // Müşteri seçimini güncelle (eğer varsa)
                             if (data.user.CustNo) {
@@ -627,6 +635,61 @@
                         .catch(error => {
                             console.error('Kullanıcı verileri alınırken bir hata oluştu:', error);
                         });
+                });
+            });
+        });
+        
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // customerSelect class'ına sahip select2 elementlerini seç
+            const customerSelects = document.querySelectorAll('select.customerSelect');
+            const branchSelectContainers = document.querySelectorAll('.branchSelectContainer');
+            const branchSelects = document.querySelectorAll('.branchSelect');
+
+            // jQuery kullanarak select2 olayını dinle
+            $(customerSelects).each(function(index, customerSelect) {
+                $(customerSelect).on('select2:select', function(e) {
+                    const customerId = this.value;
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    // AJAX isteği
+                    fetch('/get-customer-branches', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({ customer_id: customerId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // İlgili branchSelect'i temizle
+                        const branchSelect = branchSelects[index];
+                        branchSelect.innerHTML = '';
+
+                        console.log(data);
+
+                        if (data.branches && data.branches.length > 0) {
+                            // Gelen verileri branchSelect'e ekle
+                            data.branches.forEach(branch => {
+                                const option = document.createElement('option');
+                                option.value = branch.BranchID;
+                                option.textContent = branch.BranchName;
+                                branchSelect.appendChild(option);
+                            });
+
+                            // İlgili branchSelectContainer'ı göster
+                            branchSelectContainers[index].style.display = 'block';
+                        } else {
+
+                            // Eğer veri yoksa ilgili branchSelectContainer'ı gizle
+                            branchSelectContainers[index].style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Branch verileri alınırken bir hata oluştu:', error);
+                    });
+
                 });
             });
         });

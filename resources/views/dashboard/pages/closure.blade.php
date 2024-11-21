@@ -17,7 +17,7 @@ use Carbon\Carbon;
                             <!--begin::Head-->
                             <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
                                 <!--begin::Details-->
-                                <div class="d-flex flex-column">
+                                <div class="d-flex flex-column w-100">
                                     <!--begin::Status-->
                                     <div class="d-flex align-items-center mb-1">
 
@@ -32,6 +32,26 @@ use Carbon\Carbon;
                                         ulaşabilirsiniz. Örnek fatura oluşturmak istediğiniz ayı seçerek
                                         başlayabilirsiniz.
                                     </div>
+
+                                    @if(auth()->user()->hasRole('Şube Yöneticisi') && !empty(auth()->user()->BranchNo))
+                                        <div class="alert alert-light d-block">
+                                            <div class="alert-text text-center">
+                                                <p class="text-black mb-0">
+                                                    <b>{{auth()->user()->branch->BranchName}}</b> şubesi için işlem yapıyorsunuz.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(auth()->user()->hasRole('Şube Yöneticisi') && empty(auth()->user()->BranchNo))
+                                        <div class="alert alert-warning d-block">
+                                            <div class="alert-text text-center">
+                                                <p class="text-black mb-0">
+                                                    Ay kapama işlemlerine devam etmek için bayi seçmelisiniz.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     <!--end::Description-->
                                 </div>
 
@@ -284,35 +304,28 @@ use Carbon\Carbon;
                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                         <th class="min-w-175px">Ay</th>
                                         <th class="min-w-100px text-start">Müşteri</th>
-                                        <th class="min-w-100px text-start">Yıl</th>
-                                        <th class="min-w-100px text-start">#</th>
                                     </tr>
                                 </thead>
                                 <tbody class="fw-semibold text-gray-600">
                                     @foreach($months as $monthNumber => $monthName)
+                                    
                                         <tr>
                                             <td class="text-start">{{ $monthName }}</td>
                                             <td class="text-start">
-                                                @if($closure = $ListClosures->where('month', $monthNumber)->first())
-                                                    ( {{$closure->customer->No}} - {{$closure->customer->SearchName}} )
-                                                @else
+                                                @forelse($ListClosures->where('month', $monthNumber) as $closure)
+                                                <a href="{{route('dashboard.application.closure-show',['uuid' => $closure->uuid])}}" >
+                                                    <p>( {{$closure->customer->No}} - {{$closure->customer->SearchName}} )
+                                                    @if(!empty($closure->branch))
+                                                    <span class="text-muted">({{$closure->branch->BranchName}})</span>
+                                                    @endif
+                                                    </p>
+                                                    </a>
+                                                @empty
                                                     -
-                                                @endif
+                                                @endforelse
+                                                
                                             </td>
-                                            <td class="text-start">
-                                                @if($closure)
-                                                    {{ $closure->year }}
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($closure)
-                                                    <a href="{{route('dashboard.application.closure-show',['uuid' => $closure->uuid])}}" class="btn btn-sm btn-success">Detay</a>
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
+                                          
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -339,7 +352,12 @@ use Carbon\Carbon;
                                                 <tr>
 
                                                     <td class="text-start">{{ $months[$closure->month] }}</td>
-                                                    <td class="text-start">( {{$closure->customer->No}} - {{$closure->customer->SearchName}} )</td>
+                                                    <td class="text-start">
+                                                        ( {{$closure->customer->No}} - {{$closure->customer->SearchName}} )
+                                                        @if(!empty($closure->branch))
+                                                            <span class="text-muted">({{$closure->branch->BranchName}})</span>
+                                                        @endif
+                                                    </td>
                                                     <td>
                                                         <a href="{{route('dashboard.application.closure-show',['uuid' => $closure->uuid])}}" class="btn btn-sm btn-success">Detay</a>
                                                     </td>

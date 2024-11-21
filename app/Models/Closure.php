@@ -16,7 +16,8 @@ class Closure extends Model
         'month',
         'year',
         'CustNo',
-        'data'
+        'data',
+        'BranchNo'
     ];
 
     protected $casts = [
@@ -26,6 +27,11 @@ class Closure extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'CustNo', 'No');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'BranchNo', 'BranchID');
     }
 
 }

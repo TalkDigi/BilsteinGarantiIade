@@ -30,7 +30,8 @@ class Application extends Model
         'version',
         'rejected_by',
         'user_id',
-        'products'
+        'products',
+        'BranchNo'
     ];
 
     const INPUT_MATCHES = [
@@ -265,6 +266,10 @@ class Application extends Model
 
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function branch() {
+        return $this->belongsTo(Branch::class, 'BranchNo', 'BranchID');
     }
 
 }

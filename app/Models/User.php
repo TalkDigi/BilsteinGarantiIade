@@ -27,6 +27,7 @@ class User extends Authenticatable
         'CustNo',
         'status',
         'uuid',
+        'BranchNo',
         'deleted_at',
     ];
 
@@ -59,5 +60,9 @@ class User extends Authenticatable
 
     public function applications() {
         return $this->hasMany(Application::class, 'user_id', 'id');
+    }
+
+    public function branch() {
+        return $this->belongsTo(Branch::class, 'BranchNo', 'BranchID');
     }
 }

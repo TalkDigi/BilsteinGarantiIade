@@ -18,7 +18,7 @@
                         <!--begin::Aside content-->
                         <div class="card-body application-card-body">
                             <!--begin::Button-->
-                            <a data-bs-toggle="modal" data-bs-target="#bl_new_application_type_modal"
+                            <a data-bs-toggle="modal" id="bl_new_application_type_modal_button" data-bs-target="#bl_new_application_type_modal"
                                class="btn btn-primary fw-bold w-100 mb-8">
                                 Yeni Başvuru +
                             </a>
@@ -128,6 +128,20 @@
                                             @endforelse
                                         </select>
                                     @endif
+
+                                    @if(auth()->user()->hasRole('Şube Yöneticisi') && auth()->user()->customer->branches->isNotEmpty())
+                            <select class="form-select form-select-solid form-select-lg branch-select" id="branch-select" data-control="select2"
+                                            data-hide-search="true" name="branchID">
+                                            <option value="">Şube Seçin</option>
+                                            <option value="all">Tümü</option>
+
+                                            @forelse(auth()->user()->customer->branches as $branch)
+                                                <option value="{{ $branch->BranchName }}">
+                                                    {{ $branch->BranchName }}</option>
+                                            @empty
+                                            @endforelse
+                                        </select>
+                                    @endif
                            
 
                             </div>
@@ -163,6 +177,7 @@
                                         <th class="text-center">#</th>
                                         <th class="text-center">Başvuru No</th>
                                         <th class="text-center">Müşteri</th>
+                                        <th class="text-center">Bayi</th>
                                         <th class="text-center">Durum</th>
                                         <th class="text-center">Tip</th>
                                         <th class="text-center">Ay Kapama</th>
@@ -182,6 +197,13 @@
                                             <td>
                                                 <span
                                                     class="fw-bold"> {{$a->getUser->customer->No}} - {{$a->getUser->customer->SearchName}}</span>
+                                            </td>
+
+                                            <td>
+                                                
+                                            @if(!is_null($a->BranchNo))
+                                                <span class="fw-bold">{{$a->branch->BranchName}}</span>
+                                            @endif
                                             </td>
 
                                             <td class="text-center pe-0" data-order="Inactive">
@@ -261,6 +283,26 @@
             table.column(2).search('').draw(); // 2. sütun müşteri sütunu
         } else {
             table.column(2).search(selectedCustomer).draw();
+        }
+    });
+
+    $('#customer-select').change(function() {
+        var selectedCustomer = $(this).val();
+        
+        if (selectedCustomer === 'all') {
+            table.column(2).search('').draw(); // 2. sütun müşteri sütunu
+        } else {
+            table.column(2).search(selectedCustomer).draw();
+        }
+    });
+
+    $('#branch-select').change(function() {
+        var selectedBranch = $(this).val();
+        
+        if (selectedBranch === 'all') {
+            table.column(3).search('').draw(); // 3. sütun şube sütunu
+        } else {
+            table.column(3).search(selectedBranch).draw();
         }
     });
 });
