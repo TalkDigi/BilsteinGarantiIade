@@ -674,7 +674,10 @@
                         const branchSelect = branchSelects[index];
                         branchSelect.innerHTML = '';
 
-                        console.log(data);
+                        const emptyOption = document.createElement('option');
+        emptyOption.value = '';
+        emptyOption.textContent = '-';
+        branchSelect.appendChild(emptyOption);
 
                         if (data.branches && data.branches.length > 0) {
                             // Gelen verileri branchSelect'e ekle
