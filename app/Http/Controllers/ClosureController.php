@@ -33,30 +33,31 @@ class ClosureController extends Controller
     public function index()
     {
         if (auth()->user()->hasRole('Yönetici')) {
-
             $ListClosures = Closure::all();
-
+            
             $byYear = [];
-
-            $invoices = [];
-
+            $invoiceNumbers = [];
+            
+            // İlk döngüde sadece fatura numaralarını toplayalım
             foreach ($ListClosures as $Closure) {
-
                 $byYear[$Closure->year][] = $Closure;
-
-                foreach ($Closure->data as $product) {
-
-                    foreach ($product as $productItem) {
-
-                        $Invoice = Invoice::where('ExDocNo', $productItem['invoice'])->first();
-                        $invoices[$productItem['invoice']] = $Invoice->PostingDate;
+                
+                if (!empty($Closure->data)) {
+                    foreach ($Closure->data as $product) {
+                        foreach ($product as $productItem) {
+                            $invoiceNumbers[] = $productItem['invoice'];
+                        }
                     }
                 }
-
             }
-
+            
+            // Faturaları tek sorguda çekelim
+            $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
+                ->pluck('PostingDate', 'ExDocNo')
+                ->toArray();
+        
             $months = $this->months;
-
+            
             return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices'));
         }
 
@@ -67,18 +68,23 @@ class ClosureController extends Controller
     {
 
         $Closure = Closure::where('uuid', $uuid)->first();
-        $months = $this->months;
+$months = $this->months;
 
-        $invoices = [];
+$invoiceNumbers = [];
 
-        foreach ($Closure->data as $claim => $closure) {
-
-            foreach ($closure as $product) {
-                $Invoice = Invoice::where('ExDocNo', $product['invoice'])->first();
-                $invoices[$product['invoice']] = $Invoice->PostingDate;
-            }
-
+// Önce tüm fatura numaralarını toplayalım
+if (!empty($Closure->data)) {
+    foreach ($Closure->data as $claim => $closure) {
+        foreach ($closure as $product) {
+            $invoiceNumbers[] = $product['invoice'];
         }
+    }
+}
+
+// Faturaları tek sorguda çekelim
+$invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
+    ->pluck('PostingDate', 'ExDocNo')
+    ->toArray();
         return view('dashboard.pages.closure-show', compact('Closure', 'months', 'invoices'));
     }
 
@@ -91,48 +97,49 @@ class ClosureController extends Controller
         //if user has role Yönetici
         if (auth()->user()->hasRole('Yönetici')) {
             $Closures = Closure::query();
-
+        
             if ($request->CustNo) {
                 $Closures = $Closures->where('CustNo', $request->CustNo);
             }
-
+        
             if ($request->month) {
                 $onlyCustomer = false;
                 $Closures = $Closures->where('month', $request->month);
             }
-
+        
             if ($request->year) {
                 $onlyCustomer = false;
                 $Closures = $Closures->where('year', $request->year);
             }
-
+        
             $ListClosures = $Closures->get();
-
-            $ListClosures = $Closures->get();
-
+            
+            // Gereksiz ikinci get() kaldırıldı
+            
             $byYear = [];
-
-            $customers = [];
-
-            $invoices = [];
-
-            foreach ($ListClosures as $claim => $Closure) {
-
+            $invoiceNumbers = [];
+            
+            // İlk döngüde fatura numaralarını toplayalım
+            foreach ($ListClosures as $Closure) {
                 $byYear[$Closure->year][] = $Closure;
-
-                foreach ($Closure->data as $product) {
-                    foreach ($product as $productItem) {
-                        $Invoice = Invoice::where('ExDocNo', $productItem['invoice'])->first();
-                        $invoices[$productItem['invoice']] = $Invoice->PostingDate;
+                
+                if (!empty($Closure->data)) {
+                    foreach ($Closure->data as $product) {
+                        foreach ($product as $productItem) {
+                            $invoiceNumbers[] = $productItem['invoice'];
+                        }
                     }
                 }
-
             }
-
+            
+            // Faturaları tek sorguda çekelim
+            $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
+                ->pluck('PostingDate', 'ExDocNo')
+                ->toArray();
+        
             $months = $this->months;
-
-            return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices','onlyCustomer'));
-
+        
+            return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices', 'onlyCustomer'));
         }
 
         //if mont and year is not exist, return back
