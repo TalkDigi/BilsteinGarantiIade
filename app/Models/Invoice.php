@@ -76,8 +76,12 @@ class Invoice extends Model
 
     $invoices = Invoice::whereJsonContains('Line', [['ItemNo' => $itemNo]])
     ->where('CustNo', $cust->CustNo)
-    ->when(!empty($cust->BranchNo), function($query) use ($cust) {
-        return $query->where('BranchID', $cust->BranchNo);
+    // ->when(!empty($cust->BranchNo), function($query) use ($cust) {
+    //     return $query->where('BranchID', $cust->BranchNo);
+    // })
+    ->when($cust->branch?->Branches, function($query) use ($cust) {
+        $branchIds = json_decode($cust->branch->Branches, true);
+        return $query->whereIn('BranchID', $branchIds);
     })
     ->orderBy('PostingDate', 'desc')
     ->get();

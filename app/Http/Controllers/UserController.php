@@ -97,7 +97,7 @@ class UserController extends Controller
                 $values['BranchNo'] = $request->branch;
             }
 
-            $user = User::create($values);
+            $user = User::create($values) ?? dd('Kullanıcı oluşturulamadı');
 
             $Role = Role::find($request->role);
 
@@ -106,6 +106,7 @@ class UserController extends Controller
             } else {
                 $user->assignRole($Role);
             }
+            
 
         } catch (\Exception $e) {
 
@@ -218,7 +219,7 @@ class UserController extends Controller
     public function branch_update(Request $request)
     {
         $user = auth()->user();
-        $branch = Branch::where('BranchID', $request->branch_id)->first();
+        $branch = Branch::where('id', $request->branch_id)->first();
         if($branch) {
             $user->BranchNo = $request->branch_id;
             $user->save();

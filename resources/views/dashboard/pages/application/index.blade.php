@@ -201,7 +201,7 @@
 
                                             <td>
                                                 
-                                            @if(!is_null($a->BranchNo))
+                                            @if(!empty($a->BranchNo))
                                                 <span class="fw-bold">{{$a->branch->BranchName}}</span>
                                             @endif
                                             </td>

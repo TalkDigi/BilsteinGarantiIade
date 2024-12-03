@@ -31,7 +31,7 @@ class Closure extends Model
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class, 'BranchNo', 'BranchID');
+        return $this->belongsTo(Branch::class, 'BranchNo', 'id');
     }
 
 }

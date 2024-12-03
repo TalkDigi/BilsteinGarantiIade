@@ -13,6 +13,7 @@ class Branch extends Model
         'BranchID',
         'BranchName',
         'CustNo',
+        'Branches',
     ];
 
     protected $connection = 'mysql';

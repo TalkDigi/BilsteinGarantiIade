@@ -62,6 +62,8 @@ class AppServiceProvider extends ServiceProvider
 
         $WaitingForEdit = Application::where('status',4)->get();
 
+        
+
         view()->share('Settings', $Settings);
 
         view()->share('ProviderComplaints', $ProviderComplaints);

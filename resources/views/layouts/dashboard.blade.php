@@ -302,16 +302,19 @@
                                 @endif
 
                                 @if(auth()->user()->hasRole('Şube Yöneticisi'))
-                                <div class="d-flex align-items-center">
 
+                                
+                                
+                                <div class="d-flex align-items-center">
 
                                     <select
                                         class="form-select form-select-sm form-select-solid w-200px w-xxl-200px branch-update"
                                         data-control="select2" data-placeholder="Latest" data-hide-search="true">
                                         <option selected disabled>Şube Seçin</option>
+                                        
                                         @forelse(auth()->user()->customer->branches as $branch)
-                                            <option value="{{$branch->BranchID}}"
-                                                {{auth()->user()->BranchNo == $branch->BranchID ? 'selected' : ''}}>
+                                            <option value="{{$branch->id}}"
+                                                {{auth()->user()->BranchNo == $branch->id ? 'selected' : ''}}>
                                                 {{$branch->BranchName}}
                                             </option>
                                         @empty
