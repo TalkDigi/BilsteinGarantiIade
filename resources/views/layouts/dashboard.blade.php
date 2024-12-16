@@ -303,25 +303,24 @@
 
                                 @if(auth()->user()->hasRole('Şube Yöneticisi'))
 
-                                
-                                
-                                <div class="d-flex align-items-center">
 
-                                    <select
-                                        class="form-select form-select-sm form-select-solid w-200px w-xxl-200px branch-update"
-                                        data-control="select2" data-placeholder="Latest" data-hide-search="true">
-                                        <option selected disabled>Şube Seçin</option>
-                                        
-                                        @forelse(auth()->user()->customer->branches as $branch)
-                                            <option value="{{$branch->id}}"
-                                                {{auth()->user()->BranchNo == $branch->id ? 'selected' : ''}}>
-                                                {{$branch->BranchName}}
-                                            </option>
-                                        @empty
-                                        @endforelse
-                                    </select>
 
-                                </div>
+                                    <div class="d-flex align-items-center">
+
+                                        <select
+                                            class="form-select form-select-sm form-select-solid w-200px w-xxl-200px branch-update"
+                                            data-control="select2" data-placeholder="Latest" data-hide-search="true">
+                                            <option selected disabled>Şube Seçin</option>
+
+                                            @forelse(auth()->user()->customer->branches as $branch)
+                                                <option value="{{$branch->id}}" {{auth()->user()->BranchNo == $branch->id ? 'selected' : ''}}>
+                                                    {{$branch->BranchName}}
+                                                </option>
+                                            @empty
+                                            @endforelse
+                                        </select>
+
+                                    </div>
                                 @endif
 
 
@@ -3273,32 +3272,52 @@
     @yield('scripts')
     <script src="{{asset('assets/js/custom/kontent.js')}}?v={{uniqid()}}"></script>
     @yield('after-scripts')
-    <script>
-
+    @if(!empty(auth()->user()->customer->branches->toArray()))
+    {{-- Müşterinin şubeleri var --}}
+    @if(empty(auth()->user()->BranchNo))
+        {{-- Kullanıcının şube seçimi yok --}}
+        <script>
         $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
             e.preventDefault();
+            e.stopPropagation();
 
-            const userBranchId = '{{ auth()->user()->BranchNo }}';
+            // Bootstrap modal event'ini devre dışı bırak
+            $(this).removeAttr('data-bs-toggle');
+            $(this).removeAttr('data-bs-target');
 
-            if (!userBranchId) {
-                // Önce varsa backdrop'u kaldır
-                $('.modal-backdrop').remove();
-
-                Swal.fire({
-                    text: "Başvuru işlemlerine başlamadan önce şube seçmelisiniz.",
-                    icon: "error",
-                    buttonsStyling: false,
-                    confirmButtonText: "Tamam",
-                    customClass: {
-                        confirmButton: "btn btn-primary"
-                    }
-                });
-                return;
-            }
-
-            // Eğer branch varsa modalı aç
+            Swal.fire({
+                text: "Başvuru işlemlerine başlamadan önce şube seçmelisiniz.",
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Tamam",
+                customClass: {
+                    confirmButton: "btn btn-primary"
+                }
+            }).then((result) => {
+                location.reload();
+            });
+        });
+        </script>
+    @else
+        {{-- Kullanıcının şube seçimi var --}}
+        <script>
+        $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
+            e.preventDefault();
             $('#bl_new_application_type_modal').modal('show');
         });
+        </script>
+    @endif
+@else
+    {{-- Müşterinin şubesi yok, direkt modal açılabilir --}}
+    <script>
+    $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
+        e.preventDefault();
+        $('#bl_new_application_type_modal').modal('show');
+    });
+    </script>
+@endif
+    <script>
+
 
         $('.branch-update').on('change', function () {
 
@@ -3364,7 +3383,9 @@
             // Show Swal alert
             var html = '';
             @foreach($NonViewed as $invoice)
-                html += '<span class="badge badge-success mt-2"><a class="text-white" href="{{route('dashboard.application.show', $invoice->claim_number)}}">{{$invoice->claim_number}}</a></span> ';
+                html += '<span class="badge badge-success mt-2"><a class="text-white"
+                href = "{{route('dashboard.application.show', $invoice->claim_number)}}" >{{$invoice->claim_number}}</a ></span >
+                    ';
             @endforeach
             Swal.fire({
                 title: 'İncelenmemiş başvurular var.',
@@ -3388,7 +3409,9 @@
             var htmlEdit = '';
             @foreach($WaitingForEdit->where('user_id', auth()->user()->id) as $application)
 
-                htmlEdit += '<span class="badge badge-warning mt-2"><a class="text-white" href="{{route('dashboard.application.show', $application->claim_number)}}">{{$application->claim_number}}</a></span> ';
+                htmlEdit += '<span class="badge badge-warning mt-2"><a class="text-white"
+                href = "{{route('dashboard.application.show', $application->claim_number)}}" >{{$application->claim_number}}</a ></span >
+                    ';
             @endforeach
             Swal.fire({
                 title: 'Düzenleme bekleyen başvurular var.',

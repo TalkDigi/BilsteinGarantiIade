@@ -74,12 +74,11 @@ class Invoice extends Model
 {
     Log::info('checkInvoice', ['custNo' => $cust->CustNo, 'itemNo' => $itemNo, 'basvuruAdedi' => $basvuruAdedi]);
 
+    Log::info('cust');
+    Log::info($cust->customer->branches);
     $invoices = Invoice::whereJsonContains('Line', [['ItemNo' => $itemNo]])
     ->where('CustNo', $cust->CustNo)
-    // ->when(!empty($cust->BranchNo), function($query) use ($cust) {
-    //     return $query->where('BranchID', $cust->BranchNo);
-    // })
-    ->when($cust->branch?->Branches, function($query) use ($cust) {
+    ->when(!$cust->customer->branches->isEmpty(), function($query) use ($cust) {
         Log::info('BranchID bulundu'.print_r($cust->branch->Branches, true));
         $branchIds = json_decode($cust->branch->Branches, true);
         return $query->whereIn('BranchID', $branchIds);

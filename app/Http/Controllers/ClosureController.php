@@ -414,7 +414,7 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
 
         $Invoice = Invoice::where('CustNo', auth()->user()->CustNo)
     ->whereJsonContains('Line', [['ItemNo' => $product_code]])
-    ->when(auth()->user()->branch?->Branches, function($query) {
+    ->when(auth()->user()->customer->branches->count() > 0, function($query) {
         $branchIds = json_decode(auth()->user()->branch->Branches, true);
         return $query->whereIn('BranchID', $branchIds);
     })
