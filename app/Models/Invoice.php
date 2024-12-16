@@ -80,6 +80,7 @@ class Invoice extends Model
     //     return $query->where('BranchID', $cust->BranchNo);
     // })
     ->when($cust->branch?->Branches, function($query) use ($cust) {
+        Log::info('BranchID bulundu'.print_r($cust->branch->Branches, true));
         $branchIds = json_decode($cust->branch->Branches, true);
         return $query->whereIn('BranchID', $branchIds);
     })

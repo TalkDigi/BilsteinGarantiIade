@@ -670,6 +670,8 @@
                 })
                     .then(response => response.json())
                     .then(data => {
+
+                        console.log(data);
                         // İlgili branchSelect'i temizle
                         const branchSelect = branchSelects[index];
                         branchSelect.innerHTML = '';
@@ -683,7 +685,7 @@
                             // Gelen verileri branchSelect'e ekle
                             data.branches.forEach(branch => {
                                 const option = document.createElement('option');
-                                option.value = branch.BranchID;
+                                option.value = branch.id;
                                 option.textContent = branch.BranchName;
                                 branchSelect.appendChild(option);
                             });

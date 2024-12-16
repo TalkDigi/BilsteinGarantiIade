@@ -16,10 +16,6 @@ class CustomerController extends Controller
 
         $customer = Customer::where('No', $customer_id)->first();
         
-        // Customer sorgusunun SQL'ini de loglamak faydalı olacaktır
-        Log::info('Customer SQL: ' . Customer::where('No', $customer_id)->toSql());
-        Log::info('Customer değeri:', ['customer' => $customer]);
-        
         if (empty($customer)) {  // null kontrolü yerine empty() kullanalım
             return response()->json(['error' => 'Customer not found'], 404);
         }

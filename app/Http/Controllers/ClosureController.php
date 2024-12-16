@@ -412,12 +412,15 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
         $product_quantity = $Application->products[0]['qty'];
 
 
-        $Invoice = Invoice::where('CustNo', auth()->user()->CustNo)->whereJsonContains('Line', [['ItemNo' => $product_code]]);
-
-        if(auth()->user()->BranchNo) {
-            $Invoice = $Invoice->where('BranchID', auth()->user()->BranchNo);
-        }
-        $Invoice = $Invoice->where('ExDocNo', '!=', $current_invoice)->orderBy('PostingDate', 'desc')->get();
+        $Invoice = Invoice::where('CustNo', auth()->user()->CustNo)
+    ->whereJsonContains('Line', [['ItemNo' => $product_code]])
+    ->when(auth()->user()->branch?->Branches, function($query) {
+        $branchIds = json_decode(auth()->user()->branch->Branches, true);
+        return $query->whereIn('BranchID', $branchIds);
+    })
+    ->where('ExDocNo', '!=', $current_invoice)
+    ->orderBy('PostingDate', 'desc')
+    ->get();
 
 
         $searchString = 'ItemNo';
