@@ -20,10 +20,12 @@ class Branch extends Model
 
     public function migrate_branches()
     {
-        $invoices = \App\Models\Invoice::where('CustNo', '120.1042')
+        $invoices = \App\Models\Invoice::where('CustNo', '120.1007')
             ->get()
             ->groupBy('BranchID');
 
+        //echo all BranchID
+        dd($invoices);
         foreach ($invoices as $branchID => $invoices) {
             $branch = Branch::where('BranchID', $branchID)->first();
             if (!$branch) {
