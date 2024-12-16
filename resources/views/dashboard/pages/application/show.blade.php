@@ -28,9 +28,21 @@
                                     <!--begin::Description-->
                                     <div
                                         class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-500">{{$Application->getType()->title }}</div>
-                                    <div
+                                
+                                        <div
                                         class="d-flex flex-wrap fw-semibold mb-4 fs-5 text-gray-500">{{$Application->getUser->customer->No}}
-                                        - {{$Application->getUser->customer->SearchName}}</div>
+                                        - {{$Application->getUser->customer->SearchName}} 
+                                        @if(!is_null($Application->getUser->BranchNo))
+                                            (
+                                                <small class="text-gray-500 mb-5 mt-0">
+                                                    {{$Application->getUser->branch->BranchName}} 
+                                                </small>
+                                            )
+                                        @endif
+                                    
+                                    </div>
+
+                                        
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Details-->
@@ -50,14 +62,18 @@
 
 
                                            <a href="javascript:void(0);" class="btn btn-sm btn-success me-3 changeStatusButton"
-   data-bs-target="#change_status"
-   data-status-id="5" 
-   data-cargo-history="{{$Application->cargo_history}}">Onayla</a>
+                                            data-bs-target="#change_status"
+                                            data-status-id="5" 
+                                            data-cargo-history="{{$Application->cargo_history}}">
+                                                Onayla
+                                            </a>
 
-<a href="javascript:void(0);" class="btn btn-sm btn-danger me-3 changeStatusButton"
-   data-bs-target="#change_status"
-   data-status-id="6" 
-   data-cargo-history="{{$Application->cargo_history}}">Reddet</a>
+                                            <a href="javascript:void(0);" class="btn btn-sm btn-danger me-3 changeStatusButton"
+                                            data-bs-target="#change_status"
+                                            data-status-id="6" 
+                                            data-cargo-history="{{$Application->cargo_history}}">
+                                                Reddet
+                                            </a>
 
                                     @endif
 

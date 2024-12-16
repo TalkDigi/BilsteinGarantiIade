@@ -11,4 +11,9 @@ class Customer extends Model
 
     protected $table = 'customers';
     protected $connection = 'mysqlSource';
+
+    public function branches()
+{
+    return $this->hasMany(Branch::class, 'CustNo', 'No');
+}
 }

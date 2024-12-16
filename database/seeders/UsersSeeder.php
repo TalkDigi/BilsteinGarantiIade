@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class UsersSeeder extends Seeder
 {
@@ -21,5 +22,6 @@ class UsersSeeder extends Seeder
             "uuid"=> \Str::uuid(),
         ];
         \DB::table('users')->insert($users);
+        
     }
 }

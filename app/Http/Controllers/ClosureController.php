@@ -33,15 +33,17 @@ class ClosureController extends Controller
     public function index()
     {
         if (auth()->user()->hasRole('Yönetici')) {
+
             $ListClosures = Closure::all();
-            
+
             $byYear = [];
-            $invoiceNumbers = [];
-            
-            // İlk döngüde sadece fatura numaralarını toplayalım
+
+            $invoices = [];
+
             foreach ($ListClosures as $Closure) {
+
                 $byYear[$Closure->year][] = $Closure;
-                
+
                 if (!empty($Closure->data)) {
                     foreach ($Closure->data as $product) {
                         foreach ($product as $productItem) {
@@ -49,15 +51,16 @@ class ClosureController extends Controller
                         }
                     }
                 }
+
             }
-            
+
             // Faturaları tek sorguda çekelim
             $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
                 ->pluck('PostingDate', 'ExDocNo')
                 ->toArray();
-        
+
             $months = $this->months;
-            
+
             return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices'));
         }
 
@@ -97,32 +100,32 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
         //if user has role Yönetici
         if (auth()->user()->hasRole('Yönetici')) {
             $Closures = Closure::query();
-        
+
             if ($request->CustNo) {
                 $Closures = $Closures->where('CustNo', $request->CustNo);
             }
-        
+
             if ($request->month) {
                 $onlyCustomer = false;
                 $Closures = $Closures->where('month', $request->month);
             }
-        
+
             if ($request->year) {
                 $onlyCustomer = false;
                 $Closures = $Closures->where('year', $request->year);
             }
-        
+
             $ListClosures = $Closures->get();
-            
+
             // Gereksiz ikinci get() kaldırıldı
-            
+
             $byYear = [];
             $invoiceNumbers = [];
-            
+
             // İlk döngüde fatura numaralarını toplayalım
             foreach ($ListClosures as $Closure) {
                 $byYear[$Closure->year][] = $Closure;
-                
+
                 if (!empty($Closure->data)) {
                     foreach ($Closure->data as $product) {
                         foreach ($product as $productItem) {
@@ -131,14 +134,14 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
                     }
                 }
             }
-            
+
             // Faturaları tek sorguda çekelim
             $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
                 ->pluck('PostingDate', 'ExDocNo')
                 ->toArray();
-        
+
             $months = $this->months;
-        
+
             return view('dashboard.pages.closure', compact('ListClosures', 'byYear', 'months', 'invoices', 'onlyCustomer'));
         }
 
@@ -157,7 +160,13 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
 
 
         //check if aby closure exists for this month and year
-        $Closure = Closure::where('month', $month)->where('year', $year)->where('CustNo', auth()->user()->CustNo)->first();
+        $Closure = Closure::where('month', $month)
+            ->where('year', $year)
+            ->where('CustNo', auth()->user()->CustNo)
+            ->when(!empty(auth()->user()->BranchNo), function($query) {
+                return $query->where('BranchNo', auth()->user()->BranchNo);
+            })
+            ->first();
 
 
         if ($Closure) {
@@ -182,7 +191,13 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
             ->whereIn('type', [1, 3]) // Tip filtresi
             ->where('status', 5)
             ->where('user_id', auth()->id()) // Kullanıcı ID'si filtresi
+            ->when(!empty(auth()->user()->BranchNo), function($query) {
+                return $query->whereHas('user', function($q) {
+                    $q->where('BranchNo', auth()->user()->BranchNo);
+                });
+            })
             ->get();
+
 
 
         $invoices = [];
@@ -194,10 +209,11 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
             Log::info('Başvuru ürünleri'.print_r($Application->products,true));
             foreach ($Application->products as $product) {
                 $Invoice = Invoice::where('ExDocNo', $product['invoice'])->first();
-                
+
                 $invoices[$product['invoice']] = $Invoice->PostingDate;
             }
         }
+
 
 
         return view('dashboard.pages.closure', compact('Applications', 'month', 'year', 'invoices', 'applicationsByClaim'));
@@ -208,7 +224,13 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
 
 
         //check if aby closure exists for this month and year
-        $closure = Closure::where('month', $request->month)->where('year', $request->year)->where('CustNo', auth()->user()->CustNo)->first();
+        $closure = Closure::where('month', $request->month)
+            ->where('year', $request->year)
+            ->where('CustNo', auth()->user()->CustNo)
+            ->when(!empty(auth()->user()->BranchNo), function($query) {
+                return $query->where('BranchNo', auth()->user()->BranchNo);
+            })
+            ->first();
 
         if ($closure) {
             Session::flash('error', 'Bu ay için kapanış işlemi zaten yapılmış.');
@@ -250,6 +272,9 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
         $closure->year = $request->year;
         $closure->CustNo = auth()->user()->CustNo;
         $closure->data = $data;
+        if (!empty(auth()->user()->BranchNo)) {
+            $closure->BranchNo = auth()->user()->BranchNo;
+        }
         $closure->created_at = now();
 
         if ($closure->save()) {
@@ -388,6 +413,10 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
 
 
         $Invoice = Invoice::where('CustNo', auth()->user()->CustNo)->whereJsonContains('Line', [['ItemNo' => $product_code]]);
+
+        if(auth()->user()->BranchNo) {
+            $Invoice = $Invoice->where('BranchID', auth()->user()->BranchNo);
+        }
         $Invoice = $Invoice->where('ExDocNo', '!=', $current_invoice)->orderBy('PostingDate', 'desc')->get();
 
 

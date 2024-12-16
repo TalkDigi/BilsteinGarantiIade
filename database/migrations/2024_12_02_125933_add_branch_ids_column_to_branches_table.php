@@ -7,22 +7,24 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migration.
+     * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            // $table->boolean('status')->default(true);
+        Schema::table('branches', function (Blueprint $table) {
+            //
+            $table->json('Branches')->nullable();
         });
     }
 
     /**
-     * Reverse the migration.
+     * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            // $table->dropColumn('status');
+        Schema::table('branches', function (Blueprint $table) {
+            //
+            $table->dropColumn('Branches');
         });
     }
 };

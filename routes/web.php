@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\QuantitiesController;
@@ -14,9 +15,16 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\DB;
+use App\Models\Branch;
 use App\Models\Invoice;
 use App\Models\Blockage;
 use App\Models\Type;
+
+
+Route::get('/migrate-branches', function () {
+    $branch = new Branch();
+    $branch->migrate_branches();
+});
 
 
 Route::get('/assignRole', function () {
@@ -29,6 +37,8 @@ Route::get('/assignRole', function () {
 
 
 Route::middleware('auth')->group(function () {
+
+    Route::post('/get-customer-branches', [CustomerController::class, 'get_customer_branches'])->name('user.get_customer_branches');
 
     Route::get('/profil', [UserController::class, 'profile'])->name('user.profile');
     Route::post('/profil', [UserController::class, 'profileUpdate'])->name('user.profile.update');
@@ -177,8 +187,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/duzenle/{id}', [UserController::class, 'show'])->name('user.show');
         Route::post('/guncelle', [UserController::class, 'update'])->name('user.update');
         Route::get('/sil/{id}', [UserController::class, 'destroy'])->name('user.destroy');
-        
     });
+
+    Route::post('/branch-update', [UserController::class, 'branch_update'])->name('user.branch.update');
 
 });
 

@@ -195,7 +195,7 @@ background-image: url('assets/media/svg/shapes/wave-bg-red.svg');">
                                                 Başvuru formlarını buradan oluşturabilirsiniz.
                                             </div>
                                         </div>
-                                        <a href="#" class="btn btn-primary fw-semibold" data-bs-toggle="modal"
+                                        <a href="#" id="bl_new_application_type_modal_button" class="btn btn-primary fw-semibold" data-bs-toggle="modal"
                                            data-bs-target="#bl_new_application_type_modal">+</a>
 
                                         {{-- <a href="{{route('dashboard.application.index')}}" class="btn btn-primary fw-semibold" >+</a>--}}

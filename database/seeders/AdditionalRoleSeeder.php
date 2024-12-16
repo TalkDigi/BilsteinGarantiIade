@@ -5,17 +5,14 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use App\Models\User;
-class RoleSeeder extends Seeder
+class AdditionalRoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        //create two role, one Admin, one User
-        Role::create(['name' => 'Yönetici']);
-        Role::create(['name' => 'Kullanıcı']);
+        Role::create(['name' => 'Şube Yöneticisi']);
 
     }
 }

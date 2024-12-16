@@ -6,6 +6,7 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use App\Models\Branch;
 
 class UserController extends Controller
 {
@@ -16,7 +17,7 @@ class UserController extends Controller
     {
         $Roles = Role::all();
         $Users = User::where('status', true)->get();
-        
+
         $Customers = Customer::all();
 
         return view('dashboard.pages.user.index', compact('Users', 'Roles', 'Customers'));
@@ -30,18 +31,20 @@ class UserController extends Controller
         //
     }
 
-    public function profile() {
+    public function profile()
+    {
         // Mevcut kullanıcıyı al
         $user = auth()->user();
         return view('dashboard.pages.user.profile', compact('user'));
     }
 
-    public function profileUpdate(Request $request) {
+    public function profileUpdate(Request $request)
+    {
         $user = auth()->user();
         if (!password_verify($request->old_password, $user->password)) {
             return back()->withErrors(['old_password' => 'Eski şifre yanlış.']);
         }
-        
+
         $request->validate([
             'new_password' => 'required|min:6|confirmed',
         ], [
@@ -84,21 +87,37 @@ class UserController extends Controller
                 'password' => bcrypt($request->password)
             ];
 
+
+
             if (isset($request->customer) && $request->customer != null) {
-                $values['customer_id'] = $request->customer;
+                $values['CustNo'] = $request->customer;
             }
-            $user = User::create($values);
+
+            if (isset($request->branch) && $request->branch != null) {
+                $values['BranchNo'] = $request->branch;
+            }
+
+            $user = User::create($values) ?? dd('Kullanıcı oluşturulamadı');
 
             $Role = Role::find($request->role);
 
-            $user->assignRole($Role);
+            if($request->role == 3) {
+                $user->assignRole([$Role, Role::find(2)]);
+            } else {
+                $user->assignRole($Role);
+            }
+            
+
         } catch (\Exception $e) {
+
             dd($e);
+
         }
 
 
         return redirect()->route('user.index');
     }
+    
 
     /**
      * Display the specified resource.
@@ -107,9 +126,12 @@ class UserController extends Controller
     {
         $User = User::where('uuid', $id)->first();
 
-        $Role = $User->roles->first();
-        
-        return response()->json(['user' => $User, 'role' => $Role]);
+        //check if user's customer has branches
+        $branches = Branch::where('CustNo', $User->CustNo)->get();
+
+        $Role = $User->roles;
+
+        return response()->json(['user' => $User, 'role' => $Role, 'branches' => $branches]);
     }
 
     /**
@@ -125,6 +147,7 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
+
         //uuid ile kullanıcı var mı kontrol et. yoksa hata dön
         $User = User::where('uuid', $request->uuid)->first();
         if (!$User) {
@@ -138,14 +161,36 @@ class UserController extends Controller
         }
         $User->name = $request->name;
         $User->email = $request->email;
-        $User->CustNo = $request->customer;
+        if (isset($request->customer) && $request->customer != null) {
+            $User->CustNo = $request->customer;
+        }
+
+        if (isset($request->branch)) {
+            $User->BranchNo = $request->branch;
+        }
+
+        if ($request->branch == null) {
+            $User->BranchNo = null;
+        }
+
         $User->save();
 
         //kullanıcının rolünü güncelle
         $Role = Role::find($request->role);
         //remove all roles from user
         $User->roles()->detach();
-        $User->assignRole($Role);
+        
+        if($request->role == 3) {
+            // Hem 3 hem 2 rolünü ata
+            $User->assignRole($Role); // Role 3
+            $User->assignRole(Role::find(2)); // Role 2
+        } else {
+            // Sadece seçilen rolü ata
+            // Önce mevcut rolleri temizle
+            $User->syncRoles([]);
+            // Yeni rolü ata
+            $User->assignRole($Role);
+        }
 
         return redirect()->route('user.index');
     }
@@ -156,17 +201,31 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         // UUID ile kullanıcıyı bul
-    $user = User::where('uuid', $id)->first();
+        $user = User::where('uuid', $id)->first();
 
-    if (!$user) {
-        return redirect()->route('user.index')->with('error', 'Kullanıcı bulunamadı');
+        if (!$user) {
+            return redirect()->route('user.index')->with('error', 'Kullanıcı bulunamadı');
+        }
+
+        // Kullanıcıyı yumuşak sil
+        $user->status = false;
+        $user->save();
+
+        // Başarı mesajı ile sayfaya yönlendir
+        return redirect()->route('user.index')->with('success', 'Kullanıcı başarıyla silindi');
     }
 
-    // Kullanıcıyı yumuşak sil
-    $user->status = false;
-    $user->save();
 
-    // Başarı mesajı ile sayfaya yönlendir
-    return redirect()->route('user.index')->with('success', 'Kullanıcı başarıyla silindi');
+    public function branch_update(Request $request)
+    {
+        $user = auth()->user();
+        $branch = Branch::where('id', $request->branch_id)->first();
+        if($branch) {
+            $user->BranchNo = $request->branch_id;
+            $user->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
+        
     }
 }
