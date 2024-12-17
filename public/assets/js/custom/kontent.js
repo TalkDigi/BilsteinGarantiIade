@@ -160,7 +160,17 @@ function initializeDropzone(dropzoneId, updatedFileNamesMap) {
             if (responseText.includes("You can not upload any more files.")) {
                 toastr.warning("Dosya yükleme limitini aştınız. Lütfen yalnızca " + maxFilesAllowed + " dosya yükleyin.", "Hata");
             } else {
-                toastr.warning("Yükleme sırasında bir hata oluştu. Lütfen sistem yöneticinizle iletişime geçin.", "Hata");
+                 // Hata detayını da göster
+        let errorMessage = "Yükleme sırasında bir hata oluştu.";
+        if (typeof response === 'string') {
+            errorMessage += " Hata: " + response;
+        } else if (response.message) {
+            errorMessage += " Hata: " + response.message;
+        } else if (response.error) {
+            errorMessage += " Hata: " + response.error;
+        }
+        toastr.warning(errorMessage, "Hata");
+        console.error("Dosya yükleme hatası:", response);
             }
         }
     });
