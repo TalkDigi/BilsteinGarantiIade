@@ -3272,34 +3272,68 @@
     @yield('scripts')
     <script src="{{asset('assets/js/custom/kontent.js')}}?v={{uniqid()}}"></script>
     @yield('after-scripts')
-    @if(!empty(auth()->user()->customer->branches->toArray()))
-    {{-- Müşterinin şubeleri var --}}
-    @if(empty(auth()->user()->BranchNo))
-        {{-- Kullanıcının şube seçimi yok --}}
-        <script>
-        $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
+    @if(empty(auth()->user()->customer))
+    {{-- Kullanıcının müşteri seçimi yok --}}
+    <script>
+    $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-            // Bootstrap modal event'ini devre dışı bırak
-            $(this).removeAttr('data-bs-toggle');
-            $(this).removeAttr('data-bs-target');
+        // Bootstrap modal event'ini devre dışı bırak
+        $(this).removeAttr('data-bs-toggle');
+        $(this).removeAttr('data-bs-target');
 
-            Swal.fire({
-                text: "Başvuru işlemlerine başlamadan önce şube seçmelisiniz.",
-                icon: "error",
-                buttonsStyling: false,
-                confirmButtonText: "Tamam",
-                customClass: {
-                    confirmButton: "btn btn-primary"
-                }
-            }).then((result) => {
-                location.reload();
-            });
+        Swal.fire({
+            text: "Başvuru işlemlerine başlamadan önce müşteri seçimi yapmalısınız.",
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Tamam",
+            customClass: {
+                confirmButton: "btn btn-primary"
+            }
+        }).then((result) => {
+            location.reload();
         });
-        </script>
+    });
+    </script>
+@else
+    @if(!empty(auth()->user()->customer->branches->toArray()))
+        {{-- Müşterinin şubeleri var --}}
+        @if(empty(auth()->user()->BranchNo))
+            {{-- Kullanıcının şube seçimi yok --}}
+            <script>
+            $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Bootstrap modal event'ini devre dışı bırak
+                $(this).removeAttr('data-bs-toggle');
+                $(this).removeAttr('data-bs-target');
+
+                Swal.fire({
+                    text: "Başvuru işlemlerine başlamadan önce şube seçmelisiniz.",
+                    icon: "error",
+                    buttonsStyling: false,
+                    confirmButtonText: "Tamam",
+                    customClass: {
+                        confirmButton: "btn btn-primary"
+                    }
+                }).then((result) => {
+                    location.reload();
+                });
+            });
+            </script>
+        @else
+            {{-- Kullanıcının şube seçimi var --}}
+            <script>
+            $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
+                e.preventDefault();
+                $('#bl_new_application_type_modal').modal('show');
+            });
+            </script>
+        @endif
     @else
-        {{-- Kullanıcının şube seçimi var --}}
+        {{-- Müşterinin şubesi yok, direkt modal açılabilir --}}
         <script>
         $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
             e.preventDefault();
@@ -3307,14 +3341,6 @@
         });
         </script>
     @endif
-@else
-    {{-- Müşterinin şubesi yok, direkt modal açılabilir --}}
-    <script>
-    $(document).on('click', '#bl_new_application_type_modal_button', function (e) {
-        e.preventDefault();
-        $('#bl_new_application_type_modal').modal('show');
-    });
-    </script>
 @endif
     <script>
 
