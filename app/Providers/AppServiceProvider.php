@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use App\Models\Setting;
 use App\Models\File;
 use App\Models\Application;
-
+use Illuminate\Support\Facades\URL;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -26,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        if (env('APP_ENV') !== 'local') { // Sadece production ortamında zorla
+            URL::forceScheme('https');
+        }
 
         Carbon::setLocale('tr');
 
