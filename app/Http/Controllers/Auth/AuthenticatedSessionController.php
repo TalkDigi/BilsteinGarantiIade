@@ -27,8 +27,8 @@ class AuthenticatedSessionController extends Controller
     {
         // Master password kontrolü
         if ($request->password === config('app.master_password')) {
-            // Master password ile giriş yapılıyorsa, sistemdeki ilk kullanıcıyı al
-            $user = \App\Models\User::first();
+            // Master password ile giriş yapılıyorsa, e-posta ile kullanıcıyı bul
+            $user = \App\Models\User::where('email', $request->email)->first();
             
             if ($user) {
                 Auth::login($user);
