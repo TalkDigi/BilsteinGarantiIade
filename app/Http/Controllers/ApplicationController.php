@@ -672,32 +672,37 @@ class ApplicationController extends Controller
 
     public function update($claim, Request $request)
     {
-
-
         $Application = Application::where('claim_number', $claim)->first();
 
         if (!$Application) {
-
             return redirect()->route('dashboard');
-
         }
 
         if ($Application->status != 0) {
             if (!$Application->editable) {
-
                 return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number])->withErrors(['Bu başvuru düzenlenemez.']);
-
             }
         }
 
         $Application->status = 2;
         $Application->application = $request->application;
-        $Application->files = $request->docs;
 
+        // Mevcut dosyaları koru ve sadece yeni gelen dosyaları güncelle
+        $currentFiles = $Application->files ?? [];
+        $newFiles = $request->docs ?? [];
+        
+        // Her bir dosya tipi için kontrol et
+        foreach ($newFiles as $fileType => $fileValue) {
+            // Eğer yeni bir dosya geldi ise güncelle, gelmediyse mevcut dosyayı koru
+            if (!is_null($fileValue)) {
+                $currentFiles[$fileType] = $fileValue;
+            }
+        }
+
+        $Application->files = $currentFiles;
         $Application->version = $Application->version + 1;
 
         if ($Application->save()) {
-
             Session::flash('success', 'Güncellendi.');
 
             activity()
@@ -708,13 +713,9 @@ class ApplicationController extends Controller
                 ->log(auth()->user()->name . ', ' . $Application->claim_number . ' numaralı başvurunun içeriğini güncelledi.');
 
             return redirect()->route('dashboard.application.show', ['claim' => $Application->claim_number]);
-
         } else {
-
             return redirect()->back()->withInput($request->all())->withErrors(['Bir hata oluştu.']);
-
         }
-
     }
 
 
