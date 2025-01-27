@@ -534,7 +534,6 @@ class ApplicationController extends Controller
             }
         }
 
-        Log::info('Quantities check' . print_r($quantities, true));
 
         $CompareData = [];
 
