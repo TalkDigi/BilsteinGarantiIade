@@ -152,6 +152,8 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
         }
 
 
+        
+
 
         $month = (int)$request->month;
         $year = (int)$request->year;
@@ -169,6 +171,7 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
             ->first();
 
 
+
         if ($Closure) {
             Session::flash('warning', 'Tamamlanmış bir ay kapama mevcut.');
             return redirect()->route('dashboard.application.closure-show', ['uuid' => $Closure->uuid]);
@@ -176,6 +179,8 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
 
         //get users all closures
         $Closures = Closure::where('CustNo', auth()->user()->CustNo)->get();
+
+        
 
 
         $exist_applications = [];
@@ -185,6 +190,7 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
                 $exist_applications[] = $claim;
             }
         }
+
 
 
         $Applications = Application::whereNotIn('claim_number', $exist_applications)
@@ -200,19 +206,18 @@ $invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
 
 
 
-        $invoices = [];
+       // Önce tüm fatura numaralarını toplayalım
+foreach ($Applications as $Application) {
+    $applicationsByClaim[$Application->claim_number] = $Application;
+    foreach ($Application->products as $product) {
+        $invoiceNumbers[] = $product['invoice'];
+    }
+}
 
-        $applicationsByClaim = [];
-
-        foreach ($Applications as $Application) {
-            $applicationsByClaim[$Application->claim_number] = $Application;
-            Log::info('Başvuru ürünleri'.print_r($Application->products,true));
-            foreach ($Application->products as $product) {
-                $Invoice = Invoice::where('ExDocNo', $product['invoice'])->first();
-
-                $invoices[$product['invoice']] = $Invoice->PostingDate;
-            }
-        }
+// Faturaları tek seferde çekelim
+$invoices = Invoice::whereIn('ExDocNo', array_unique($invoiceNumbers))
+    ->pluck('PostingDate', 'ExDocNo')
+    ->toArray();
 
 
 
