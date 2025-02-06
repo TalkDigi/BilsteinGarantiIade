@@ -108,6 +108,10 @@
         .activeCat .svg-icon {
             color: #1b84ff
         }
+
+        .closure-table td,.closure-table tr,.closure-table th,.closure-table p {
+            color: black !important;
+        }
     </style>
 </head>
 
